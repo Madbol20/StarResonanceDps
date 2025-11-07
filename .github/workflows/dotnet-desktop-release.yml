@@ -1,0 +1,56 @@
+name: .NET Desktop Build and Release
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        configuration: [Release]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore StarResonanceDpsAnalysis.sln
+
+      - name: Build solution
+        run: dotnet build StarResonanceDpsAnalysis.sln --configuration ${{ matrix.configuration }} --no-restore
+
+      - name: Publish project
+        run: dotnet publish StarResonanceDpsAnalysis/StarResonanceDpsAnalysis.csproj -c ${{ matrix.configuration }} -o publish
+
+      - name: Create ZIP package
+        run: Compress-Archive -Path publish/* -DestinationPath StarResonanceDpsAnalysis-${{ github.run_number }}.zip
+
+      - name: Upload artifact (optional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: StarResonanceDpsAnalysis-${{ github.run_number }}.zip
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: "StarResonanceDpsAnalysis v${{ github.run_number }}"
+          body: |
+            Automated release from GitHub Actions.
+            Build: ${{ github.run_number }}
+          draft: false
+          prerelease: false
+          files: |
+            StarResonanceDpsAnalysis-${{ github.run_number }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
