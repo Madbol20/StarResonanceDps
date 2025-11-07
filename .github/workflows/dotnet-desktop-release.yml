@@ -1,12 +1,12 @@
-name: .NET Desktop Build and Release
+name: .NET Build and GitHub Release
 
 on:
   push:
     branches: [ "master" ]
 
 permissions:
-  contents: write
-  
+  contents: write  # Needed to create releases
+
 jobs:
   build:
     runs-on: windows-latest
@@ -29,31 +29,31 @@ jobs:
       - name: Build solution
         run: dotnet build StarResonanceDpsAnalysis.sln --configuration ${{ matrix.configuration }} --no-restore
 
+      - name: Run tests
+        run: dotnet test StarResonanceDpsAnalysis.sln --configuration ${{ matrix.configuration }} --no-build
+
       - name: Publish project
-        run: dotnet publish StarResonanceDpsAnalysis/StarResonanceDpsAnalysis.csproj -c ${{ matrix.configuration }} -o publish
+        run: dotnet publish StarResonanceDpsAnalysis.WPF/StarResonanceDpsAnalysis.WPF.csproj -c ${{ matrix.configuration }} -o publish
+
+      - name: Verify publish output
+        run: dir publish
 
       - name: Create ZIP package
         run: Compress-Archive -Path publish/* -DestinationPath StarResonanceDpsAnalysis-${{ github.run_number }}.zip
 
-      - name: Upload artifact (optional)
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-output
-          path: StarResonanceDpsAnalysis-${{ github.run_number }}.zip
+      - name: Verify ZIP file
+        run: dir StarResonanceDpsAnalysis-${{ github.run_number }}.zip
 
       - name: Create GitHub Release
-        id: create_release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ github.run_number }}
           name: "StarResonanceDpsAnalysis v${{ github.run_number }}"
           body: |
-            Automated release from GitHub Actions.
-            Build: ${{ github.run_number }}
-          draft: false
-          prerelease: false
+            ✅ Automated Release from GitHub Actions  
+            • Build: ${{ github.run_number }}
+            • Commit: ${{ github.sha }}
           files: |
             StarResonanceDpsAnalysis-${{ github.run_number }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
