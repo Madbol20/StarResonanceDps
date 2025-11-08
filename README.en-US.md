@@ -1,37 +1,100 @@
-# Star Resonance Tool Box (BPSR Tool Box)
+# 🌟 Star Resonance Toolbox
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-brightgreen.svg)](https://www.gnu.org/licenses/agpl-3.0.txt)
 
-This project ports the key data capture and analysis components from [StarResonanceDamageCounter](https://github.com/dmlgzs/StarResonanceDamageCounter). Many thanks to the original author for their help and inspiration.
+[🇨🇳 Chinese](Readme.md)
 
-The tool does not require modifying the game client and does not violate the game's Terms of Service. It is intended to help players better understand combat data, avoid ineffective optimizations, and improve overall gameplay. Please do not use the results to justify power-level discrimination or any behavior that harms the community.
+This project’s core data extraction and analysis modules are adapted from the [StarResonanceDamageCounter](https://github.com/dmlgzs/StarResonanceDamageCounter) project.
+Special thanks to the original author for their great work and support.
+
+The tool **does not modify or inject into the game client** and **does not violate the game’s Terms of Service**.
+Its purpose is to help players better understand combat data, identify inefficiencies, and improve gameplay experience through informed optimization.
+
+Before using, please ensure that your use of this tool and its data does **not contribute to toxicity, player discrimination, or any harmful behavior within the community**.
 
 ![Moe-counter](https://ipacel.cc/+/MoeCounter2/?name=StarResonanceToolBox)
+
+---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- .NET 8.0
+* [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+* Windows 10 or later
+
+### Build & Run
+
+1. Clone this repository:
+
+   ```bash
+   git clone https://github.com/yourusername/StarResonanceToolBox.git
+   cd StarResonanceToolBox
+   ```
+2. Build:
+
+   ```bash
+   dotnet build -c Release
+   ```
+3. Run:
+
+   ```bash
+   dotnet run --project StarResonanceDpsAnalysis.WPF
+   ```
+
+### Features
+
+* ✅ Real-time combat data analysis
+* 📊 Performance tracking and visualization
+* 🔍 Class-specific damage breakdowns
+* ⚙️ Customizable UI and chart settings
+* 💾 Local data storage for long-term trend analysis
+
+*(More features are under active development!)*
+
+### Screenshots
+
+![SC](SC.jpg)
+
+---
 
 ## 📄 License
 
 [![AGPLv3](https://www.gnu.org/graphics/agplv3-with-text-162x68.png)](LICENSE.txt)
 
-This project is licensed under the [GNU Affero General Public License v3](LICENSE.txt).
+This project is licensed under the **GNU Affero General Public License v3**.
+By using or contributing to this project, you agree to the terms of this license.
 
-By using this project, you agree to comply with the terms of the license.
-
-We do not welcome individuals or projects that disregard this license, including those who modify or translate open-source code and redistribute it as closed-source, or who mirror open-source updates into closed-source derivatives.
-
-## 👥 Contributing
-
-Issues and pull requests to improve the project are welcome!
-
-## ⭐ Support
-
-If this project helps you, please consider giving it a star ⭐
+We **do not welcome** those who take open-source code, modify it, and release it as **closed-source** without compliance with the license.
+Open source should stay open.
 
 ---
 
-**Disclaimer**: This tool is for learning and analysis of game data only. Do not use it in ways that violate the game's Terms of Service. You are solely responsible for any risks incurred. The maintainers are not responsible for any misuse of this tool to discriminate against other players. Please adhere to the rules and ethical standards of the game's community.
+## 👥 Contributing
+
+Contributions are always welcome!
+If you’d like to help improve the project:
+
+* Open an [Issue](../../issues) for bug reports or suggestions
+* Submit a [Pull Request](../../pulls) with enhancements or fixes
+
+Before contributing, please make sure your code follows the project’s structure and respects the AGPL license.
+
+---
+
+## ⭐ Support the Project
+
+If this project helped you, consider giving it a **Star ⭐** on GitHub!
+Your support encourages further development and new features.
+
+---
+
+## ⚠️ Disclaimer
+
+This tool is provided **for educational and analytical purposes only**.
+It must not be used for cheating, automation, or any activity that violates the game’s Terms of Service.
+
+Users are solely responsible for how they use the tool.
+The developers are **not liable** for any misuse or toxic behavior resulting from others’ interpretation of its data.
+
+Please use responsibly and help maintain a positive, fair community environment.
