@@ -2,7 +2,7 @@
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-brightgreen.svg)](https://www.gnu.org/licenses/agpl-3.0.txt)
 
-[🌍 English README](EN.md)
+[🇺🇸 English README](README.en-US.md)
 
 本项目关键数据抓取与分析部分基于 [StarResonanceDamageCounter](https://github.com/dmlgzs/StarResonanceDamageCounter) 项目移植而来，感谢原作者对于本项目的帮助。
 
