@@ -16,6 +16,10 @@
 
 - .NET 8.0
 
+### Screenshots
+
+![SC](SC.jpg)
+
 ## 📄 许可证
 
 [![AGPLv3](https://www.gnu.org/graphics/agplv3-with-text-162x68.png)](LICENSE.txt)
