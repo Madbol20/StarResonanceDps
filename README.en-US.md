@@ -2,7 +2,7 @@
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-brightgreen.svg)](https://www.gnu.org/licenses/agpl-3.0.txt)
 
-[🇨🇳 Chinese](Readme.md)
+[🇨🇳 Chinese](README.md)
 
 This project’s core data extraction and analysis modules are adapted from the [StarResonanceDamageCounter](https://github.com/dmlgzs/StarResonanceDamageCounter) project.
 Special thanks to the original author for their great work and support.
