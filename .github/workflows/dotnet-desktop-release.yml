@@ -44,15 +44,30 @@ jobs:
       - name: Verify ZIP file
         run: dir StarResonanceDpsAnalysis-${{ github.run_number }}.zip
 
+      - name: Get latest commit info
+        id: commit
+        shell: pwsh
+        run: |
+          $commit = git log -1 --pretty=format:"%s"
+          $author = git log -1 --pretty=format:"%an"
+          $body = git log -1 --pretty=format:"%b"
+      
+          echo "message=$commit" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          echo "author=$author" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          echo "body=$body" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ github.run_number }}
           name: "StarResonanceDpsAnalysis v${{ github.run_number }}"
           body: |
-            ✅ Automated Release from GitHub Actions  
+            ✅ Automated Release from GitHub Actions
             • Build: ${{ github.run_number }}
-            • Commit: ${{ github.sha }}
+            • Commit SHA: ${{ github.sha }}
+            • Commit Author: ${{ steps.commit.outputs.author }}
+            • Commit Message: ${{ steps.commit.outputs.message }}
+            • Commit Description: ${{ steps.commit.outputs.body }}
           files: |
             StarResonanceDpsAnalysis-${{ github.run_number }}.zip
         env:
