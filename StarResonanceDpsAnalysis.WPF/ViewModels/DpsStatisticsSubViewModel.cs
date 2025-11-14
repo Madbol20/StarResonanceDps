@@ -409,10 +409,11 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
             Player = new PlayerInfoViewModel
             {
                 Uid = Random.Shared.Next(100, 999),
-                Class = Classes.Marksman,
+                Class = RandomClass(),
                 Guild = "Test Guild",
                 Name = $"Test Player {slots.Count + 1}",
-                Spec = ClassSpec.Unknown
+                Spec = ClassSpec.Unknown,
+                PowerLevel = Random.Shared.Next(5000, 39000)
             },
             SkillList = ApplySkillDisplayLimit(new[]
             {
@@ -456,6 +457,12 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
 
         slots.Add(newItem);
         SortSlotsInPlace();
+    }
+
+    private Classes RandomClass()
+    {
+        var values = Enum.GetValues(typeof(Classes));
+        return (Classes)values.GetValue(Random.Shared.Next(values.Length))!;
     }
 
     #region Sort
