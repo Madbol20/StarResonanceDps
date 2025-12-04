@@ -254,7 +254,8 @@ public sealed class GlobalHotkeyService(
     {
         try
         {
-            dpsStatisticsViewModel.ResetSection();
+            // ? 修复:改为调用ResetAll,和刷新按钮效果一致
+            dpsStatisticsViewModel.ResetAll();
         }
         catch (Exception ex)
         {

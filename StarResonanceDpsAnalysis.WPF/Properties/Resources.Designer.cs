@@ -1042,24 +1042,6 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
-        ///   查找类似  的本地化字符串。
-        /// </summary>
-        public static string MainView_Plugin_Training_Description {
-            get {
-                return ResourceManager.GetString("MainView_Plugin_Training_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似  的本地化字符串。
-        /// </summary>
-        public static string MainView_Plugin_Training_Title {
-            get {
-                return ResourceManager.GetString("MainView_Plugin_Training_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 Search... 的本地化字符串。
         /// </summary>
         public static string MainView_Plugin_Search_PlaceHolder {
@@ -1101,6 +1083,24 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         public static string MainView_Plugin_ThirdPartySdkTips {
             get {
                 return ResourceManager.GetString("MainView_Plugin_ThirdPartySdkTips", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似  的本地化字符串。
+        /// </summary>
+        public static string MainView_Plugin_Training_Description {
+            get {
+                return ResourceManager.GetString("MainView_Plugin_Training_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似  的本地化字符串。
+        /// </summary>
+        public static string MainView_Plugin_Training_Title {
+            get {
+                return ResourceManager.GetString("MainView_Plugin_Training_Title", resourceCulture);
             }
         }
         
@@ -2448,15 +2448,6 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
-        ///   查找类似 打桩模式 的本地化字符串。
-        /// </summary>
-        public static string Window_Training_Title {
-            get {
-                return ResourceManager.GetString("Window_Training_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 Settings 的本地化字符串。
         /// </summary>
         public static string Window_Settings_Title {
@@ -2471,6 +2462,15 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         public static string Window_SkillBreakdown_Title {
             get {
                 return ResourceManager.GetString("Window_SkillBreakdown_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 训练模式 的本地化字符串。
+        /// </summary>
+        public static string Window_Training_Title {
+            get {
+                return ResourceManager.GetString("Window_Training_Title", resourceCulture);
             }
         }
     }

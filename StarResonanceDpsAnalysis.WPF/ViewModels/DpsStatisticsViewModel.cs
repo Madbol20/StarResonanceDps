@@ -40,6 +40,9 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
 
     private readonly IDataStorage _storage;
 
+    // ⭐ 新增: 快照服务
+    private readonly BattleSnapshotService _snapshotService;
+
     // Use a single stopwatch for both total and section durations
     private readonly Stopwatch _timer = new();
     private readonly ITopmostService _topmostService;
@@ -68,60 +71,28 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     [ObservableProperty] private AppConfig _appConfig;
     [ObservableProperty] private TimeSpan _battleDuration;
     [ObservableProperty] private bool _isServerConnected;
+    [ObservableProperty] private bool _showTeamTotalDamage;
+    [ObservableProperty] private ulong _teamTotalDamage;
+    [ObservableProperty] private double _teamTotalDps;
+    [ObservableProperty] private string _teamTotalLabel = "团队DPS";  // 动态标签
+    
+    // ===== 调试用: 更新计数器 =====
+    [ObservableProperty] private int _debugUpdateCount;
+  private DpsDataUpdatedEventHandler? _resumeActiveTimerHandler;
 
-    // One-shot handler to resume active timer when first datapoint of a new section arrives
-    private DpsDataUpdatedEventHandler? _resumeActiveTimerHandler;
+    // ⭐ 新增: 控制是否显示NPC数据
+    [ObservableProperty] private bool _isIncludeNpcData = false;
+    
+    // ⭐ 新增: 快照查看模式相关字段
+    [ObservableProperty] private bool _isViewingSnapshot = false;
+    [ObservableProperty] private BattleSnapshotData? _currentSnapshot = null;
+  
+    // 保存实时数据订阅状态,以便恢复
+    private bool _wasPassiveMode = false;
+  private bool _wasTimerRunning = false;
 
-
-    /// <inheritdoc/>
-    public DpsStatisticsViewModel(IApplicationControlService appControlService,
-        IDataStorage storage,
-        ILogger<DpsStatisticsViewModel> logger,
-        IConfigManager configManager,
-        IWindowManagementService windowManagement,
-        ITopmostService topmostService,
-        DebugFunctions debugFunctions,
-        Dispatcher dispatcher)
-    {
-        StatisticData = new Dictionary<StatisticType, DpsStatisticsSubViewModel>
-        {
-            {
-                StatisticType.Damage,
-                new DpsStatisticsSubViewModel(logger, dispatcher, StatisticType.Damage, storage, debugFunctions)
-            },
-            {
-                StatisticType.TakenDamage,
-                new DpsStatisticsSubViewModel(logger, dispatcher, StatisticType.TakenDamage, storage, debugFunctions)
-            },
-            {
-                StatisticType.Healing,
-                new DpsStatisticsSubViewModel(logger, dispatcher, StatisticType.Healing, storage, debugFunctions)
-            },
-            {
-                StatisticType.NpcTakenDamage,
-                new DpsStatisticsSubViewModel(logger, dispatcher, StatisticType.TakenDamage, storage, debugFunctions)
-            }
-        };
-        _configManager = configManager;
-        _configManager.ConfigurationUpdated += ConfigManagerOnConfigurationUpdated;
-        _appConfig = _configManager.CurrentConfig;
-
-        DebugFunctions = debugFunctions;
-        _appControlService = appControlService;
-        _storage = storage;
-        _logger = logger;
-        _windowManagement = windowManagement;
-        _topmostService = topmostService;
-        _dispatcher = dispatcher;
-        IsServerConnected = _storage.IsServerConnected;
-
-        // Subscribe to DebugFunctions events to handle sample data requests
-        DebugFunctions.SampleDataRequested += OnSampleDataRequested;
-        _storage.PlayerInfoUpdated += StorageOnPlayerInfoUpdated;
-        _storage.ServerConnectionStateChanged += StorageOnServerConnectionStateChanged;
-
-        // set config
-    }
+    // ⭐ 新增: 暴露快照服务给View绑定
+    public BattleSnapshotService SnapshotService => _snapshotService;
 
     public Dictionary<StatisticType, DpsStatisticsSubViewModel> StatisticData { get; }
 
@@ -131,7 +102,57 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
 
     public DpsStatisticsOptions Options { get; } = new();
 
-    /// <inheritdoc/>
+  // ⭐ 添加构造函数以初始化StatisticData和DebugFunctions
+    public DpsStatisticsViewModel(
+        ILogger<DpsStatisticsViewModel> logger,
+      IDataStorage storage,
+        IConfigManager configManager,
+      IWindowManagementService windowManagement,
+    ITopmostService topmostService,
+  IApplicationControlService appControlService,
+ Dispatcher dispatcher,
+        DebugFunctions debugFunctions,
+   BattleSnapshotService snapshotService)
+    {
+        _logger = logger;
+        _storage = storage;
+_configManager = configManager;
+        _windowManagement = windowManagement;
+    _topmostService = topmostService;
+     _appControlService = appControlService;
+        _dispatcher = dispatcher;
+       DebugFunctions = debugFunctions;
+        _snapshotService = snapshotService;
+
+  // 初始化StatisticData字典，为每种统计类型创建对应的SubViewModel
+        StatisticData = new Dictionary<StatisticType, DpsStatisticsSubViewModel>
+    {
+            [StatisticType.Damage] = new DpsStatisticsSubViewModel(logger, dispatcher, StatisticType.Damage, storage, debugFunctions),
+            [StatisticType.Healing] = new DpsStatisticsSubViewModel(logger, dispatcher, StatisticType.Healing, storage, debugFunctions),
+            [StatisticType.TakenDamage] = new DpsStatisticsSubViewModel(logger, dispatcher, StatisticType.TakenDamage, storage, debugFunctions),
+            [StatisticType.NpcTakenDamage] = new DpsStatisticsSubViewModel(logger, dispatcher, StatisticType.NpcTakenDamage, storage, debugFunctions)
+        };
+
+        // 订阅配置更新事件
+     _configManager.ConfigurationUpdated += ConfigManagerOnConfigurationUpdated;
+
+        // 订阅存储事件
+        _storage.DpsDataUpdated += DataStorage_DpsDataUpdated;
+_storage.NewSectionCreated += StorageOnNewSectionCreated;
+ _storage.ServerConnectionStateChanged += StorageOnServerConnectionStateChanged;
+ _storage.PlayerInfoUpdated += StorageOnPlayerInfoUpdated;
+        _storage.ServerChanged += StorageOnServerChanged;  // ⭐ 订阅服务器切换事件
+
+        // 订阅DebugFunctions事件
+   DebugFunctions.SampleDataRequested += OnSampleDataRequested;
+
+        // 初始化AppConfig
+   AppConfig = _configManager.CurrentConfig;
+
+ _logger.LogDebug("DpsStatisticsViewModel constructor completed");
+    }
+
+  /// <inheritdoc/>
     public void Dispose()
     {
         // Unsubscribe from DebugFunctions events
@@ -254,17 +275,146 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     [RelayCommand]
     public void ResetAll()
     {
-        _storage.ClearAllDpsData();
-        _timer.Reset();
-        _sectionStartElapsed = TimeSpan.Zero;
-        _awaitingSectionStart = false;
-        _lastSectionElapsed = TimeSpan.Zero;
-
-        // Clear current UI data for all statistic types and rebuild from the new section snapshot
-        foreach (var subVm in StatisticData.Values)
+        _logger.LogInformation("=== ResetAll START === ScopeTime={ScopeTime}", ScopeTime);
+        
+        // ⭐ 新增: 保存快照(在清空数据之前)
+       if (_storage.ReadOnlyFullDpsDataList.Count > 0 || _storage.ReadOnlySectionedDpsDataList.Count > 0)
         {
-            subVm.Reset();
+      try
+          {
+ if (ScopeTime == ScopeTime.Current)
+          {
+      // 当前模式:保存当前战斗快照
+          // ⭐ 传递用户设置的最小时长(0表示记录所有,但仍受10秒硬性限制)
+   _snapshotService.SaveCurrentSnapshot(_storage, BattleDuration, Options.MinimalDurationInSeconds);
+    _logger.LogInformation("保存当前战斗快照成功");
+}
+      else
+        {
+  // 全程模式:保存全程快照
+ // ⭐ 传递用户设置的最小时长
+     _snapshotService.SaveTotalSnapshot(_storage, BattleDuration, Options.MinimalDurationInSeconds);
+   _logger.LogInformation("保存全程快照成功");
+     }
+     }
+    catch (Exception ex)
+  {
+ _logger.LogError(ex, "保存快照失败");
+    }
         }
+        
+        // ⭐ 新逻辑: 根据当前视图模式决定清空策略
+      if (ScopeTime == ScopeTime.Current)
+  {
+        // 当前模式: 只清空当前(sectioned)数据,保留全程数据
+        _logger.LogInformation("Current mode: Clearing only sectioned data, preserving total data");
+     _storage.ClearDpsData(); // 只清空当前数据
+    
+     // 重置section开始时间为当前时刻
+            _sectionStartElapsed = _timer.Elapsed;
+            _lastSectionElapsed = TimeSpan.Zero;
+            _awaitingSectionStart = false;
+        }
+        else
+{
+            // 全程模式: 清空所有数据(全程+当前)
+ _logger.LogInformation("Total mode: Clearing ALL data (total + sectioned)");
+            _storage.ClearAllDpsData(); // 清空全程+当前数据
+    
+            // 完全重置计时器
+    _timer.Reset();
+     _sectionStartElapsed = TimeSpan.Zero;
+      _lastSectionElapsed = TimeSpan.Zero;
+   _awaitingSectionStart = false;
+        }
+
+        // 清空UI数据
+        foreach (var subVm in StatisticData.Values)
+     {
+      subVm.Reset();
+     }
+
+        // 重置团队统计
+      TeamTotalDamage = 0;
+        TeamTotalDps = 0;
+        BattleDuration = TimeSpan.Zero;
+
+        // 强制重新初始化更新机制
+        if (!_isInitialized)
+        {
+            _logger.LogWarning("ResetAll called but ViewModel not initialized!");
+      return;
+        }
+
+        try
+        {
+            _logger.LogInformation("ResetAll: Mode={Mode}, Interval={Interval}ms", 
+                AppConfig.DpsUpdateMode, AppConfig.DpsUpdateInterval);
+
+            // 清理残留
+  if (_resumeActiveTimerHandler != null)
+      {
+         _storage.DpsDataUpdated -= _resumeActiveTimerHandler;
+      _resumeActiveTimerHandler = null;
+            }
+
+            // ===== 关键修复: 完全重建更新机制 =====
+      
+    // 步骤1: 完全停止现有机制
+            if (_dpsUpdateTimer != null)
+     {
+        _dpsUpdateTimer.Stop();
+           _dpsUpdateTimer.Tick -= DpsUpdateTimerOnTick;
+    _dpsUpdateTimer = null;
+            }
+_storage.DpsDataUpdated -= DataStorage_DpsDataUpdated;
+            _storage.NewSectionCreated -= StorageOnNewSectionCreated;
+       
+    _logger.LogInformation("ResetAll: Stopped all existing update mechanisms");
+
+    // 步骤2: 根据模式重新创建
+if (AppConfig.DpsUpdateMode == DpsUpdateMode.Active)
+   {
+ // Active模式: 创建新定时器
+        _dpsUpdateTimer = new DispatcherTimer
+             {
+   Interval = TimeSpan.FromMilliseconds(Math.Clamp(AppConfig.DpsUpdateInterval, 100, 5000))
+  };
+    _dpsUpdateTimer.Tick += DpsUpdateTimerOnTick;
+      _dpsUpdateTimer.Start();
+            
+    _logger.LogInformation("ResetAll: Created and started NEW timer. Enabled={Enabled}, Interval={Interval}ms",
+        _dpsUpdateTimer.IsEnabled, _dpsUpdateTimer.Interval.TotalMilliseconds);
+         }
+         else
+     {
+       // Passive模式: 订阅事件
+      _storage.DpsDataUpdated += DataStorage_DpsDataUpdated;
+_logger.LogInformation("ResetAll: Subscribed to DpsDataUpdated event");
+            }
+
+          // 始终订阅NewSectionCreated
+   _storage.NewSectionCreated += StorageOnNewSectionCreated;
+
+            // 步骤3: 立即触发一次更新显示空状态
+      var dpsList = ScopeTime == ScopeTime.Total
+      ? _storage.ReadOnlyFullDpsDataList
+       : _storage.ReadOnlySectionedDpsDataList;
+      
+       // ⭐ 关键:即使数据为空也要更新UI,确保UI显示空状态
+     UpdateData(dpsList);
+            UpdateBattleDuration();
+
+            _logger.LogInformation("=== ResetAll COMPLETE === ScopeTime={ScopeTime}, Mode={Mode}, Timer={Timer}, Event subscribed={Event}",
+     ScopeTime,
+       AppConfig.DpsUpdateMode,
+       _dpsUpdateTimer?.IsEnabled ?? false,
+         AppConfig.DpsUpdateMode == DpsUpdateMode.Passive);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during ResetAll");
+      }
     }
 
     [RelayCommand]
@@ -318,14 +468,16 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     [RelayCommand]
     private void OnUnloaded()
     {
-        // Pause periodic timers when view is not visible
-        StopDpsUpdateTimer();
-        if (_durationTimer != null)
-        {
-            _durationTimer.Stop();
-        }
+   // ===== 重要: 不要在Unloaded时停止定时器,因为ResetAll可能会触发这个 =====
+        // 只记录日志,不实际停止任何东西
+  _logger.LogDebug("DpsStatisticsViewModel OnUnloaded called - NOT stopping timers");
 
-        _logger.LogDebug("DpsStatisticsViewModel unloaded - timers paused");
+        // 注释掉原来的停止逻辑
+        // StopDpsUpdateTimer();
+        // if (_durationTimer != null)
+        // {
+        //     _durationTimer.Stop();
+   // }
     }
 
     [RelayCommand]
@@ -339,44 +491,53 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     /// </summary>
     private void ConfigureDpsUpdateMode()
     {
-        if (!_isInitialized) return;
+      if (!_isInitialized)
+ {
+         _logger.LogWarning("ConfigureDpsUpdateMode called but not initialized");
+   return;
+}
 
-        _logger.LogInformation("Configuring DPS update mode: {Mode}, Interval: {Interval}ms",
-            AppConfig.DpsUpdateMode, AppConfig.DpsUpdateInterval);
+  _logger.LogInformation("Configuring DPS update mode: {Mode}, Interval: {Interval}ms",
+     AppConfig.DpsUpdateMode, AppConfig.DpsUpdateInterval);
 
-        // Ensure any one-shot handler from previous mode is removed
-        if (_resumeActiveTimerHandler != null)
-        {
+   // Ensure any one-shot handler from previous mode is removed
+   if (_resumeActiveTimerHandler != null)
+   {
             _storage.DpsDataUpdated -= _resumeActiveTimerHandler;
-            _resumeActiveTimerHandler = null;
+        _resumeActiveTimerHandler = null;
+    _logger.LogDebug("Removed resume active timer handler");
         }
 
         switch (AppConfig.DpsUpdateMode)
         {
-            case DpsUpdateMode.Passive:
-                // Passive mode: subscribe to event
-                StopDpsUpdateTimer();
-                _dpsUpdateTimer = null; // ensure timer is released
-                _storage.DpsDataUpdated -= DataStorage_DpsDataUpdated; // Unsubscribe first to avoid duplicate
-                _storage.DpsDataUpdated += DataStorage_DpsDataUpdated;
-                _storage.NewSectionCreated -= StorageOnNewSectionCreated;
+    case DpsUpdateMode.Passive:
+       // Passive mode: subscribe to event
+     StopDpsUpdateTimer();
+      _dpsUpdateTimer = null; // ensure timer is released
+  _storage.DpsDataUpdated -= DataStorage_DpsDataUpdated; // Unsubscribe first to avoid duplicate
+           _storage.DpsDataUpdated += DataStorage_DpsDataUpdated;
+          _storage.NewSectionCreated -= StorageOnNewSectionCreated;
                 _storage.NewSectionCreated += StorageOnNewSectionCreated;
-                _logger.LogDebug("Passive mode enabled: listening to DpsDataUpdated event");
-                break;
+  _logger.LogDebug("Passive mode enabled: DpsDataUpdated event subscribed");
+     break;
 
             case DpsUpdateMode.Active:
-                // Active mode: use timer, but still listen for section events to pause/resume
-                _storage.DpsDataUpdated -= DataStorage_DpsDataUpdated;
-                _storage.NewSectionCreated -= StorageOnNewSectionCreated;
-                _storage.NewSectionCreated += StorageOnNewSectionCreated;
-                StartDpsUpdateTimer(AppConfig.DpsUpdateInterval);
-                _logger.LogDebug("Active mode enabled: timer interval {Interval}ms", AppConfig.DpsUpdateInterval);
-                break;
+       // Active mode: use timer, but still listen for section events to pause/resume
+       _storage.DpsDataUpdated -= DataStorage_DpsDataUpdated;
+         _storage.NewSectionCreated -= StorageOnNewSectionCreated;
+    _storage.NewSectionCreated += StorageOnNewSectionCreated;
+      StartDpsUpdateTimer(AppConfig.DpsUpdateInterval);
+ _logger.LogDebug("Active mode enabled: timer started with interval {Interval}ms", AppConfig.DpsUpdateInterval);
+      break;
 
             default:
-                _logger.LogWarning("Unknown DPS update mode: {Mode}", AppConfig.DpsUpdateMode);
-                break;
+      _logger.LogWarning("Unknown DPS update mode: {Mode}", AppConfig.DpsUpdateMode);
+      break;
         }
+  
+    _logger.LogInformation("Update mode configuration complete. Mode: {Mode}, Timer enabled: {TimerEnabled}", 
+    AppConfig.DpsUpdateMode,
+      _dpsUpdateTimer?.IsEnabled ?? false);
     }
 
     /// <summary>
@@ -385,29 +546,33 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     private void StartDpsUpdateTimer(int intervalMs)
     {
         // Validate interval
-        var clampedInterval = Math.Clamp(intervalMs, 100, 5000);
+     var clampedInterval = Math.Clamp(intervalMs, 100, 5000);
         if (clampedInterval != intervalMs)
-        {
-            _logger.LogWarning("DPS update interval {Original}ms clamped to {Clamped}ms",
-                intervalMs, clampedInterval);
+     {
+       _logger.LogWarning("DPS update interval {Original}ms clamped to {Clamped}ms",
+     intervalMs, clampedInterval);
         }
 
         if (_dpsUpdateTimer == null)
-        {
-            _dpsUpdateTimer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromMilliseconds(clampedInterval)
-            };
-            _dpsUpdateTimer.Tick += DpsUpdateTimerOnTick;
+ {
+      _dpsUpdateTimer = new DispatcherTimer
+       {
+     Interval = TimeSpan.FromMilliseconds(clampedInterval)
+       };
+    _dpsUpdateTimer.Tick += DpsUpdateTimerOnTick;
+  _logger.LogInformation("Created NEW DPS update timer with interval {Interval}ms", clampedInterval);
         }
-        else
+else
         {
-            _dpsUpdateTimer.Stop();
-            _dpsUpdateTimer.Interval = TimeSpan.FromMilliseconds(clampedInterval);
+    _dpsUpdateTimer.Stop();
+    _dpsUpdateTimer.Interval = TimeSpan.FromMilliseconds(clampedInterval);
+    _logger.LogInformation("Updated EXISTING DPS update timer interval to {Interval}ms", clampedInterval);
         }
 
-        _dpsUpdateTimer.Start();
-        _logger.LogDebug("DPS update timer started with interval {Interval}ms", clampedInterval);
+    _dpsUpdateTimer.Start();
+        _logger.LogInformation("DPS update timer STARTED. Enabled={Enabled}, Interval={Interval}ms", 
+    _dpsUpdateTimer.IsEnabled, 
+       _dpsUpdateTimer.Interval.TotalMilliseconds);
     }
 
     /// <summary>
@@ -428,50 +593,70 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     /// </summary>
     private void DpsUpdateTimerOnTick(object? sender, EventArgs e)
     {
-        // Call the same update logic as event-based mode
-        DataStorage_DpsDataUpdated();
+   // 每10次tick输出一次日志,避免日志爆炸
+        if (_dpsUpdateTimer != null && _dpsUpdateTimer.IsEnabled)
+        {
+          var currentSecond = DateTime.Now.Second;
+   if (currentSecond % 10 == 0) // 每10秒输出一次
+       {
+    _logger.LogInformation("Timer tick triggered - calling DataStorage_DpsDataUpdated");
+  }
+        }
+        
+     // Call the same update logic as event-based mode
+   DataStorage_DpsDataUpdated();
     }
 
     private void DataStorage_DpsDataUpdated()
     {
+        _logger.LogTrace("DataStorage_DpsDataUpdated called");  // 添加跟踪日志
+      
         if (!_dispatcher.CheckAccess())
         {
-            _dispatcher.BeginInvoke(DataStorage_DpsDataUpdated);
+             _logger.LogTrace("Dispatching to UI thread");
+        _dispatcher.BeginInvoke(DataStorage_DpsDataUpdated);
             return;
         }
 
-        var dpsList = ScopeTime == ScopeTime.Total
-            ? _storage.ReadOnlyFullDpsDataList
+        _logger.LogDebug("Processing DPS data update on UI thread");
+
+  var dpsList = ScopeTime == ScopeTime.Total
+       ? _storage.ReadOnlyFullDpsDataList
             : _storage.ReadOnlySectionedDpsDataList;
 
-        // Only start the timer when there is actual damage data present
+        _logger.LogDebug("Data count: {Count}, Timer running: {IsRunning}", dpsList.Count, _timer.IsRunning);
+
+        // ⭐ 关键修复:当有数据且计时器未运行时,启动计时器
         if (!_timer.IsRunning && HasDamageData(dpsList))
-        {
-            _timer.Start();
-        }
-        // else if (_timer.IsRunning && !HasDamageData(dpsList))
-        // {
-        //     // Stop recording if timer was running but no more damage data
-        //     // (IsRecordingActive removed - not part of interface)
-        // }
+   {
+      _logger.LogDebug("Starting timer - has damage data");
+     _timer.Start();
+            // ⭐ 新增:重置section开始时间为当前时刻
+    _sectionStartElapsed = _timer.Elapsed;
+  }
 
-        // If a new section was created, wait until first datapoint to reset UI and mark section start
-        var hasSectionDamage = HasDamageData(_storage.ReadOnlySectionedDpsDataList);
-        if (!hasSectionDamage) return;
+      // If we're waiting for first datapoint of new section and data arrives, reset UI
         if (_awaitingSectionStart)
-        {
-            foreach (var subVm in StatisticData.Values)
-            {
-                subVm.Reset();
-            }
-
-            _sectionStartElapsed = _timer.Elapsed;
-            _lastSectionElapsed = TimeSpan.Zero;
-            _awaitingSectionStart = false;
+  {
+        var hasSectionDamage = HasDamageData(_storage.ReadOnlySectionedDpsDataList);
+    _logger.LogDebug("Awaiting section start - has section damage: {HasSectionDamage}", hasSectionDamage);
+      if (hasSectionDamage)
+{
+    foreach (var subVm in StatisticData.Values)
+     {
+   subVm.Reset();
         }
 
+      _sectionStartElapsed = _timer.Elapsed;
+             _lastSectionElapsed = TimeSpan.Zero;
+  _awaitingSectionStart = false;
+       _logger.LogDebug("Section start processed");
+            }
+   }
+
+        // Always update data (even if empty) to ensure UI reflects current state
         UpdateData(dpsList);
-        UpdateBattleDuration();
+  UpdateBattleDuration();
     }
 
     private static bool HasDamageData(IReadOnlyList<DpsData> data)
@@ -498,8 +683,100 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
 
         // Append per-player DPS samples after sub VMs updated
         AppendDpsSamples(data);
+
+        // Update team total damage and DPS
+        UpdateTeamTotalStats(data);
     }
 
+    /// <summary>
+    /// Updates team total damage and DPS statistics
+    /// </summary>
+  private void UpdateTeamTotalStats(IReadOnlyList<DpsData> data)
+ {
+        if (!ShowTeamTotalDamage) return;
+
+        ulong totalValue = 0;
+        double totalElapsedSeconds = 0;
+        int playerCount = 0;  // ⭐ 新增: 统计玩家数量
+        int npcCount = 0;     // ⭐ 新增: 统计NPC数量
+        int skippedPlayers = 0; // ⭐ 新增: 统计跳过的玩家
+      int skippedNpcs = 0;    // ⭐ 新增: 统计跳过的NPC
+
+        // 根据当前统计类型计算不同的数值
+        foreach (var dpsData in data)
+        {
+        // 跳过NPC数据 (除非是NPC承伤统计)
+            if (dpsData.IsNpcData && StatisticIndex != StatisticType.NpcTakenDamage) 
+            {
+ skippedNpcs++;
+    continue;
+            }
+            
+ // 跳过玩家数据 (如果是NPC承伤统计)
+        if (!dpsData.IsNpcData && StatisticIndex == StatisticType.NpcTakenDamage) 
+   {
+      skippedPlayers++;
+      continue;
+       }
+
+            // 统计计入的数据类型
+      if (dpsData.IsNpcData) npcCount++;
+            else playerCount++;
+
+       // 根据统计类型累加不同的数值
+        ulong value = StatisticIndex switch
+          {
+         StatisticType.Damage => dpsData.TotalAttackDamage.ConvertToUnsigned(),
+        StatisticType.Healing => dpsData.TotalHeal.ConvertToUnsigned(),
+      StatisticType.TakenDamage => dpsData.TotalTakenDamage.ConvertToUnsigned(),
+StatisticType.NpcTakenDamage => dpsData.TotalTakenDamage.ConvertToUnsigned(),
+    _ => 0
+       };
+          
+     totalValue += value;
+
+         // 计算经过时间
+            var elapsedTicks = dpsData.LastLoggedTick - (dpsData.StartLoggedTick ?? 0);
+     if (elapsedTicks > 0)
+          {
+      var elapsedSeconds = TimeSpan.FromTicks(elapsedTicks).TotalSeconds;
+   // 使用最大经过时间作为团队持续时间
+            if (elapsedSeconds > totalElapsedSeconds)
+      {
+              totalElapsedSeconds = elapsedSeconds;
+     }
+            }
+        }
+
+        // 更新标签
+ TeamTotalLabel = StatisticIndex switch
+  {
+     StatisticType.Damage => "团队DPS",
+ StatisticType.Healing => "团队治疗",
+            StatisticType.TakenDamage => "团队承伤",
+            StatisticType.NpcTakenDamage => "NPC承伤",
+        _ => "团队DPS"
+   };
+
+   // ⭐ 关键修复: 只有在有新数据时更新,否则保持上次的值
+if (totalValue > 0 || data.Count > 0)
+        {
+    TeamTotalDamage = totalValue;
+            TeamTotalDps = totalElapsedSeconds > 0 ? totalValue / totalElapsedSeconds : 0;
+        }
+
+   // ⭐ 新增: 详细日志输出(只在有数据时输出,避免日志爆炸)
+        if (data.Count > 0)
+        {
+         _logger.LogDebug(
+     "TeamTotal [{Type}]: Total={Total:N0}, DPS={Dps:N0}, " +
+     "Players={Players}(skipped={SkipP}), NPCs={NPCs}(skipped={SkipN}), " +
+    "Duration={Duration:F1}s, Label={Label}",
+        StatisticIndex, totalValue, TeamTotalDps,
+          playerCount, skippedPlayers, npcCount, skippedNpcs,
+    totalElapsedSeconds, TeamTotalLabel);
+        }
+    }
     /// <summary>
     /// Appends per-player DPS/HPS/DTPS samples (section and total) into each player's StatisticDataViewModel series.
     /// Keeps only the latest N points to avoid unbounded growth.
@@ -548,14 +825,14 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
 
             // Push samples with duration
             var dpsSeries = slot.Damage.Dps;
-            dpsSeries.Add((sectionDuration, sectionDps, totalDps));
-            if (dpsSeries.Count > maxSamples)
-            {
-                while (dpsSeries.Count > maxSamples) dpsSeries.RemoveAt(0);
-            }
+      dpsSeries.Add((sectionDuration, sectionDps, totalDps));
+       if (dpsSeries.Count > maxSamples)
+   {
+      while (dpsSeries.Count > maxSamples) dpsSeries.RemoveAt(0);
+     }
 
             var hpsSeries = slot.Heal.Dps;
-            hpsSeries.Add((sectionDuration, sectionHps, totalHps));
+   hpsSeries.Add((sectionDuration, sectionHps, totalHps));
             if (hpsSeries.Count > maxSamples)
             {
                 while (hpsSeries.Count > maxSamples) hpsSeries.RemoveAt(0);
@@ -587,85 +864,84 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     private Dictionary<StatisticType, Dictionary<long, DpsDataProcessed>> PreProcessDataForAllTypes(
         IReadOnlyList<DpsData> data)
     {
-        var result = new Dictionary<StatisticType, Dictionary<long, DpsDataProcessed>>
+  var result = new Dictionary<StatisticType, Dictionary<long, DpsDataProcessed>>
         {
-            [StatisticType.Damage] = new(),
+     [StatisticType.Damage] = new(),
             [StatisticType.Healing] = new(),
             [StatisticType.TakenDamage] = new(),
-            [StatisticType.NpcTakenDamage] = new()
-        };
+ [StatisticType.NpcTakenDamage] = new()
+   };
 
-        // Single pass through the data
+        var currentPlayerUid = _storage.CurrentPlayerUUID;
+
         foreach (var dpsData in data)
-        {
-            // Calculate common values once
-            var duration = (dpsData.LastLoggedTick - (dpsData.StartLoggedTick ?? 0)).ConvertToUnsigned() / TimeSpan.TicksPerMillisecond;
-            var (filtered, total,
-                filteredHeal, totalHeal,
-                filteredTaken, totalTaken) = BuildSkillListSnapshot(dpsData);
+  {
+     // Get player info for this UID
+       _storage.ReadOnlyPlayerInfoDatas.TryGetValue(dpsData.UID, out var playerInfo);
 
-            // Get player info once
-            string playerName;
-            Classes playerClass;
-            ClassSpec playerSpec;
-            var powerLevel = 0;
+  var playerName = playerInfo?.Name ?? $"UID: {dpsData.UID}";
+ var playerClass = playerInfo?.Class ?? Classes.Unknown;
+            var playerSpec = playerInfo?.Spec ?? ClassSpec.Unknown;
+      var powerLevel = playerInfo?.CombatPower ?? 0;
 
+         var duration = (dpsData.LastLoggedTick - (dpsData.StartLoggedTick ?? 0)).ConvertToUnsigned();
 
-            if (_storage.ReadOnlyPlayerInfoDatas.TryGetValue(dpsData.UID, out var playerInfo))
-            {
-                playerName = playerInfo.Name ?? $"UID: {dpsData.UID}";
-                playerClass = playerInfo.ProfessionID.GetClassNameById();
-                playerSpec = playerInfo.Spec;
-                powerLevel = playerInfo.CombatPower ?? 0;
-            }
-            else
-            {
-                playerName = $"UID: {dpsData.UID}";
-                playerClass = Classes.Unknown;
-                playerSpec = ClassSpec.Unknown;
-            }
+   // Build skill lists once for reuse
+ var (filteredDmg, totalDmg, filteredHeal, totalHeal, filteredTaken, totalTaken) =
+     BuildSkillListSnapshot(dpsData);
 
-            // Process Damage
-            var damageValue = dpsData.TotalAttackDamage.ConvertToUnsigned();
-            if (damageValue > 0)
-            {
-                result[StatisticType.Damage][dpsData.UID] = new DpsDataProcessed(
-                    dpsData, damageValue, duration, filtered, total, filteredHeal, totalHeal,
-                    filteredTaken, totalTaken, playerName, playerClass, playerSpec,
-                    powerLevel);
+            // ⭐ 修复: Process Damage - 根据IsIncludeNpcData控制NPC数据显示
+          var damageValue = dpsData.TotalAttackDamage.ConvertToUnsigned();
+       if (damageValue > 0)
+         {
+    // ✅ 新逻辑: 
+         // 1. 玩家数据始终显示
+     // 2. NPC数据只在勾选"统计BOSS"时显示
+    bool shouldShowInDamageList = !dpsData.IsNpcData || IsIncludeNpcData;
+             
+                if (shouldShowInDamageList)
+           {
+                 result[StatisticType.Damage][dpsData.UID] = new DpsDataProcessed(
+        dpsData, damageValue, duration,
+          filteredDmg, totalDmg, filteredHeal, totalHeal, filteredTaken, totalTaken,
+ playerName, playerClass, playerSpec, powerLevel);
+                }
             }
 
-            // Process Healing
-            var healingValue = dpsData.TotalHeal.ConvertToUnsigned();
-            if (healingValue > 0)
+            // Process Healing - 只统计玩家治疗
+      var healingValue = dpsData.TotalHeal.ConvertToUnsigned();
+       if (healingValue > 0 && !dpsData.IsNpcData)
             {
-                result[StatisticType.Healing][dpsData.UID] = new DpsDataProcessed(
-                    dpsData, healingValue, duration, filtered, total, filteredHeal, totalHeal,
-                    filteredTaken, totalTaken, playerName, playerClass, playerSpec, powerLevel);
-            }
+    result[StatisticType.Healing][dpsData.UID] = new DpsDataProcessed(
+            dpsData, healingValue, duration,
+          filteredDmg, totalDmg, filteredHeal, totalHeal, filteredTaken, totalTaken,
+    playerName, playerClass, playerSpec, powerLevel);
+    }
 
-            // Process TakenDamage
-            var takenDamageValue = dpsData.TotalTakenDamage.ConvertToUnsigned();
-            if (takenDamageValue > 0)
-            {
-                // Process NpcTakenDamage (only for NPCs)
-                if (dpsData.IsNpcData)
-                {
+       // Process TakenDamage
+var takenDamageValue = dpsData.TotalTakenDamage.ConvertToUnsigned();
+  if (takenDamageValue > 0)
+  {
+         // ⭐ NPC承伤统计:只显示NPC
+    if (dpsData.IsNpcData)
+          {
+           _logger.LogDebug($"NPC TakenDamage: UID={dpsData.UID}, Value={takenDamageValue}, IsNpcData={dpsData.IsNpcData}");
                     result[StatisticType.NpcTakenDamage][dpsData.UID] = new DpsDataProcessed(
-                        dpsData, takenDamageValue, duration, filtered, total, filteredHeal, totalHeal,
-                    filteredTaken, totalTaken, playerName, playerClass, playerSpec,
-                        powerLevel);
-                }
-                else
-                {
-                    result[StatisticType.TakenDamage][dpsData.UID] = new DpsDataProcessed(
-                        dpsData, takenDamageValue, duration, filtered, total, filteredHeal, totalHeal,
-                    filteredTaken, totalTaken, playerName, playerClass, playerSpec,
-                        powerLevel);
-                }
-            }
+      dpsData, takenDamageValue, duration,
+             filteredDmg, totalDmg, filteredHeal, totalHeal, filteredTaken, totalTaken,
+       playerName, playerClass, playerSpec, powerLevel);
+   }
+     else // Player TakenDamage - 只显示玩家
+    {
+   result[StatisticType.TakenDamage][dpsData.UID] = new DpsDataProcessed(
+  dpsData, takenDamageValue, duration,
+    filteredDmg, totalDmg, filteredHeal, totalHeal, filteredTaken, totalTaken,
+   playerName, playerClass, playerSpec, powerLevel);
+   }
+    }
         }
 
+        _logger.LogDebug($"PreProcess complete: Damage count = {result[StatisticType.Damage].Count}, NpcTakenDamage count = {result[StatisticType.NpcTakenDamage].Count}, IsIncludeNpcData = {IsIncludeNpcData}");
         return result;
     }
 
@@ -690,10 +966,10 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
 
         // Process battle logs to separate healing and taken damage skills
         var battleLogs = dpsData.ReadOnlyBattleLogs;
-        var healingSkillDict = new Dictionary<long, (long totalValue, int useTimes, int critTimes, int luckyTimes)>();
+      var healingSkillDict = new Dictionary<long, (long totalValue, int useTimes, int critTimes, int luckyTimes)>();
         var takenDamageSkillDict = new Dictionary<long, (long totalValue, int useTimes, int critTimes, int luckyTimes)>();
 
-        // Aggregate skills from battle logs
+      // Aggregate skills from battle logs
         foreach (var log in battleLogs)
         {
             if (log.IsHeal)
@@ -979,55 +1255,65 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     {
         _dispatcher.BeginInvoke(() =>
         {
-            // Freeze current section duration and await first datapoint of the new section
-            _lastSectionElapsed = _timer.IsRunning ? _timer.Elapsed - _sectionStartElapsed : TimeSpan.Zero;
-            _awaitingSectionStart = true;
-            UpdateBattleDuration();
-
-            // In Active mode, pause the active timer until first datapoint of the new section arrives.
-            if (AppConfig.DpsUpdateMode == DpsUpdateMode.Active)
-            {
-                StopDpsUpdateTimer();
-
-                // Remove previous one-shot if still attached
-                if (_resumeActiveTimerHandler != null)
-                {
-                    _storage.DpsDataUpdated -= _resumeActiveTimerHandler;
-                    _resumeActiveTimerHandler = null;
-                }
-
-                // Setup one-shot resume on first datapoint
-                _resumeActiveTimerHandler = () =>
-                {
-                    // Ensure executed on UI thread
-                    _dispatcher.BeginInvoke(() =>
-                    {
-                        // Unsubscribe this one-shot handler
-                        if (_resumeActiveTimerHandler != null)
-                        {
-                            _storage.DpsDataUpdated -= _resumeActiveTimerHandler;
-                            _resumeActiveTimerHandler = null;
-                        }
-
-                        // Process this datapoint and resume periodic timer
-                        try
-                        {
-                            DataStorage_DpsDataUpdated();
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError(ex, "Failed to process first datapoint after new section");
-                        }
-
-                        StartDpsUpdateTimer(AppConfig.DpsUpdateInterval);
-                    });
-                };
-
-                // Subscribe one-shot handler
-                _storage.DpsDataUpdated += _resumeActiveTimerHandler;
+    _logger.LogInformation("=== NewSectionCreated triggered (脱战自动清空) ===");
+    
+     // ⭐ 新增: 在自动清空之前,先尝试保存当前战斗的快照
+            // 只有当前模式下才需要保存(全程模式不受脱战影响)
+            if (ScopeTime == ScopeTime.Current && _storage.ReadOnlySectionedDpsDataList.Count > 0)
+ {
+        try
+     {
+   // 计算当前section的时长
+  var sectionDuration = _timer.IsRunning 
+       ? _timer.Elapsed - _sectionStartElapsed 
+           : _lastSectionElapsed;
+         
+ // ⭐ 传递用户设置的最小时长
+             _snapshotService.SaveCurrentSnapshot(_storage, sectionDuration, Options.MinimalDurationInSeconds);
+        _logger.LogInformation("脱战自动清空时保存当前快照成功,时长: {Duration:F1}秒", sectionDuration.TotalSeconds);
             }
+catch (Exception ex)
+             {
+         _logger.LogError(ex, "脱战自动清空时保存快照失败");
+  }
+       }
 
-            // Do NOT clear current UI data here; wait until data for the new section arrives
+            // Freeze current section duration and await first datapoint of the new section
+  _lastSectionElapsed = _timer.IsRunning ? _timer.Elapsed - _sectionStartElapsed : TimeSpan.Zero;
+   _awaitingSectionStart = true;
+       UpdateBattleDuration();
+
+      _logger.LogInformation("NewSection: awaiting={AwaitingStart}, lastElapsed={LastElapsed}",
+  _awaitingSectionStart, _lastSectionElapsed);
+
+    // ⭐ 关键修复: 不要在Active模式下停止定时器!
+       // Active模式应该继续运行定时器,让它检查新数据到来时自动处理
+          // 只需要设置 _awaitingSectionStart 标记,DataStorage_DpsDataUpdated会处理剩余逻辑
+
+       if (AppConfig.DpsUpdateMode == DpsUpdateMode.Active)
+     {
+          // ❌ 移除: 不再停止定时器
+     // StopDpsUpdateTimer();
+     
+   // ❌ 移除: 不再需要一次性恢复handler
+   // 因为定时器会持续运行,当有新数据时DataStorage_DpsDataUpdated会自动处理
+        
+ // 清理可能残留的handler
+   if (_resumeActiveTimerHandler != null)
+        {
+ _storage.DpsDataUpdated -= _resumeActiveTimerHandler;
+    _resumeActiveTimerHandler = null;
+       }
+
+_logger.LogInformation("NewSection (Active mode): Timer continues running, awaiting first datapoint");
+   }
+     else
+      {
+ // Passive模式不需要特殊处理,事件驱动会自动处理
+        _logger.LogInformation("NewSection (Passive mode): Event-driven, no special handling needed");
+     }
+
+       // Do NOT clear current UI data here; wait until data for the new section arrives
         });
     }
 
@@ -1089,5 +1375,356 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     {
         OnPropertyChanged(nameof(CurrentStatisticData));
         UpdateData();
+    }
+
+    // ⭐ 新增: 当IsIncludeNpcData改变时刷新数据
+    partial void OnIsIncludeNpcDataChanged(bool value)
+    {
+      _logger.LogDebug($"IsIncludeNpcData changed to: {value}");
+        
+        // ⭐ 新增: 如果取消勾选,清除所有StatisticData中的NPC数据
+      if (!value)
+        {
+            _logger.LogInformation("Removing NPC data from UI (IsIncludeNpcData=false)");
+            
+       // 遍历所有统计类型的SubViewModel
+    foreach (var subViewModel in StatisticData.Values)
+            {
+           // 找出所有NPC的slot
+      var npcSlots = subViewModel.Data
+           .Where(slot => slot.Player.IsNpc)
+.ToList(); // ToList()避免遍历时修改集合
+
+     // 从UI中移除NPC数据
+      foreach (var npcSlot in npcSlots)
+          {
+         _dispatcher.Invoke(() =>
+    {
+          subViewModel.Data.Remove(npcSlot);
+     _logger.LogDebug($"Removed NPC slot: UID={npcSlot.Player.Uid}, Name={npcSlot.Player.Name}");
+       });
+          }
+
+      _logger.LogInformation($"Removed {npcSlots.Count} NPC slots from {subViewModel.GetType().Name}");
+          }
+   }
+      
+ // 刷新当前显示的数据
+        UpdateData();
+    }
+
+    // ⭐ 新增: 服务器切换事件处理
+    private void StorageOnServerChanged(string currentServer, string prevServer)
+    {
+ _dispatcher.BeginInvoke(() =>
+   {
+ _logger.LogInformation("服务器切换: {Prev} -> {Current}", prevServer, currentServer);
+         
+     // 在全程模式下,服务器切换时保存全程快照
+       if (ScopeTime == ScopeTime.Total && _storage.ReadOnlyFullDpsDataList.Count > 0)
+  {
+    try
+    {
+      // ⭐ 传递用户设置的最小时长
+     _snapshotService.SaveTotalSnapshot(_storage, BattleDuration, Options.MinimalDurationInSeconds);
+         _logger.LogInformation("服务器切换时保存全程快照成功");
+  }
+     catch (Exception ex)
+   {
+        _logger.LogError(ex, "服务器切换时保存快照失败");
+     }
+       }
+        });
+    }
+
+    // ⭐ 新增: 加载快照命令
+    [RelayCommand]
+    private void LoadSnapshot(BattleSnapshotData snapshot)
+    {
+        if (snapshot == null)
+ {
+ _logger.LogWarning("尝试加载空快照");
+    return;
+        }
+
+    try
+{
+    _logger.LogInformation("加载快照: {Label}", snapshot.DisplayLabel);
+    
+   // ⭐ 进入快照查看模式
+            EnterSnapshotViewMode(snapshot);
+        }
+   catch (Exception ex)
+   {
+         _logger.LogError(ex, "加载快照失败: {Label}", snapshot.DisplayLabel);
+  }
+    }
+    
+    /// <summary>
+    /// ⭐ 新增: 进入快照查看模式
+    /// </summary>
+  private void EnterSnapshotViewMode(BattleSnapshotData snapshot)
+  {
+    _dispatcher.Invoke(() =>
+   {
+    _logger.LogInformation("=== 进入快照查看模式 ===");
+
+  // 1. 保存当前状态
+       _wasPassiveMode = AppConfig.DpsUpdateMode == DpsUpdateMode.Passive;
+       _wasTimerRunning = _dpsUpdateTimer?.IsEnabled ?? false;
+       
+      // 2. 停止DPS更新定时器
+  if (_dpsUpdateTimer != null)
+ {
+  _dpsUpdateTimer.Stop();
+  _logger.LogDebug("已停止DPS更新定时器");
+  }
+  
+          // ⭐ 新增: 停止战斗时长定时器
+if (_durationTimer != null)
+        {
+         _durationTimer.Stop();
+    _logger.LogDebug("已停止战斗时长定时器");
+          }
+          
+         // ⭐ 新增: 停止主计时器(Stopwatch)
+          if (_timer.IsRunning)
+          {
+       _timer.Stop();
+ _logger.LogDebug("已停止主计时器");
+          }
+    
+   // 3. 取消订阅实时数据事件
+     _storage.DpsDataUpdated -= DataStorage_DpsDataUpdated;
+   _storage.NewSectionCreated -= StorageOnNewSectionCreated;
+        _logger.LogDebug("已取消订阅实时数据事件");
+       
+      // 4. 设置快照模式标记
+        IsViewingSnapshot = true;
+  CurrentSnapshot = snapshot;
+            
+   // 5. 加载快照数据到UI
+LoadSnapshotDataToUI(snapshot);
+    
+      _logger.LogInformation("快照查看模式已启动: {Label}, 战斗时长: {Duration}", 
+    snapshot.DisplayLabel, snapshot.Duration);
+     });
+ }
+
+    /// <summary>
+    /// ⭐ 新增: 退出快照查看模式,恢复实时统计
+    /// </summary>
+ [RelayCommand]
+ private void ExitSnapshotViewMode()
+ {
+        _dispatcher.Invoke(() =>
+     {
+        _logger.LogInformation("=== 退出快照查看模式 ===");
+ 
+   // 1. 清除快照状态
+   IsViewingSnapshot = false;
+   CurrentSnapshot = null;
+          
+     // 2. 清空UI数据
+ foreach (var subVm in StatisticData.Values)
+       {
+              subVm.Reset();
+         }
+     
+   // 3. 恢复DPS更新机制
+if (_wasPassiveMode)
+   {
+       _storage.DpsDataUpdated += DataStorage_DpsDataUpdated;
+     _logger.LogDebug("已恢复订阅DpsDataUpdated事件");
+    }
+   else if (_wasTimerRunning && _dpsUpdateTimer != null)
+          {
+    _dpsUpdateTimer.Start();
+   _logger.LogDebug("已恢复DPS更新定时器");
+  }
+  
+       // ⭐ 新增: 恢复战斗时长定时器
+     if (_durationTimer != null && !_durationTimer.IsEnabled)
+     {
+  _durationTimer.Start();
+  _logger.LogDebug("已恢复战斗时长定时器");
+    }
+        
+   // ⭐ 新增: 恢复主计时器(如果之前在运行)
+        // 注意:只有当有实时数据时才需要恢复
+  var hasData = _storage.ReadOnlyFullDpsDataList.Count > 0 || 
+     _storage.ReadOnlySectionedDpsDataList.Count > 0;
+      if (hasData && !_timer.IsRunning)
+   {
+      _timer.Start();
+ _logger.LogDebug("已恢复主计时器");
+    }
+ 
+    _storage.NewSectionCreated += StorageOnNewSectionCreated;
+         
+  // 4. 刷新实时数据
+var dpsList = ScopeTime == ScopeTime.Total
+      ? _storage.ReadOnlyFullDpsDataList
+     : _storage.ReadOnlySectionedDpsDataList;
+  
+     UpdateData(dpsList);
+          UpdateBattleDuration();
+  
+     _logger.LogInformation("已恢复实时DPS统计模式");
+        });
+    }
+
+    /// <summary>
+    /// ⭐ 新增: 将快照数据加载到UI显示
+    /// </summary>
+    private void LoadSnapshotDataToUI(BattleSnapshotData snapshot)
+    {
+        _logger.LogDebug("开始加载快照数据到UI...");
+  
+  // 1. 设置战斗时长
+     BattleDuration = snapshot.Duration;
+ 
+        // 2. 设置团队总伤/治疗
+      TeamTotalDamage = snapshot.TeamTotalDamage;
+ TeamTotalDps = snapshot.Duration.TotalSeconds > 0
+  ? snapshot.TeamTotalDamage / snapshot.Duration.TotalSeconds
+   : 0;
+
+     // 3. 构建每个统计类型的数据
+        var damageData = new Dictionary<long, DpsDataProcessed>();
+   var healingData = new Dictionary<long, DpsDataProcessed>();
+   var takenData = new Dictionary<long, DpsDataProcessed>();
+    var npcTakenData = new Dictionary<long, DpsDataProcessed>();
+
+     foreach (var (uid, playerData) in snapshot.Players)
+        {
+    // ⭐ 关键修复: 添加空值检查
+   if (playerData == null)
+        {
+ _logger.LogWarning("Player data is null for UID: {Uid}", uid);
+       continue;
+}
+        
+      // 构建技能列表
+    var damageSkills = ConvertSnapshotSkillsToViewModel(playerData.DamageSkills);
+  var healingSkills = ConvertSnapshotSkillsToViewModel(playerData.HealingSkills);
+  var takenSkills = ConvertSnapshotSkillsToViewModel(playerData.TakenSkills);
+          
+      var skillDisplayLimit = CurrentStatisticData?.SkillDisplayLimit ?? 8;
+  var filteredDamage = skillDisplayLimit > 0 ? damageSkills.Take(skillDisplayLimit).ToList() : damageSkills;
+  var filteredHealing = skillDisplayLimit > 0 ? healingSkills.Take(skillDisplayLimit).ToList() : healingSkills;
+var filteredTaken = skillDisplayLimit > 0 ? takenSkills.Take(skillDisplayLimit).ToList() : takenSkills;
+
+    // 解析职业
+            Enum.TryParse<Classes>(playerData.Profession, out var playerClass);
+    
+      // 伤害统计
+    if (playerData.TotalDamage > 0)
+  {
+    // 根据IsIncludeNpcData控制NPC显示
+      bool shouldShow = !playerData.IsNpc || IsIncludeNpcData;
+        if (shouldShow)
+       {
+    // ⭐ 使用默认的DpsData而不是null
+         var dummyDpsData = new DpsData { UID = uid };
+     damageData[uid] = new DpsDataProcessed(
+  dummyDpsData,
+     playerData.TotalDamage,
+    0, // duration
+         filteredDamage, damageSkills,
+        filteredHealing, healingSkills,
+  filteredTaken, takenSkills,
+   playerData.Nickname,
+      playerClass,
+  ClassSpec.Unknown,
+        playerData.CombatPower
+      );
+     }
+       }
+
+   // 治疗统计(不含NPC)
+ if (playerData.TotalHealing > 0 && !playerData.IsNpc)
+    {
+         var dummyDpsData = new DpsData { UID = uid };
+         healingData[uid] = new DpsDataProcessed(
+dummyDpsData,
+  playerData.TotalHealing,
+          0,
+     filteredDamage, damageSkills,
+   filteredHealing, healingSkills,
+  filteredTaken, takenSkills,
+     playerData.Nickname,
+ playerClass,
+  ClassSpec.Unknown,
+  playerData.CombatPower
+        );
+     }
+
+   // 承伤统计
+            if (playerData.TakenDamage > 0)
+  {
+     if (playerData.IsNpc)
+      {
+       // NPC承伤
+        var dummyDpsData = new DpsData { UID = uid };
+   npcTakenData[uid] = new DpsDataProcessed(
+       dummyDpsData,
+  playerData.TakenDamage,
+   0,
+    filteredDamage, damageSkills,
+        filteredHealing, healingSkills,
+  filteredTaken, takenSkills,
+ playerData.Nickname,
+ playerClass,
+          ClassSpec.Unknown,
+          playerData.CombatPower
+           );
+        }
+    else
+ {
+    // 玩家承伤
+   var dummyDpsData = new DpsData { UID = uid };
+  takenData[uid] = new DpsDataProcessed(
+  dummyDpsData,
+          playerData.TakenDamage,
+      0,
+          filteredDamage, damageSkills,
+        filteredHealing, healingSkills,
+         filteredTaken, takenSkills,
+     playerData.Nickname,
+      playerClass,
+         ClassSpec.Unknown,
+     playerData.CombatPower
+           );
+ }
+         }
+     }
+
+        // 4. 更新各个统计类型的UI
+    StatisticData[StatisticType.Damage].UpdateDataOptimized(damageData, 0);
+    StatisticData[StatisticType.Healing].UpdateDataOptimized(healingData, 0);
+  StatisticData[StatisticType.TakenDamage].UpdateDataOptimized(takenData, 0);
+        StatisticData[StatisticType.NpcTakenDamage].UpdateDataOptimized(npcTakenData, 0);
+
+        _logger.LogDebug("快照数据加载完成: {Count}个玩家", snapshot.Players.Count);
+    }
+
+    /// <summary>
+    /// ⭐ 新增: 将快照技能数据转换为ViewModel
+    /// </summary>
+    private List<SkillItemViewModel> ConvertSnapshotSkillsToViewModel(List<SnapshotSkillData> snapshotSkills)
+    {
+      if (snapshotSkills == null || snapshotSkills.Count == 0)
+         return new List<SkillItemViewModel>();
+
+        return snapshotSkills.Select(s => new SkillItemViewModel
+  {
+          SkillName = s.SkillName,
+     TotalDamage = (long)s.TotalValue,
+            HitCount = s.UseTimes,
+    CritCount = s.CritTimes,
+   AvgDamage = s.UseTimes > 0 ? (int)(s.TotalValue / (ulong)s.UseTimes) : 0,
+  CritRate = s.UseTimes > 0 ? (double)s.CritTimes / s.UseTimes : 0
+  }).ToList();
     }
 }

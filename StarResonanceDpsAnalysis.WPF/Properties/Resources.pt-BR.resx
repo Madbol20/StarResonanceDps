@@ -124,7 +124,7 @@
     <value>Configurações</value>
   </data>
   <data name="Menu_StatisticBoss" xml:space="preserve">
-    <value>Rastrear Apenas Boss</value>
+    <value>Rastrear Apenas Npc</value>
   </data>
   <data name="Menu_ShowTotal" xml:space="preserve">
     <value>Mostrar Dano Total</value>

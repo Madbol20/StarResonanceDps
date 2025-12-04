@@ -124,7 +124,7 @@
     <value>设置</value>
   </data>
   <data name="Menu_StatisticBoss" xml:space="preserve">
-    <value>统计BOSS</value>
+    <value>统计Npc</value>
   </data>
   <data name="Menu_ShowTotal" xml:space="preserve">
     <value>显示总伤</value>
@@ -165,23 +165,20 @@
   <data name="Menu_History" xml:space="preserve">
     <value>历史记录</value>
   </data>
-  <data name="Menu_Training" xml:space="preserve">
-    <value>打桩模式</value>
+  <data name="Menu_History_Current" xml:space="preserve">
+    <value>当前战斗</value>
   </data>
-  <data name="Menu_Training_Personal" xml:space="preserve">
-    <value>个人打桩</value>
+  <data name="Menu_History_Total" xml:space="preserve">
+    <value>全程战斗</value>
   </data>
-  <data name="Menu_Training_Faction" xml:space="preserve">
-    <value>协会打桩</value>
-  </data>
-  <data name="Menu_Training_Extreme" xml:space="preserve">
-    <value>极限打桩</value>
-  </data>
-  <data name="Menu_SkillDiary" xml:space="preserve">
-    <value>技能日记</value>
+  <data name="Menu_ExitSnapshotMode" xml:space="preserve">
+    <value>退出快照模式</value>
   </data>
   <data name="Menu_Exit" xml:space="preserve">
     <value>退出</value>
+  </data>
+  <data name="Menu_Training" xml:space="preserve">
+    <value>打桩模式</value>
   </data>
   <data name="Tooltip_ToggleScope" xml:space="preserve">
     <value>切换为：全程 / 当前</value>

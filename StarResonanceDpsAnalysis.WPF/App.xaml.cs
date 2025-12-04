@@ -118,6 +118,9 @@ public partial class App : Application
                 services.AddWindowManagementService();
                 services.AddMessageDialogService();
 
+                // ? 新增: 注册快照服务
+                services.AddSingleton<BattleSnapshotService>();
+
                 services.AddSingleton<DebugFunctions>();
                 services.AddSingleton(CaptureDeviceList.Instance);
                 services.AddSingleton<IApplicationControlService, ApplicationControlService>();

@@ -8,40 +8,41 @@ namespace StarResonanceDpsAnalysis.WinForm.Core.Module
         BASIC_ATTACK = 5500101,
         HIGH_PERFORMANCE_ATTACK = 5500102,
         EXCELLENT_ATTACK = 5500103,
+        EXCELLENT_ATTACK_PREFERRED = 5500104,
         BASIC_HEALING = 5500201,
         HIGH_PERFORMANCE_HEALING = 5500202,
         EXCELLENT_HEALING = 5500203,
+        EXCELLENT_HEALING_PREFERRED = 5500204,
         BASIC_PROTECTION = 5500301,
         HIGH_PERFORMANCE_PROTECTION = 5500302,
         EXCELLENT_PROTECTION = 5500303,
+        EXCELLENT_PROTECTION_PREFERRED = 5500304,
     }
 
     public enum ModuleAttrType : int
     {
-        // 基础/通用属性
         STRENGTH_BOOST = 1110,
-        AGILITY_BOOST = 1111,
-        INTELLIGENCE_BOOST = 1112,
-        SPECIAL_ATTACK_DAMAGE = 1113,
-        ELITE_STRIKE = 1114,
-        SPECIAL_HEALING_BOOST = 1205,
-        EXPERT_HEALING_BOOST = 1206,
-        MAGIC_RESISTANCE = 1307,
-        PHYSICAL_RESISTANCE = 1308,
-        CASTING_FOCUS = 1407,
-        ATTACK_SPEED_FOCUS = 1408,
-        CRITICAL_FOCUS = 1409,
-        LUCK_FOCUS = 1410,
+    AGILITY_BOOST = 1111,
+    INTELLIGENCE_BOOST = 1112,
+    SPECIAL_ATTACK_DAMAGE = 1113,
+    ELITE_STRIKE = 1114,
+    SPECIAL_HEALING_BOOST = 1205,
+    EXPERT_HEALING_BOOST = 1206,
+    CASTING_FOCUS = 1407,
+    ATTACK_SPEED_FOCUS = 1408,
+    CRITICAL_FOCUS = 1409,
+    LUCK_FOCUS = 1410,
 
-        // 特殊（EXTREME）属性
-        EXTREME_DAMAGE_STACK = 2104,
-        EXTREME_FLEXIBLE_MOVEMENT = 2105,
-        EXTREME_LIFE_CONVERGENCE = 2204,
-        EXTREME_EMERGENCY_MEASURES = 2205,
-        EXTREME_DESPERATE_GUARDIAN = 2304,
-        EXTREME_LIFE_FLUCTUATION = 2404,
-        EXTREME_LIFE_DRAIN = 2405,
-        EXTREME_TEAM_CRIT = 2406,
+    MAGIC_RESISTANCE = 1307,
+    PHYSICAL_RESISTANCE = 1308,
+    EXTREME_DAMAGE_STACK = 2104,
+    EXTREME_FLEXIBLE_MOVEMENT = 2105,
+    EXTREME_LIFE_CONVERGENCE = 2204,
+    EXTREME_EMERGENCY_MEASURES = 2205,
+    EXTREME_LIFE_FLUCTUATION = 2404,
+    EXTREME_LIFE_DRAIN = 2405,
+    EXTREME_TEAM_CRIT = 2406,
+    EXTREME_DESPERATE_GUARDIAN = 2304
     }
 
     public enum ModuleCategory
@@ -77,12 +78,17 @@ namespace StarResonanceDpsAnalysis.WinForm.Core.Module
             { (int)ModuleType.BASIC_ATTACK, "基础攻击" },
             { (int)ModuleType.HIGH_PERFORMANCE_ATTACK, "高性能攻击" },
             { (int)ModuleType.EXCELLENT_ATTACK, "卓越攻击" },
+            { (int)ModuleType.EXCELLENT_ATTACK_PREFERRED, "卓越攻击-优选" },
+
             { (int)ModuleType.BASIC_HEALING, "基础治疗" },
             { (int)ModuleType.HIGH_PERFORMANCE_HEALING, "高性能治疗" },
-            { (int)ModuleType.EXCELLENT_HEALING, "卓越辅助" }, // 注意：Python里是“卓越辅助”
+            { (int)ModuleType.EXCELLENT_HEALING, "卓越辅助" },
+            { (int)ModuleType.EXCELLENT_HEALING_PREFERRED, "卓越辅助-优选" },
+
             { (int)ModuleType.BASIC_PROTECTION, "基础防护" },
             { (int)ModuleType.HIGH_PERFORMANCE_PROTECTION, "高性能守护" },
             { (int)ModuleType.EXCELLENT_PROTECTION, "卓越守护" },
+            { (int)ModuleType.EXCELLENT_PROTECTION_PREFERRED, "卓越守护-优选" },
         };
 
         // 模组属性名称映射（与 Python MODULE_ATTR_NAMES 一致）
@@ -101,8 +107,6 @@ namespace StarResonanceDpsAnalysis.WinForm.Core.Module
             { (int)ModuleAttrType.LUCK_FOCUS, "幸运专注" },
             { (int)ModuleAttrType.MAGIC_RESISTANCE, "抵御魔法" },
             { (int)ModuleAttrType.PHYSICAL_RESISTANCE, "抵御物理" },
-
-            // EXTREME（特殊）属性中文名
             { (int)ModuleAttrType.EXTREME_DAMAGE_STACK, "极-伤害叠加" },
             { (int)ModuleAttrType.EXTREME_FLEXIBLE_MOVEMENT, "极-灵活身法" },
             { (int)ModuleAttrType.EXTREME_LIFE_CONVERGENCE, "极-生命凝聚" },
@@ -119,12 +123,17 @@ namespace StarResonanceDpsAnalysis.WinForm.Core.Module
             { (int)ModuleType.BASIC_ATTACK, ModuleCategory.ATTACK },
             { (int)ModuleType.HIGH_PERFORMANCE_ATTACK, ModuleCategory.ATTACK },
             { (int)ModuleType.EXCELLENT_ATTACK, ModuleCategory.ATTACK },
+            { (int)ModuleType.EXCELLENT_ATTACK_PREFERRED, ModuleCategory.ATTACK },
+
             { (int)ModuleType.BASIC_PROTECTION, ModuleCategory.GUARDIAN },
             { (int)ModuleType.HIGH_PERFORMANCE_PROTECTION, ModuleCategory.GUARDIAN },
             { (int)ModuleType.EXCELLENT_PROTECTION, ModuleCategory.GUARDIAN },
+            { (int)ModuleType.EXCELLENT_PROTECTION_PREFERRED, ModuleCategory.GUARDIAN },
+
             { (int)ModuleType.BASIC_HEALING, ModuleCategory.SUPPORT },
             { (int)ModuleType.HIGH_PERFORMANCE_HEALING, ModuleCategory.SUPPORT },
             { (int)ModuleType.EXCELLENT_HEALING, ModuleCategory.SUPPORT },
+            { (int)ModuleType.EXCELLENT_HEALING_PREFERRED, ModuleCategory.SUPPORT },
         };
 
         // 分类中文名（补齐 ALL）

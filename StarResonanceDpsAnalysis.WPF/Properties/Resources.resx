@@ -165,23 +165,20 @@
   <data name="Menu_History" xml:space="preserve">
     <value>History</value>
   </data>
-  <data name="Menu_Training" xml:space="preserve">
-    <value>Training Mode</value>
+  <data name="Menu_History_Current" xml:space="preserve">
+    <value>Current Battle</value>
   </data>
-  <data name="Menu_Training_Personal" xml:space="preserve">
-    <value>Solo Training</value>
+  <data name="Menu_History_Total" xml:space="preserve">
+    <value>Full Battle</value>
   </data>
-  <data name="Menu_Training_Faction" xml:space="preserve">
-    <value>Faction Training</value>
-  </data>
-  <data name="Menu_Training_Extreme" xml:space="preserve">
-    <value>Extreme Training</value>
-  </data>
-  <data name="Menu_SkillDiary" xml:space="preserve">
-    <value>Skill Diary</value>
+  <data name="Menu_ExitSnapshotMode" xml:space="preserve">
+    <value>Exit Snapshot Mode</value>
   </data>
   <data name="Menu_Exit" xml:space="preserve">
     <value>Exit</value>
+  </data>
+  <data name="Menu_Training" xml:space="preserve">
+  <value>Training Mode</value>
   </data>
   <data name="Tooltip_ToggleScope" xml:space="preserve">
     <value>Toggle: Full / Current</value>

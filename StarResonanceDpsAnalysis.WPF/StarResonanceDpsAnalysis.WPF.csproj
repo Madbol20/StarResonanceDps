@@ -52,6 +52,7 @@
       <ClassNamePostfix>Keys</ClassNamePostfix>
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>StarResonanceDpsAnalysis.WPF.Properties</CustomToolNamespace>
     </EmbeddedResource>
     <EmbeddedResource Update="Properties\Resources.en-US.resx">
       <DependentUpon>Resources.resx</DependentUpon>

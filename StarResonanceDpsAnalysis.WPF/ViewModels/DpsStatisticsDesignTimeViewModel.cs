@@ -18,48 +18,60 @@ namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
 {
     public DpsStatisticsDesignTimeViewModel() : base(
-        new DesignAppControlService(),
-        new DesignDataStorage(),
         NullLogger<DpsStatisticsViewModel>.Instance,
+        new DesignDataStorage(),
         new DesignConfigManager(),
         new DesignWindowManagementService(),
         new DesignTopmostService(),
-        new DebugFunctions(
-            Dispatcher.CurrentDispatcher,
+        new DesignAppControlService(),
+        Dispatcher.CurrentDispatcher,
+  new DebugFunctions(
+    Dispatcher.CurrentDispatcher,
             NullLogger<DebugFunctions>.Instance,
             new DesignLogObservable(),
             new DesignOptionsMonitor(),
-            null!,
-            LocalizationManager.Instance),
-        Dispatcher.CurrentDispatcher)
+      null!,
+    LocalizationManager.Instance),
+        new DesignBattleSnapshotService()) // ? 添加设计时快照服务
     {
+        // Initialize AppConfig
+        AppConfig = new AppConfig { DebugEnabled = true };
+
         // Populate with a few sample entries so designer shows something.
         try
         {
-            for (var i = 0; i < 15; i++)
+    for (var i = 0; i < 15; i++)
             {
-                AddTestItem();
-            }
+              AddTestItem();
+        }
         }
         catch
         {
-            /* swallow design-time exceptions */
+      /* swallow design-time exceptions */
         }
     }
 
     #region Stub Implementations
+
+    // ? 新增: 设计时快照服务
+    private sealed class DesignBattleSnapshotService : BattleSnapshotService
+    {
+    public DesignBattleSnapshotService() : base(NullLogger<BattleSnapshotService>.Instance)
+      {
+        }
+    }
 
     private sealed class DesignTopmostService : ITopmostService
     {
         public void SetTopmost(Window window, bool enable)
         {
             // no-op at design time
-        }
+  }
 
         public bool ToggleTopmost(Window window)
         {
             // Return current state or false at design time
-            return window.Topmost = !window.Topmost;
+    return window.Topmost = !window.Topmost;
         }
     }
 
@@ -67,7 +79,7 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
     {
         public void Shutdown()
         {
-        }
+ }
     }
 
     private sealed class DesignWindowManagementService : IWindowManagementService
@@ -85,22 +97,22 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
 
     private sealed class DesignDataStorage : IDataStorage
     {
-        public PlayerInfo CurrentPlayerInfo { get; } = new();
+      public PlayerInfo CurrentPlayerInfo { get; } = new();
 
         public ReadOnlyDictionary<long, PlayerInfo> ReadOnlyPlayerInfoDatas { get; } =
-            new(new Dictionary<long, PlayerInfo>());
+     new(new Dictionary<long, PlayerInfo>());
 
         public ReadOnlyDictionary<long, DpsData> ReadOnlyFullDpsDatas => ReadOnlySectionedDpsDatas;
         public IReadOnlyList<DpsData> ReadOnlyFullDpsDataList { get; } = [];
 
-        public ReadOnlyDictionary<long, DpsData> ReadOnlySectionedDpsDatas { get; } =
+  public ReadOnlyDictionary<long, DpsData> ReadOnlySectionedDpsDatas { get; } =
             new(new Dictionary<long, DpsData>());
 
         public IReadOnlyList<DpsData> ReadOnlySectionedDpsDataList { get; } = [];
         public TimeSpan SectionTimeout { get; set; } = TimeSpan.FromSeconds(5);
-        bool IDataStorage.IsServerConnected { get; set; }
+ bool IDataStorage.IsServerConnected { get; set; }
         public long CurrentPlayerUUID { get; set; }
-        public bool IsServerConnected => false;
+   public bool IsServerConnected => false;
 
 #pragma warning disable CS0067
         public event ServerConnectionStateChangedEventHandler? ServerConnectionStateChanged;
@@ -117,36 +129,36 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
         }
 
         public void SavePlayerInfoToFile()
-        {
-        }
+   {
+   }
 
         public Dictionary<long, PlayerInfoFileData> BuildPlayerDicFromBattleLog(List<BattleLog> battleLogs)
-        {
-            return new Dictionary<long, PlayerInfoFileData>();
+    {
+  return new Dictionary<long, PlayerInfoFileData>();
         }
 
-        public void ClearAllDpsData()
+      public void ClearAllDpsData()
         {
         }
 
-        public void ClearDpsData()
-        {
+   public void ClearDpsData()
+   {
         }
 
         public void ClearCurrentPlayerInfo()
-        {
+      {
         }
 
         public void ClearPlayerInfos()
-        {
+      {
         }
 
         public void ClearAllPlayerInfos()
-        {
+      {
         }
 
         public void RaiseServerChanged(string currentServerStr, string prevServer)
-        {
+      {
         }
 
         public void SetPlayerLevel(long playerUid, int tmpLevel)
@@ -158,35 +170,35 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
             return true;
         }
 
-        public void SetPlayerHP(long playerUid, long hp)
-        {
+  public void SetPlayerHP(long playerUid, long hp)
+     {
         }
 
-        public void SetPlayerMaxHP(long playerUid, long maxHp)
-        {
-        }
+     public void SetPlayerMaxHP(long playerUid, long maxHp)
+      {
+      }
 
         public void SetPlayerName(long playerUid, string playerName)
-        {
-        }
+  {
+      }
 
         public void SetPlayerCombatPower(long playerUid, int combatPower)
         {
-        }
+    }
 
         public void SetPlayerProfessionID(long playerUid, int professionId)
         {
-        }
+    }
 
         public void AddBattleLog(BattleLog log)
+     {
+        }
+
+     public void SetPlayerRankLevel(long playerUid, int readInt32)
         {
         }
 
-        public void SetPlayerRankLevel(long playerUid, int readInt32)
-        {
-        }
-
-        public void SetPlayerCritical(long playerUid, int readInt32)
+     public void SetPlayerCritical(long playerUid, int readInt32)
         {
         }
 
@@ -196,6 +208,23 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
 
         public void Dispose()
         {
+    }
+    }
+
+    private sealed class DesignConfigManager : IConfigManager
+    {
+        public event EventHandler<AppConfig>? ConfigurationUpdated;
+
+        public AppConfig CurrentConfig => GetConfiguration();
+
+   public AppConfig GetConfiguration()
+        {
+         return new AppConfig { DebugEnabled = true };
+   }
+
+        public Task SaveAsync(AppConfig config)
+        {
+ return Task.CompletedTask;
         }
     }
 
@@ -207,11 +236,11 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
         }
 
         private sealed class DummyDisp : IDisposable
-        {
+    {
             public void Dispose()
-            {
+       {
             }
-        }
+      }
     }
 
     private sealed class DesignOptionsMonitor : IOptionsMonitor<AppConfig>
@@ -219,19 +248,19 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
         public AppConfig CurrentValue { get; } = new() { DebugEnabled = true };
 
         public AppConfig Get(string? name)
-        {
-            return CurrentValue;
+    {
+       return CurrentValue;
         }
 
         public IDisposable OnChange(Action<AppConfig, string?> listener)
         {
-            listener(CurrentValue, null);
-            return new DummyDisp();
+         listener(CurrentValue, null);
+ return new DummyDisp();
         }
 
-        private sealed class DummyDisp : IDisposable
-        {
-            public void Dispose()
+private sealed class DummyDisp : IDisposable
+ {
+      public void Dispose()
             {
             }
         }
@@ -239,5 +268,7 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
 
     #endregion
 }
+
+
 
 
