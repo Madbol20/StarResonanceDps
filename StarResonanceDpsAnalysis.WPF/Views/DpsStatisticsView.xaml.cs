@@ -164,13 +164,14 @@ e.Handled = true;
     private void OnWindowRightClick(object sender, MouseButtonEventArgs e)
     {
         if (DataContext is DpsStatisticsViewModel vm && vm.IsViewingSnapshot)
-     {
-            // 如果正在查看快照,右键退出快照模式
-      if (vm.ExitSnapshotViewModeCommand.CanExecute(null))
- {
-                vm.ExitSnapshotViewModeCommand.Execute(null);
-        e.Handled = true; // 阻止默认右键菜单
-    }
+            {
+            
+                // 如果正在查看快照,右键退出快照模式
+            if (vm.ExitSnapshotViewModeCommand.CanExecute(null))
+            {
+                        vm.ExitSnapshotViewModeCommand.Execute(null);
+                e.Handled = true; // 阻止默认右键菜单
+            }
         }
     }
 }

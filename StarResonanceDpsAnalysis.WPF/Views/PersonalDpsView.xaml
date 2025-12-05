@@ -69,7 +69,7 @@
 
         <Style x:Key="DpsTextBase" TargetType="TextBlock" BasedOn="{StaticResource NormalTextBlockBaseStyle}">
             <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="FontSize" Value="15.75" />
+            <Setter Property="FontSize" Value="13.75" />
             <Setter Property="Margin" Value="0,0,0,7" />
         </Style>
 
@@ -192,7 +192,7 @@
                                     <TextBlock
                                         Style="{StaticResource DpsPersentText}"
                                         Text="{Binding RemainingTimeDisplay}"
-                                        FontSize="15.75"
+                                        FontSize="11"
                                         FontWeight="Bold"
                                         Foreground="#6BA5FC"
                                         VerticalAlignment="Center"
@@ -203,14 +203,14 @@
                         <ctrl:RingProgressBar
                             Style="{StaticResource RingProgressBar}"
                             Maximum="100"
-                            Value="75"
+                            Value="{Binding TeamDamagePercent}"
                             Visibility="{Binding EnableTrainingMode, Converter={StaticResource BoolToInvertedVisibilityConverter}}">
                             <ctrl:RingProgressBar.InnerContent>
                                 <Border Style="{StaticResource RingProgressBarCircleBorder}">
                                     <TextBlock
                                         Style="{StaticResource DpsPersentText}"
-                                        Text="75%"
-                                        FontSize="15.75"
+                                        Text="{Binding TeamPercentDisplay}"
+                                        FontSize="11"
                                         FontWeight="Bold"
                                         Foreground="#6BA5FC"
                                         VerticalAlignment="Center"
@@ -222,7 +222,7 @@
 
                     <StackPanel Style="{StaticResource DpsStackPanel}" Grid.Column="1">
                         <TextBlock Style="{StaticResource DpsTextBase}" Text="当前伤害"/>
-                        <TextBlock Style="{StaticResource DpsText}" Text="22.4K (4603.4)"/>
+                        <TextBlock Style="{StaticResource DpsText}" Text="{Binding CurrentDpsDisplay}"/>
                     </StackPanel>
                 </Grid>
 

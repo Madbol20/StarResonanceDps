@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,120 +7,198 @@ using Microsoft.Extensions.Logging;
 using StarResonanceDpsAnalysis.Core.Data.Models;
 using StarResonanceDpsAnalysis.WPF.Data;
 using StarResonanceDpsAnalysis.WPF.Models;
-using StarResonanceDpsAnalysis.Core; // ? ĞÂÔö: ÒıÈë¼¼ÄÜÀàĞÍÅĞ¶Ï
+using StarResonanceDpsAnalysis.Core;
+using StarResonanceDpsAnalysis.WPF.Config; // â­ æ–°å¢ï¼šå¼•å…¥é…ç½®ç®¡ç†å™¨
 
 namespace StarResonanceDpsAnalysis.WPF.Services;
 
 /// <summary>
-/// Õ½¶·¿ìÕÕ·şÎñ - ¸ºÔğ±£´æºÍ¼ÓÔØÕ½¶·¿ìÕÕ
+/// æˆ˜æ–—å¿«ç…§æœåŠ¡ - è´Ÿè´£ä¿å­˜å’ŒåŠ è½½æˆ˜æ–—å¿«ç…§
 /// </summary>
 public class BattleSnapshotService
 {
     private readonly ILogger<BattleSnapshotService> _logger;
+    private readonly IConfigManager _configManager; // â­ æ–°å¢ï¼šé…ç½®ç®¡ç†å™¨
     private readonly string _snapshotDirectory;
-    private const int MaxSnapshots = 8; // ×î¶à±£´æ8Ìõ¿ìÕÕ
-    private const int AbsoluteMinDurationSeconds = 10; // ? ¾ø¶Ô×îĞ¡Õ½¶·Ê±³¤(Ãë),µÍÓÚ´ËÖµµÄÕ½¶·ÓÀÔ¶²»±£´æ
+    private const int AbsoluteMinDurationSeconds = 10; // ç»å¯¹æœ€å°æˆ˜æ–—æ—¶é•¿(ç§’),ä½äºæ­¤å€¼çš„æˆ˜æ–—æ°¸è¿œä¸ä¿å­˜
 
-    public BattleSnapshotService(ILogger<BattleSnapshotService> logger)
+    // â­ ä¿®æ”¹ï¼šä»å¸¸é‡æ”¹ä¸ºå±æ€§ï¼Œä»é…ç½®è¯»å–
+    private int MaxSnapshots => _configManager?.CurrentConfig?.MaxHistoryCount ?? 15;
+
+    public BattleSnapshotService(ILogger<BattleSnapshotService> logger, IConfigManager configManager)
     {
         _logger = logger;
+        _configManager = configManager; // â­ æ–°å¢ï¼šæ³¨å…¥é…ç½®ç®¡ç†å™¨
         _snapshotDirectory = Path.Combine(Environment.CurrentDirectory, "BattleSnapshots");
       
-  // È·±£Ä¿Â¼´æÔÚ
-    if (!Directory.Exists(_snapshotDirectory))
-     {
-         Directory.CreateDirectory(_snapshotDirectory);
-        }
+        // ç¡®ä¿ç›®å½•å­˜åœ¨
+if (!Directory.Exists(_snapshotDirectory))
+        {
+  Directory.CreateDirectory(_snapshotDirectory);
+}
 
-      // Æô¶¯Ê±¼ÓÔØÏÖÓĞ¿ìÕÕ
-     LoadSnapshots();
+        // å¯åŠ¨æ—¶åŠ è½½ç°æœ‰å¿«ç…§
+      LoadSnapshots();
     }
 
     /// <summary>
-    /// µ±Ç°Õ½¶·¿ìÕÕÁĞ±í(×îĞÂµÄ8Ìõ)
+    /// å½“å‰æˆ˜æ–—å¿«ç…§åˆ—è¡¨(æœ€æ–°çš„Næ¡ï¼ŒNç”±é…ç½®å†³å®š)
     /// </summary>
     public List<BattleSnapshotData> CurrentSnapshots { get; private set; } = new();
 
     /// <summary>
-    /// È«³Ì¿ìÕÕÁĞ±í(×îĞÂµÄ8Ìõ)
+    /// å…¨ç¨‹å¿«ç…§åˆ—è¡¨(æœ€æ–°çš„Næ¡ï¼ŒNç”±é…ç½®å†³å®š)
     /// </summary>
     public List<BattleSnapshotData> TotalSnapshots { get; private set; } = new();
-
     /// <summary>
-    /// ±£´æµ±Ç°Õ½¶·¿ìÕÕ
+    /// ä¿å­˜å½“å‰æˆ˜æ–—å¿«ç…§
     /// </summary>
-    /// <param name="storage">Êı¾İ´æ´¢</param>
-    /// <param name="duration">Õ½¶·Ê±³¤</param>
-    /// <param name="minDurationSeconds">ÓÃ»§ÉèÖÃµÄ×îĞ¡Ê±³¤(Ãë),0±íÊ¾¼ÇÂ¼ËùÓĞ(Ä¬ÈÏ¼ÇÂ¼ËùÓĞ)</param>
-    public void SaveCurrentSnapshot(IDataStorage storage, TimeSpan duration, int minDurationSeconds = 0)
+    /// <param name="storage">æ•°æ®å­˜å‚¨</param>
+    /// <param name="duration">æˆ˜æ–—æ—¶é•¿</param>
+    /// <param name="minDurationSeconds">ç”¨æˆ·è®¾ç½®çš„æœ€å°æ—¶é•¿(ç§’),0è¡¨ç¤ºè®°å½•æ‰€æœ‰(é»˜è®¤è®°å½•æ‰€æœ‰)</param>
+    /// <param name="forceUseFullData">â­ æ–°å¢: å¼ºåˆ¶ä½¿ç”¨FullDpsData(ç”¨äºè„±æˆ˜æ—¶sectionedæ•°æ®å·²è¢«æ¸…ç©ºçš„æƒ…å†µ)</param>
+    public void SaveCurrentSnapshot(IDataStorage storage, TimeSpan duration, int minDurationSeconds = 0, bool forceUseFullData = false)
     {
-        // ? Ó²ĞÔÏŞÖÆ: µÍÓÚ10ÃëµÄÕ½¶·ÓÀÔ¶²»±£´æ
+        // â­ ç¡¬æ€§é™åˆ¶: ä½äº10ç§’çš„æˆ˜æ–—æ°¸è¿œä¸ä¿å­˜
         if (duration.TotalSeconds < AbsoluteMinDurationSeconds)
         {
-     _logger.LogInformation("Õ½¶·Ê±³¤²»×ã{Min}Ãë({Actual:F1}Ãë),Ìø¹ı±£´æµ±Ç°¿ìÕÕ(Ó²ĞÔÏŞÖÆ)", 
-   AbsoluteMinDurationSeconds, duration.TotalSeconds);
- return;
-      }
-
-        // ? ÓÃ»§ÉèÖÃµÄ¹ıÂËÌõ¼ş(¿ÉÑ¡)
-        if (minDurationSeconds > 0 && duration.TotalSeconds < minDurationSeconds)
- {
-            _logger.LogInformation("Õ½¶·Ê±³¤²»×ãÓÃ»§ÉèÖÃµÄ{UserMin}Ãë({Actual:F1}Ãë),Ìø¹ı±£´æµ±Ç°¿ìÕÕ(ÓÃ»§ÉèÖÃ)", 
-           minDurationSeconds, duration.TotalSeconds);
+            _logger.LogInformation("æˆ˜æ–—æ—¶é•¿ä¸è¶³{Min}ç§’({Actual:F1}ç§’),è·³è¿‡ä¿å­˜å½“å‰å¿«ç…§(ç¡¬æ€§é™åˆ¶)",
+                AbsoluteMinDurationSeconds, duration.TotalSeconds);
             return;
-  }
+        }
+
+        // â­ ç”¨æˆ·è®¾ç½®çš„è¿‡æ»¤æ¡ä»¶(å¯é€‰)
+        if (minDurationSeconds > 0 && duration.TotalSeconds < minDurationSeconds)
+        {
+            _logger.LogInformation("æˆ˜æ–—æ—¶é•¿ä¸è¶³ç”¨æˆ·è®¾ç½®çš„{UserMin}ç§’({Actual:F1}ç§’),è·³è¿‡ä¿å­˜å½“å‰å¿«ç…§(ç”¨æˆ·è®¾ç½®)",
+                minDurationSeconds, duration.TotalSeconds);
+            return;
+        }
 
         try
-  {
-            var snapshot = CreateSnapshot(storage, duration, ScopeType.Current);
-          
- // ±£´æµ½´ÅÅÌ
-      SaveSnapshotToDisk(snapshot);
-    
-      // Ìí¼Óµ½ÄÚ´æÁĞ±í(²åÈëµ½¿ªÍ·)
-      CurrentSnapshots.Insert(0, snapshot);
-         
-         // ? Ö»±£Áô×îĞÂµÄ8Ìõ,³¬³öµÄÊÍ·ÅÄÚ´æ²¢É¾³ı´ÅÅÌÎÄ¼ş
-     while (CurrentSnapshots.Count > MaxSnapshots)
-    {
-    var oldest = CurrentSnapshots[CurrentSnapshots.Count - 1];
-         CurrentSnapshots.RemoveAt(CurrentSnapshots.Count - 1);
-  
-    // É¾³ı¶ÔÓ¦µÄ´ÅÅÌÎÄ¼ş
-     TryDeleteSnapshotFile(oldest.FilePath);
-   
-                _logger.LogDebug("ÒÆ³ı¾É¿ìÕÕ: {Time}, ÎÄ¼şÒÑÉ¾³ı", oldest.StartedAt);
-       }
- 
-            _logger.LogInformation("±£´æµ±Ç°Õ½¶·¿ìÕÕ³É¹¦: {Time}, Ê±³¤: {Duration:F1}Ãë, µ±Ç°±£´æÊıÁ¿: {Count}/{Max}", 
- snapshot.StartedAt, duration.TotalSeconds, CurrentSnapshots.Count, MaxSnapshots);
+        {
+            // â­ å…³é”®ä¿®å¤: å¦‚æœforceUseFullData=true,åˆ™ä½¿ç”¨FullDpsDataåˆ›å»ºå¿«ç…§
+            var snapshot = forceUseFullData
+                ? CreateSnapshotFromFullData(storage, duration, ScopeType.Current)
+                : CreateSnapshot(storage, duration, ScopeType.Current);
+
+            // ä¿å­˜åˆ°ç£ç›˜
+            SaveSnapshotToDisk(snapshot);
+
+            // æ·»åŠ åˆ°å†…å­˜åˆ—è¡¨(æ’å…¥åˆ°å¼€å¤´)
+            CurrentSnapshots.Insert(0, snapshot);
+
+            // â­ åªä¿ç•™æœ€æ–°çš„8æ¡,è¶…å‡ºçš„é‡Šæ”¾å†…å­˜å¹¶åˆ é™¤ç£ç›˜æ–‡ä»¶
+            while (CurrentSnapshots.Count > MaxSnapshots)
+            {
+                var oldest = CurrentSnapshots[CurrentSnapshots.Count - 1];
+                CurrentSnapshots.RemoveAt(CurrentSnapshots.Count - 1);
+
+                // åˆ é™¤å¯¹åº”çš„ç£ç›˜æ–‡ä»¶
+                TryDeleteSnapshotFile(oldest.FilePath);
+
+                _logger.LogDebug("ç§»é™¤æ—§å¿«ç…§: {Time}, æ–‡ä»¶å·²åˆ é™¤", oldest.StartedAt);
+            }
+
+            _logger.LogInformation("ä¿å­˜å½“å‰æˆ˜æ–—å¿«ç…§æˆåŠŸ: {Time}, æ—¶é•¿: {Duration:F1}ç§’, æ•°æ®æº: {Source}, å½“å‰ä¿å­˜æ•°é‡: {Count}/{Max}",
+                snapshot.StartedAt, duration.TotalSeconds, forceUseFullData ? "FullData" : "SectionedData",
+                CurrentSnapshots.Count, MaxSnapshots);
         }
-    catch (Exception ex)
-  {
-         _logger.LogError(ex, "±£´æµ±Ç°Õ½¶·¿ìÕÕÊ§°Ü");
- }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "ä¿å­˜å½“å‰æˆ˜æ–—å¿«ç…§å¤±è´¥");
+        }
     }
 
     /// <summary>
-    /// ±£´æÈ«³Ì¿ìÕÕ
+    /// â­ æ–°å¢: å¼ºåˆ¶ä»FullDpsDataåˆ›å»ºå¿«ç…§(ç”¨äºè„±æˆ˜æ—¶sectionedæ•°æ®å·²è¢«æ¸…ç©ºçš„åœºæ™¯)
     /// </summary>
-    /// <param name="storage">Êı¾İ´æ´¢</param>
-    /// <param name="duration">Õ½¶·Ê±³¤</param>
-    /// <param name="minDurationSeconds">ÓÃ»§ÉèÖÃµÄ×îĞ¡Ê±³¤(Ãë),0±íÊ¾¼ÇÂ¼ËùÓĞ(Ä¬ÈÏ¼ÇÂ¼ËùÓĞ)</param>
+    private BattleSnapshotData CreateSnapshotFromFullData(IDataStorage storage, TimeSpan duration, ScopeType scopeType)
+    {
+        var now = DateTime.Now;
+        var players = new Dictionary<long, SnapshotPlayerData>();
+
+        // â­ å¼ºåˆ¶ä½¿ç”¨FullDpsData
+        var dpsList = storage.ReadOnlyFullDpsDataList;
+
+        ulong teamTotalDamage = 0;
+        ulong teamTotalHealing = 0;
+        ulong teamTotalTaken = 0;
+
+        foreach (var dpsData in dpsList)
+        {
+            storage.ReadOnlyPlayerInfoDatas.TryGetValue(dpsData.UID, out var playerInfo);
+
+            var damage = (ulong)Math.Max(0, dpsData.TotalAttackDamage);
+            var healing = (ulong)Math.Max(0, dpsData.TotalHeal);
+            var taken = (ulong)Math.Max(0, dpsData.TotalTakenDamage);
+
+            teamTotalDamage += damage;
+            teamTotalHealing += healing;
+            teamTotalTaken += taken;
+
+            var elapsedTicks = dpsData.LastLoggedTick - (dpsData.StartLoggedTick ?? 0);
+            var elapsedSeconds = elapsedTicks > 0 ? TimeSpan.FromTicks(elapsedTicks).TotalSeconds : duration.TotalSeconds;
+
+            // â­ ä¿å­˜æŠ€èƒ½æ•°æ®
+            var damageSkills = BuildSkillSnapshot(dpsData.ReadOnlySkillDataList, SkillType.Damage);
+            var healingSkills = BuildHealingSkillSnapshot(dpsData.ReadOnlyBattleLogs);
+            var takenSkills = BuildTakenSkillSnapshot(dpsData.ReadOnlyBattleLogs, dpsData.UID);
+
+            players[dpsData.UID] = new SnapshotPlayerData
+            {
+                Uid = dpsData.UID,
+                Nickname = playerInfo?.Name ?? $"UID: {dpsData.UID}",
+                CombatPower = playerInfo?.CombatPower ?? 0,
+                Profession = playerInfo?.Class.ToString() ?? "Unknown",
+                SubProfession = playerInfo?.SubProfessionName ?? "",
+                TotalDamage = damage,
+                TotalDps = elapsedSeconds > 0 ? damage / elapsedSeconds : 0,
+                TotalHealing = healing,
+                TotalHps = elapsedSeconds > 0 ? healing / elapsedSeconds : 0,
+                TakenDamage = taken,
+                IsNpc = dpsData.IsNpcData,
+
+                // â­ ä¿å­˜æŠ€èƒ½åˆ—è¡¨
+                DamageSkills = damageSkills,
+                HealingSkills = healingSkills,
+                TakenSkills = takenSkills
+            };
+        }
+
+        return new BattleSnapshotData
+        {
+            ScopeType = scopeType,
+            StartedAt = now.AddTicks(-duration.Ticks),
+            EndedAt = now,
+            Duration = duration,
+            TeamTotalDamage = teamTotalDamage,
+            TeamTotalHealing = teamTotalHealing,
+            TeamTotalTakenDamage = teamTotalTaken,
+            Players = players
+        };
+    }
+
+    /// <summary>
+    /// ä¿å­˜å…¨ç¨‹å¿«ç…§
+    /// </summary>
+    /// <param name="storage">æ•°æ®å­˜å‚¨</param>
+    /// <param name="duration">æˆ˜æ–—æ—¶é•¿</param>
+    /// <param name="minDurationSeconds">ç”¨æˆ·è®¾ç½®çš„æœ€å°æ—¶é•¿(ç§’),0è¡¨ç¤ºè®°å½•æ‰€æœ‰(é»˜è®¤è®°å½•æ‰€æœ‰)</param>
     public void SaveTotalSnapshot(IDataStorage storage, TimeSpan duration, int minDurationSeconds = 0)
     {
-        // ? Ó²ĞÔÏŞÖÆ: µÍÓÚ10ÃëµÄÕ½¶·ÓÀÔ¶²»±£´æ
+        // ? ç¡¬æ€§é™åˆ¶: ä½äº10ç§’çš„æˆ˜æ–—æ°¸è¿œä¸ä¿å­˜
         if (duration.TotalSeconds < AbsoluteMinDurationSeconds)
         {
-            _logger.LogInformation("Õ½¶·Ê±³¤²»×ã{Min}Ãë({Actual:F1}Ãë),Ìø¹ı±£´æÈ«³Ì¿ìÕÕ(Ó²ĞÔÏŞÖÆ)", 
+            _logger.LogInformation("æˆ˜æ–—æ—¶é•¿ä¸è¶³{Min}ç§’({Actual:F1}ç§’),è·³è¿‡ä¿å­˜å…¨ç¨‹å¿«ç…§(ç¡¬æ€§é™åˆ¶)", 
         AbsoluteMinDurationSeconds, duration.TotalSeconds);
             return;
         }
 
-        // ? ÓÃ»§ÉèÖÃµÄ¹ıÂËÌõ¼ş(¿ÉÑ¡)
+        // ? ç”¨æˆ·è®¾ç½®çš„è¿‡æ»¤æ¡ä»¶(å¯é€‰)
         if (minDurationSeconds > 0 && duration.TotalSeconds < minDurationSeconds)
         {
-        _logger.LogInformation("Õ½¶·Ê±³¤²»×ãÓÃ»§ÉèÖÃµÄ{UserMin}Ãë({Actual:F1}Ãë),Ìø¹ı±£´æÈ«³Ì¿ìÕÕ(ÓÃ»§ÉèÖÃ)", 
+        _logger.LogInformation("æˆ˜æ–—æ—¶é•¿ä¸è¶³ç”¨æˆ·è®¾ç½®çš„{UserMin}ç§’({Actual:F1}ç§’),è·³è¿‡ä¿å­˜å…¨ç¨‹å¿«ç…§(ç”¨æˆ·è®¾ç½®)", 
    minDurationSeconds, duration.TotalSeconds);
           return;
         }
@@ -129,42 +207,42 @@ public class BattleSnapshotService
     {
           var snapshot = CreateSnapshot(storage, duration, ScopeType.Total);
             
-    // ±£´æµ½´ÅÅÌ
+    // ä¿å­˜åˆ°ç£ç›˜
             SaveSnapshotToDisk(snapshot);
     
-   // Ìí¼Óµ½ÄÚ´æÁĞ±í(²åÈëµ½¿ªÍ·)
+   // æ·»åŠ åˆ°å†…å­˜åˆ—è¡¨(æ’å…¥åˆ°å¼€å¤´)
             TotalSnapshots.Insert(0, snapshot);
 
- // ? Ö»±£Áô×îĞÂµÄ8Ìõ,³¬³öµÄÊÍ·ÅÄÚ´æ²¢É¾³ı´ÅÅÌÎÄ¼ş
+ // ? åªä¿ç•™æœ€æ–°çš„8æ¡,è¶…å‡ºçš„é‡Šæ”¾å†…å­˜å¹¶åˆ é™¤ç£ç›˜æ–‡ä»¶
   while (TotalSnapshots.Count > MaxSnapshots)
             {
   var oldest = TotalSnapshots[TotalSnapshots.Count - 1];
                 TotalSnapshots.RemoveAt(TotalSnapshots.Count - 1);
                 
-      // É¾³ı¶ÔÓ¦µÄ´ÅÅÌÎÄ¼ş
+      // åˆ é™¤å¯¹åº”çš„ç£ç›˜æ–‡ä»¶
        TryDeleteSnapshotFile(oldest.FilePath);
       
-      _logger.LogDebug("ÒÆ³ı¾É¿ìÕÕ: {Time}, ÎÄ¼şÒÑÉ¾³ı", oldest.StartedAt);
+      _logger.LogDebug("ç§»é™¤æ—§å¿«ç…§: {Time}, æ–‡ä»¶å·²åˆ é™¤", oldest.StartedAt);
      }
      
-          _logger.LogInformation("±£´æÈ«³Ì¿ìÕÕ³É¹¦: {Time}, Ê±³¤: {Duration:F1}Ãë, µ±Ç°±£´æÊıÁ¿: {Count}/{Max}", 
+          _logger.LogInformation("ä¿å­˜å…¨ç¨‹å¿«ç…§æˆåŠŸ: {Time}, æ—¶é•¿: {Duration:F1}ç§’, å½“å‰ä¿å­˜æ•°é‡: {Count}/{Max}", 
                 snapshot.StartedAt, duration.TotalSeconds, TotalSnapshots.Count, MaxSnapshots);
         }
         catch (Exception ex)
         {
-       _logger.LogError(ex, "±£´æÈ«³Ì¿ìÕÕÊ§°Ü");
+       _logger.LogError(ex, "ä¿å­˜å…¨ç¨‹å¿«ç…§å¤±è´¥");
         }
     }
 
     /// <summary>
-    /// ´´½¨¿ìÕÕ
+    /// åˆ›å»ºå¿«ç…§
     /// </summary>
     private BattleSnapshotData CreateSnapshot(IDataStorage storage, TimeSpan duration, ScopeType scopeType)
     {
         var now = DateTime.Now;
         var players = new Dictionary<long, SnapshotPlayerData>();
         
-        // ¸ù¾İÀàĞÍÑ¡ÔñÊı¾İÔ´
+        // æ ¹æ®ç±»å‹é€‰æ‹©æ•°æ®æº
         var dpsList = scopeType == ScopeType.Total 
             ? storage.ReadOnlyFullDpsDataList 
     : storage.ReadOnlySectionedDpsDataList;
@@ -188,7 +266,7 @@ public class BattleSnapshotService
         var elapsedTicks = dpsData.LastLoggedTick - (dpsData.StartLoggedTick ?? 0);
   var elapsedSeconds = elapsedTicks > 0 ? TimeSpan.FromTicks(elapsedTicks).TotalSeconds : duration.TotalSeconds;
     
-          // ? ĞÂÔö: ±£´æ¼¼ÄÜÊı¾İ
+          // ? æ–°å¢: ä¿å­˜æŠ€èƒ½æ•°æ®
             var damageSkills = BuildSkillSnapshot(dpsData.ReadOnlySkillDataList, SkillType.Damage);
     var healingSkills = BuildHealingSkillSnapshot(dpsData.ReadOnlyBattleLogs);
             var takenSkills = BuildTakenSkillSnapshot(dpsData.ReadOnlyBattleLogs, dpsData.UID);
@@ -207,7 +285,7 @@ public class BattleSnapshotService
       TakenDamage = taken,
          IsNpc = dpsData.IsNpcData,
                 
-      // ? ĞÂÔö: ±£´æ¼¼ÄÜÁĞ±í
+      // ? æ–°å¢: ä¿å­˜æŠ€èƒ½åˆ—è¡¨
           DamageSkills = damageSkills,
          HealingSkills = healingSkills,
   TakenSkills = takenSkills
@@ -228,7 +306,7 @@ return new BattleSnapshotData
     }
 
     /// <summary>
-    /// ? ĞÂÔö: ´Ó¼¼ÄÜÁĞ±í¹¹½¨ÉËº¦¼¼ÄÜ¿ìÕÕ
+    /// ? æ–°å¢: ä»æŠ€èƒ½åˆ—è¡¨æ„å»ºä¼¤å®³æŠ€èƒ½å¿«ç…§
     /// </summary>
     private List<SnapshotSkillData> BuildSkillSnapshot(IReadOnlyList<SkillData> skills, SkillType targetType)
     {
@@ -236,7 +314,7 @@ return new BattleSnapshotData
    
   foreach (var skill in skills)
         {
-    // ¸ù¾İ¼¼ÄÜIDÅĞ¶ÏÀàĞÍ
+    // æ ¹æ®æŠ€èƒ½IDåˆ¤æ–­ç±»å‹
    var skillType = EmbeddedSkillConfig.GetTypeOf((int)skill.SkillId);
    if (skillType != targetType)
  continue;
@@ -256,7 +334,7 @@ return new BattleSnapshotData
     }
 
     /// <summary>
-    /// ? ĞÂÔö: ´ÓÕ½¶·ÈÕÖ¾¹¹½¨ÖÎÁÆ¼¼ÄÜ¿ìÕÕ
+    /// ? æ–°å¢: ä»æˆ˜æ–—æ—¥å¿—æ„å»ºæ²»ç–—æŠ€èƒ½å¿«ç…§
     /// </summary>
     private List<SnapshotSkillData> BuildHealingSkillSnapshot(IReadOnlyList<BattleLog> logs)
     {
@@ -287,7 +365,7 @@ if (log.IsCritical) skillData.CritTimes++;
     }
 
     /// <summary>
-    /// ? ĞÂÔö: ´ÓÕ½¶·ÈÕÖ¾¹¹½¨³ĞÉË¼¼ÄÜ¿ìÕÕ
+    /// ? æ–°å¢: ä»æˆ˜æ–—æ—¥å¿—æ„å»ºæ‰¿ä¼¤æŠ€èƒ½å¿«ç…§
     /// </summary>
     private List<SnapshotSkillData> BuildTakenSkillSnapshot(IReadOnlyList<BattleLog> logs, long targetUid)
     {
@@ -295,7 +373,7 @@ if (log.IsCritical) skillData.CritTimes++;
    
         foreach (var log in logs)
       {
-  // Ö»Í³¼ÆÄ¿±êÊÇµ±Ç°Íæ¼ÒµÄÉËº¦
+  // åªç»Ÿè®¡ç›®æ ‡æ˜¯å½“å‰ç©å®¶çš„ä¼¤å®³
  if (log.IsHeal || log.TargetUuid != targetUid)
 continue;
                 
@@ -319,7 +397,7 @@ skillData.TotalValue += (ulong)Math.Max(0, log.Value);
     }
 
     /// <summary>
-    /// ±£´æ¿ìÕÕµ½´ÅÅÌ
+    /// ä¿å­˜å¿«ç…§åˆ°ç£ç›˜
     /// </summary>
   private void SaveSnapshotToDisk(BattleSnapshotData snapshot)
     {
@@ -336,7 +414,7 @@ skillData.TotalValue += (ulong)Math.Max(0, log.Value);
     }
 
     /// <summary>
-    /// ´Ó´ÅÅÌ¼ÓÔØ¿ìÕÕ
+    /// ä»ç£ç›˜åŠ è½½å¿«ç…§
   /// </summary>
     private void LoadSnapshots()
     {
@@ -370,9 +448,9 @@ return;
     }
      else
           {
-   // ? ³¬³öÏŞÖÆ,É¾³ıÎÄ¼ş²¢ÊÍ·ÅÄÚ´æ
+   // ? è¶…å‡ºé™åˆ¶,åˆ é™¤æ–‡ä»¶å¹¶é‡Šæ”¾å†…å­˜
            File.Delete(file);
-           _logger.LogDebug("Æô¶¯Ê±É¾³ı³¬³öÏŞÖÆµÄ¾É¿ìÕÕÎÄ¼ş: {File}", file);
+           _logger.LogDebug("å¯åŠ¨æ—¶åˆ é™¤è¶…å‡ºé™åˆ¶çš„æ—§å¿«ç…§æ–‡ä»¶: {File}", file);
    }
     }
               else
@@ -383,32 +461,32 @@ return;
                }
         else
       {
-    // ? ³¬³öÏŞÖÆ,É¾³ıÎÄ¼ş²¢ÊÍ·ÅÄÚ´æ
+    // ? è¶…å‡ºé™åˆ¶,åˆ é™¤æ–‡ä»¶å¹¶é‡Šæ”¾å†…å­˜
          File.Delete(file);
-         _logger.LogDebug("Æô¶¯Ê±É¾³ı³¬³öÏŞÖÆµÄ¾É¿ìÕÕÎÄ¼ş: {File}", file);
+         _logger.LogDebug("å¯åŠ¨æ—¶åˆ é™¤è¶…å‡ºé™åˆ¶çš„æ—§å¿«ç…§æ–‡ä»¶: {File}", file);
      }
            }
    }
                 }
                 catch (Exception ex)
          {
-       _logger.LogWarning(ex, "¼ÓÔØ¿ìÕÕÎÄ¼şÊ§°Ü: {File}", file);
-   // Ëğ»µµÄÎÄ¼şÖ±½ÓÉ¾³ı
+       _logger.LogWarning(ex, "åŠ è½½å¿«ç…§æ–‡ä»¶å¤±è´¥: {File}", file);
+   // æŸåçš„æ–‡ä»¶ç›´æ¥åˆ é™¤
      try { File.Delete(file); } catch { }
              }
          }
 
-    _logger.LogInformation("¼ÓÔØ¿ìÕÕÍê³É: µ±Ç°={Current}/{MaxCurrent}, È«³Ì={Total}/{MaxTotal}", 
+    _logger.LogInformation("åŠ è½½å¿«ç…§å®Œæˆ: å½“å‰={Current}/{MaxCurrent}, å…¨ç¨‹={Total}/{MaxTotal}", 
                 CurrentSnapshots.Count, MaxSnapshots, TotalSnapshots.Count, MaxSnapshots);
         }
         catch (Exception ex)
      {
-            _logger.LogError(ex, "¼ÓÔØ¿ìÕÕÊ§°Ü");
+            _logger.LogError(ex, "åŠ è½½å¿«ç…§å¤±è´¥");
         }
     }
 
     /// <summary>
-    /// ³¢ÊÔÉ¾³ı¿ìÕÕÎÄ¼ş
+    /// å°è¯•åˆ é™¤å¿«ç…§æ–‡ä»¶
     /// </summary>
     private void TryDeleteSnapshotFile(string filePath)
     {
@@ -417,18 +495,18 @@ return;
       if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
 {
                 File.Delete(filePath);
-       _logger.LogDebug("³É¹¦É¾³ı¿ìÕÕÎÄ¼ş: {File}", filePath);
+       _logger.LogDebug("æˆåŠŸåˆ é™¤å¿«ç…§æ–‡ä»¶: {File}", filePath);
    }
      }
         catch (Exception ex)
         {
-          _logger.LogWarning(ex, "É¾³ı¿ìÕÕÎÄ¼şÊ§°Ü: {File}", filePath);
+          _logger.LogWarning(ex, "åˆ é™¤å¿«ç…§æ–‡ä»¶å¤±è´¥: {File}", filePath);
         }
     }
 }
 
 /// <summary>
-/// ¿ìÕÕÊı¾İÄ£ĞÍ
+/// å¿«ç…§æ•°æ®æ¨¡å‹
 /// </summary>
 public class BattleSnapshotData
 {
@@ -442,21 +520,21 @@ public class BattleSnapshotData
     public Dictionary<long, SnapshotPlayerData> Players { get; set; } = new();
     
     /// <summary>
-    /// ÎÄ¼şÂ·¾¶(²»ĞòÁĞ»¯)
+    /// æ–‡ä»¶è·¯å¾„(ä¸åºåˆ—åŒ–)
     /// </summary>
     [System.Text.Json.Serialization.JsonIgnore]
     public string FilePath { get; set; } = "";
     
     /// <summary>
-    /// ÏÔÊ¾±êÇ©
+    /// æ˜¾ç¤ºæ ‡ç­¾
     /// </summary>
     [System.Text.Json.Serialization.JsonIgnore]
     public string DisplayLabel => 
-        $"{(ScopeType == ScopeType.Current ? "µ±Ç°" : "È«³Ì")} {StartedAt:HH:mm:ss} ({Duration:mm\\:ss})";
+        $"{(ScopeType == ScopeType.Current ? "å½“å‰" : "å…¨ç¨‹")} {StartedAt:HH:mm:ss} ({Duration:mm\\:ss})";
 }
 
 /// <summary>
-/// ¿ìÕÕÍæ¼ÒÊı¾İ
+/// å¿«ç…§ç©å®¶æ•°æ®
 /// </summary>
 public class SnapshotPlayerData
 {
@@ -472,14 +550,14 @@ public class SnapshotPlayerData
     public ulong TakenDamage { get; set; }
     public bool IsNpc { get; set; }
     
-    // ? ĞÂÔö: ¼¼ÄÜÊı¾İÁĞ±í
+    // ? æ–°å¢: æŠ€èƒ½æ•°æ®åˆ—è¡¨
     public List<SnapshotSkillData> DamageSkills { get; set; } = new();
     public List<SnapshotSkillData> HealingSkills { get; set; } = new();
     public List<SnapshotSkillData> TakenSkills { get; set; } = new();
 }
 
 /// <summary>
-/// ? ĞÂÔö: ¿ìÕÕ¼¼ÄÜÊı¾İ
+/// ? æ–°å¢: å¿«ç…§æŠ€èƒ½æ•°æ®
 /// </summary>
 public class SnapshotSkillData
 {
@@ -492,7 +570,7 @@ public class SnapshotSkillData
 }
 
 /// <summary>
-/// ¿ìÕÕÀàĞÍ
+/// å¿«ç…§ç±»å‹
 /// </summary>
 public enum ScopeType
 {

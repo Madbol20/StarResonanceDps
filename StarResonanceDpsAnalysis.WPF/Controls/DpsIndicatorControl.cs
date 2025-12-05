@@ -67,11 +67,9 @@ public class DpsIndicatorControl : Control
 
     public DpsIndicatorControl()
     {
-        // Add mouse event handlers for debugging
-        MouseEnter += (s, e) =>
-            Debug.WriteLine(
-                $"[DpsIndicatorControl] MouseEnter - PopupContent: {PopupContent?.GetType().Name ?? "null"}");
-        MouseLeave += (s, e) => Debug.WriteLine("[DpsIndicatorControl] MouseLeave");
+        // ? 修改: MouseEnter时触发tooltip数据刷新
+        MouseEnter += OnMouseEnterRefreshTooltip;
+      MouseLeave += (s, e) => Debug.WriteLine("[DpsIndicatorControl] MouseLeave");
     }
 
     public double TrackOpacity
@@ -168,5 +166,42 @@ public class DpsIndicatorControl : Control
         var oldPlayerName = (e.OldValue as dynamic)?.Player?.Name ?? "null";
         var newPlayerName = (e.NewValue as dynamic)?.Player?.Name ?? "null";
         Debug.WriteLine($"[DpsIndicatorControl] PopupContent changed: {oldPlayerName} -> {newPlayerName}");
+    }
+
+    /// <summary>
+    /// ? 新增: 鼠标进入时刷新tooltip中的技能列表
+    /// </summary>
+    private void OnMouseEnterRefreshTooltip(object sender, System.Windows.Input.MouseEventArgs e)
+    {
+        Debug.WriteLine($"[DpsIndicatorControl] MouseEnter - PopupContent: {PopupContent?.GetType().Name ?? "null"}");
+
+        // ? 关键: 从PopupContent获取StatisticDataViewModel,刷新其FilteredSkillList
+        if (PopupContent is not ViewModels.StatisticDataViewModel slot)
+        {
+            return;
+        }
+
+        // 获取当前的技能显示条数限制
+        // 注意: 这里需要从父级DpsStatisticsViewModel获取SkillDisplayLimit
+        // 由于DpsIndicatorControl是独立的Control,我们需要通过DataContext链找到父级ViewModel
+        var window = Window.GetWindow(this);
+        if (window?.DataContext is not ViewModels.DpsStatisticsViewModel parentVm)
+        {
+            Debug.WriteLine("[DpsIndicatorControl] Unable to find parent DpsStatisticsViewModel");
+            return;
+        }
+
+        var skillDisplayLimit = parentVm.CurrentStatisticData?.SkillDisplayLimit ?? 8;
+
+        // ? 刷新三类技能的FilteredSkillList
+        // RefreshFilteredList会触发PropertyChanged,WPF绑定系统会自动更新
+        slot.Damage.RefreshFilteredList(skillDisplayLimit);
+        slot.Heal.RefreshFilteredList(skillDisplayLimit);
+        slot.TakenDamage.RefreshFilteredList(skillDisplayLimit);
+   
+        // ? 关键: 递增刷新触发器,强制MultiBinding重新评估
+        slot.SkillListRefreshTrigger++;
+
+        Debug.WriteLine($"[DpsIndicatorControl] Refreshed skill lists for player: {slot.Player.Name}, limit: {skillDisplayLimit}, trigger: {slot.SkillListRefreshTrigger}");
     }
 }

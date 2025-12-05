@@ -10,32 +10,27 @@ public sealed class SnapshotOrRankConverter : IMultiValueConverter
     {
         if (values == null || values.Length < 2)
         {
-return "[--]";
+            return "[--]";
         }
 
+        // 第一个参数: IsViewingSnapshot (是否在快照模式)
         var isSnapshot = values[0] is bool b && b;
         
-      if (isSnapshot)
-{
-      return "[快照]";
+        // 如果是快照模式,显示[快照]
+        if (isSnapshot)
+        {
+            return "[快照]";
         }
 
+        // 第二个参数: CurrentPlayerRank (玩家排名字符串,格式已经是"[01]"或"[--]")
         if (values[1] == null || values[1] == DependencyProperty.UnsetValue)
         {
             return "[--]";
         }
 
-        if (values[1] is int index)
-     {
-    return $"[{index}]";
-        }
-
-        if (int.TryParse(values[1]?.ToString(), out var parsedIndex))
-        {
-  return $"[{parsedIndex}]";
-        }
-
-        return "[--]";
+        // 战斗模式下,直接返回排名字符串(已经包含方括号)
+        var rank = values[1]?.ToString() ?? "[--]";
+        return rank;
     }
 
     public object[] ConvertBack(object? value, Type[] targetTypes, object? parameter, CultureInfo culture)

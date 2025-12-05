@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -14,7 +14,8 @@ public sealed class GlobalHotkeyService(
     IConfigManager configManager,
     IMousePenetrationService mousePenetration,
     ITopmostService topmostService,
-    DpsStatisticsViewModel dpsStatisticsViewModel)
+    DpsStatisticsViewModel dpsStatisticsViewModel,
+    PersonalDpsViewModel personalDpsViewModel)  // ? 新增: 注入个人打桩模式ViewModel
     : IGlobalHotkeyService
 {
     private const int WM_HOTKEY = 0x0312;
@@ -238,11 +239,25 @@ public sealed class GlobalHotkeyService(
     {
         try
         {
-            var window = windowManager.DpsStatisticsView;
-            var newState = !window.Topmost; // source of truth is window state
-            topmostService.SetTopmost(window, newState);
+            // ? 关键修复: 同时控制DPS统计窗口和个人模式窗口的置顶
+            var dpsWindow = windowManager.DpsStatisticsView;
+            var personalWindow = windowManager.PersonalDpsView;
+            
+            // 使用DPS统计窗口的当前状态作为基准
+            var newState = !dpsWindow.Topmost;
+            
+            // 同时设置两个窗口的置顶状态
+            topmostService.SetTopmost(dpsWindow, newState);
+            if (personalWindow != null)
+            {
+                topmostService.SetTopmost(personalWindow, newState);
+            }
+            
+            // 保存配置
             _config.TopmostEnabled = newState;
             _ = configManager.SaveAsync(_config);
+            
+            logger.LogInformation("置顶快捷键: DPS统计和个人模式同时切换到 {State}", newState ? "置顶" : "取消置顶");
         }
         catch (Exception ex)
         {
@@ -254,8 +269,22 @@ public sealed class GlobalHotkeyService(
     {
         try
         {
-            // ? �޸�:��Ϊ����ResetAll,��ˢ�°�ťЧ��һ��
-            dpsStatisticsViewModel.ResetAll();
+            // ? 关键修复: 检查当前激活的窗口,决定清空策略
+            var personalWindow = windowManager.PersonalDpsView;
+            var isPersonalWindowVisible = personalWindow != null && personalWindow.IsVisible;
+
+            if (isPersonalWindowVisible)
+            {
+                // 个人模式窗口可见: 调用个人模式的Clear命令
+                logger.LogInformation("快捷键刷新: 个人模式窗口可见,执行个人模式清空");
+                personalDpsViewModel.ClearCommand.Execute(null);
+            }
+            else
+            {
+                // DPS统计窗口: 调用DPS统计的ResetAll
+                logger.LogInformation("快捷键刷新: DPS统计窗口,执行ResetAll");
+                dpsStatisticsViewModel.ResetAll();
+            }
         }
         catch (Exception ex)
         {

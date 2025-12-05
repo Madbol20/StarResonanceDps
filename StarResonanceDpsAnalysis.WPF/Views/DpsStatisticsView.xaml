@@ -243,10 +243,18 @@
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="PopupTemplate" DataType="{x:Type viewModels:StatisticDataViewModel}">
-            <!--  ? 直接绑定玩家昵称作为Title  -->
-     <ctrl:DpsDetailPopup 
-      Title="{Binding Player.Name}"
-  SkillList="{Binding Damage.FilteredSkillList}" />
+            <!--  ⭐ 动态绑定: 根据StatisticType显示对应的技能列表  -->
+   <ctrl:DpsDetailPopup 
+       Title="{Binding Player.Name}">
+         <ctrl:DpsDetailPopup.SkillList>
+       <MultiBinding Converter="{StaticResource StatisticTypeToSkillListConverter}">
+         <Binding Path="." />
+        <Binding Path="DataContext.StatisticIndex" RelativeSource="{RelativeSource AncestorType=Window}" />
+      <!--  ⭐ 新增: 添加SkillListRefreshTrigger作为第三个绑定源,每次触发器改变时重新执行转换器  -->
+         <Binding Path="SkillListRefreshTrigger" />
+     </MultiBinding>
+       </ctrl:DpsDetailPopup.SkillList>
+            </ctrl:DpsDetailPopup>
         </DataTemplate>
         <DataTemplate x:Key="ProgressBarDataTemplate" DataType="{x:Type viewModels:StatisticDataViewModel}">
             <Grid Height="36" Margin="0">
@@ -799,11 +807,11 @@
 Grid.Column="0"
    HorizontalAlignment="Left"
    Style="{StaticResource FooterTextContent}">
-    <!-- 快照模式下显示[快照],否则显示排名或无数据 -->
-    <TextBlock.Text>
-   <MultiBinding Converter="{StaticResource SnapshotOrRankConverter}">
-  <Binding Path="IsViewingSnapshot" />
-      <Binding Path="CurrentStatisticData.CurrentPlayerSlot.Index" />
+    <!-- 快照模式下显示[快照],战斗模式下显示排名 -->
+ <TextBlock.Text>
+        <MultiBinding Converter="{StaticResource SnapshotOrRankConverter}">
+   <Binding Path="IsViewingSnapshot" />
+            <Binding Path="CurrentPlayerRank" />
         </MultiBinding>
     </TextBlock.Text>
 </TextBlock>

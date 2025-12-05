@@ -130,6 +130,12 @@ public partial class AppConfig : ObservableObject
     private KeyBinding _clearDataShortcut = new(Key.F9, ModifierKeys.None);
 
     /// <summary>
+    /// ⭐ 新增: 开关伤害统计快捷键
+    /// </summary>
+    [ObservableProperty]
+    private KeyBinding _toggleDpsShortcut = new(Key.F10, ModifierKeys.None);
+
+    /// <summary>
     /// 当前窗口是否置顶
     /// </summary>
     [ObservableProperty]
@@ -151,6 +157,14 @@ public partial class AppConfig : ObservableObject
     /// </summary>
     [ObservableProperty]
     private int _dpsUpdateInterval = 1000;
+
+    /// <summary>
+    /// ⭐ 新增: 历史记录最大保存数量
+    /// 默认值：15条
+    /// 范围：5 - 50
+    /// </summary>
+    [ObservableProperty]
+    private int _maxHistoryCount = 15;
 
     public AppConfig Clone()
     {

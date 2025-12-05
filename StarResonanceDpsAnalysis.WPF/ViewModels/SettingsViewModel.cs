@@ -188,11 +188,22 @@ public partial class SettingsViewModel(
     [RelayCommand]
     private void HandleTopMostShortcut(object parameter)
     {
+  if (parameter is KeyEventArgs e)
+        {
+HandleShortcutInput(e, ShortcutType.TopMost);
+    }
+    }
+
+    /// <summary>
+    /// ⭐ 新增: 处理开关伤害统计快捷键输入
+    /// </summary>
+    [RelayCommand]
+    private void HandleToggleDpsShortcut(object parameter)
+    {
         if (parameter is KeyEventArgs e)
         {
-    HandleShortcutInput(e, ShortcutType.TopMost);
+    HandleShortcutInput(e, ShortcutType.ToggleDps);
         }
-
     }
 
     private void OnAppConfigPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -273,19 +284,22 @@ public partial class SettingsViewModel(
     {
         var shortcutData = new KeyBinding(key, modifiers);
 
-      switch (shortcutType)
-     {
+        switch (shortcutType)
+        {
             case ShortcutType.MouseThrough:
- AppConfig.MouseThroughShortcut = shortcutData;
-              break;
-            case ShortcutType.ClearData:
-      AppConfig.ClearDataShortcut = shortcutData;
+     AppConfig.MouseThroughShortcut = shortcutData;
    break;
+            case ShortcutType.ClearData:
+                AppConfig.ClearDataShortcut = shortcutData;
+     break;
             case ShortcutType.TopMost:
-                AppConfig.TopmostShortcut = shortcutData;
-          break;
+         AppConfig.TopmostShortcut = shortcutData;
+        break;
+         case ShortcutType.ToggleDps:
+                AppConfig.ToggleDpsShortcut = shortcutData;
+                break;
             default:
-       throw new ArgumentOutOfRangeException(nameof(shortcutType), shortcutType, null);
+      throw new ArgumentOutOfRangeException(nameof(shortcutType), shortcutType, null);
         }
     }
 
@@ -296,14 +310,20 @@ public partial class SettingsViewModel(
     {
         var shortCut = new KeyBinding(Key.None, ModifierKeys.None);
         switch (shortcutType)
-        {
-        case ShortcutType.MouseThrough:
-      AppConfig.MouseThroughShortcut = shortCut;
+     {
+         case ShortcutType.MouseThrough:
+              AppConfig.MouseThroughShortcut = shortCut;
+           break;
+     case ShortcutType.ClearData:
+    AppConfig.ClearDataShortcut = shortCut;
   break;
-      case ShortcutType.ClearData:
-        AppConfig.ClearDataShortcut = shortCut;
-  break;
-    }
+         case ShortcutType.TopMost:
+           AppConfig.TopmostShortcut = shortCut;
+       break;
+case ShortcutType.ToggleDps:
+      AppConfig.ToggleDpsShortcut = shortCut;
+             break;
+        }
     }
 
     public Task ApplySettingsAsync()
@@ -453,7 +473,8 @@ public enum ShortcutType
 {
     MouseThrough,
     ClearData,
-    TopMost
+    TopMost,
+    ToggleDps  // ⭐ 新增: 开关伤害统计
 }
 
 public sealed class SettingsDesignTimeViewModel : SettingsViewModel

@@ -300,6 +300,7 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
         if (_disposed) return;
         DateTime last;
         bool alreadyCleared;
+
         lock (_sectionTimeoutLock)
         {
             last = _lastLogWallClockAtUtc;
@@ -307,15 +308,35 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
         }
 
         if (alreadyCleared) return;
-        if (last == DateTime.MinValue) return; // no logs yet
+        if (last == DateTime.MinValue) return;
 
         var now = DateTime.UtcNow;
         if (now - last <= SectionTimeout) return;
 
-        // Timeout reached: clear section and notify
+        // ⭐ 新增:检查是否有分段数据,没有数据就不触发事件
+        if (SectionedDpsData.Count == 0)
+        {
+            lock (_sectionTimeoutLock)
+            {
+                _timeoutSectionClearedOnce = true;
+            }
+            return;
+        }
+
+        // 有数据才触发事件并清空
         try
         {
-            PrivateClearDpsData(); // raises DpsDataUpdated & DataUpdated
+            BeforeSectionCleared?.Invoke();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred during BeforeSectionCleared event");
+            ExceptionHelper.ThrowIfDebug(ex);
+        }
+
+        try
+        {
+            PrivateClearDpsData();
             RaiseNewSectionCreated();
         }
         finally
@@ -508,7 +529,7 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
 
     /// <summary>
     /// Checks if the time since the last battle log exceeds the section timeout threshold
- /// and creates a new section if necessary
+    /// and creates a new section if necessary
     /// </summary>
     /// <param name="log">The current battle log being processed</param>
     /// <returns>True if a new section was created; otherwise, false</returns>
@@ -525,11 +546,24 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
         if (LastBattleLog == null)
             return false;
 
-        // Compare ticks directly instead of creating TimeSpan objects for better performance
         var timeSinceLastLog = log.TimeTicks - LastBattleLog.Value.TimeTicks;
 
         if (timeSinceLastLog > SectionTimeout.Ticks || ForceNewBattleSection)
         {
+            // ⭐ 新增:检查是否有分段数据,有数据才触发事件
+            if (SectionedDpsData.Count > 0)
+            {
+                try
+                {
+                    BeforeSectionCleared?.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "An error occurred during BeforeSectionCleared event");
+                    ExceptionHelper.ThrowIfDebug(ex);
+                }
+            }
+
             PrivateClearDpsDataNoEvents();
             ForceNewBattleSection = false;
             return true;
@@ -1141,5 +1175,10 @@ public partial class DataStorageV2
         }
     }
 
+    // 在 Events 区域添加新事件(约第780行后):
+    /// <summary>
+    /// ⭐ 新增: 分段数据即将被清空前触发 (用于保存快照)
+    /// </summary>
+    public event Action? BeforeSectionCleared;
     #endregion
 }

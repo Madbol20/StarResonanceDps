@@ -232,7 +232,7 @@
     <value>Clear data after combat</value>
   </data>
   <data name="Settings_Common_Seconds" xml:space="preserve">
-    <value>sec</value>
+    <value>s</value>
   </data>
   <data name="Settings_Combat_ClearAfterTeleport" xml:space="preserve">
     <value>Reset on map change</value>
@@ -938,5 +938,36 @@ Recommended: 500-2000 milliseconds</value>
   </data>
   <data name="MainView_Plugin_Training_Description" xml:space="preserve">
     <value />
+  </data>
+  <!--  ⭐ 新增: 开关伤害统计快捷键  -->
+  <data name="Settings_Shortcut_ToggleDps" xml:space="preserve">
+    <value>Toggle DPS Window</value>
+  </data>
+  <data name="Settings_Shortcut_ToggleDps_Tooltip" xml:space="preserve">
+    <value>Focus this box and press a shortcut (e.g. F10). Press Delete to clear.</value>
+  </data>
+  <!--  ⭐ 新增: 角色设置  -->
+  <data name="Settings_Section_Character_Title" xml:space="preserve">
+    <value>Character Settings</value>
+  </data>
+  <data name="Settings_Section_Character_Sub" xml:space="preserve">
+    <value>Set your character UID for Solo/Training mode</value>
+  </data>
+  <data name="Settings_Character_Uid" xml:space="preserve">
+    <value>Character UID</value>
+  </data>
+  <data name="Settings_Character_Uid_Tooltip" xml:space="preserve">
+    <value>Enter your character UID (number)
+How to get: After a fight, your character will automatically appear in the stats window</value>
+  </data>
+  <!--  ⭐ 新增: 历史记录保存数量  -->
+  <data name="Settings_Combat_MaxHistoryCount" xml:space="preserve">
+    <value>History Record Limit</value>
+  </data>
+  <data name="Settings_Combat_MaxHistoryCount_Tooltip" xml:space="preserve">
+    <value>Maximum number of battle records to keep (5-50)</value>
+  </data>
+  <data name="Settings_Common_Records" xml:space="preserve">
+    <value>records</value>
   </data>
 </root>
