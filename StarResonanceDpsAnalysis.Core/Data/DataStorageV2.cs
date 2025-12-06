@@ -316,10 +316,7 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
         // ⭐ 新增:检查是否有分段数据,没有数据就不触发事件
         if (SectionedDpsData.Count == 0)
         {
-            lock (_sectionTimeoutLock)
-            {
-                _timeoutSectionClearedOnce = true;
-            }
+            _timeoutSectionClearedOnce = true;
             return;
         }
 
@@ -341,10 +338,7 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
         }
         finally
         {
-            lock (_sectionTimeoutLock)
-            {
-                _timeoutSectionClearedOnce = true;
-            }
+            _timeoutSectionClearedOnce = true;
         }
     }
 
@@ -588,20 +582,20 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
     {
         if (log.IsTargetPlayer)
         {
-         ProcessPlayerTargetLog(log);
+            ProcessPlayerTargetLog(log);
         }
         else if (log.IsAttackerPlayer && !log.IsHeal)
         {
- // 玩家攻击非玩家目标(NPC)
+            // 玩家攻击非玩家目标(NPC)
             ProcessPlayerAttackLog(log);
 
- // 同时也记录NPC承伤数据
+            // 同时也记录NPC承伤数据
             ProcessNpcLog(log);
-   }
+        }
         else
         {
-   // ⭐ 修复: 其他情况(NPC攻击玩家/NPC, NPC治疗等)
- // 处理NPC的攻击输出数据
+            // ⭐ 修复: 其他情况(NPC攻击玩家/NPC, NPC治疗等)
+            // 处理NPC的攻击输出数据
             ProcessNpcAttackLog(log);
         }
     }
@@ -620,26 +614,26 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
     /// </remarks>
     private void ProcessPlayerTargetLog(BattleLog log)
     {
-     if (log.IsHeal)
+        if (log.IsHeal)
         {
             var (fullData, sectionedData) = SetLogInfos(log.AttackerUuid, log);
-       TrySetSpecBySkillId(log.AttackerUuid, log.SkillID);
+            TrySetSpecBySkillId(log.AttackerUuid, log.SkillID);
             UpdateDpsData(fullData, sectionedData, log, DpsType.Heal);
-      }
+        }
         else
         {
- // ⭐ 修复: 记录玩家承伤
+            // ⭐ 修复: 记录玩家承伤
             var (targetFull, targetSectioned) = SetLogInfos(log.TargetUuid, log);
-        UpdateDpsData(targetFull, targetSectioned, log, DpsType.TakenDamage);
+            UpdateDpsData(targetFull, targetSectioned, log, DpsType.TakenDamage);
 
-     // ⭐ 新增: 如果攻击者是NPC,同时记录NPC的输出数据
+            // ⭐ 新增: 如果攻击者是NPC,同时记录NPC的输出数据
             if (!log.IsAttackerPlayer)
-       {
-           var (attackerFull, attackerSectioned) = SetLogInfos(log.AttackerUuid, log);
-  attackerFull.IsNpcData = true;
-           attackerSectioned.IsNpcData = true;
-    UpdateDpsData(attackerFull, attackerSectioned, log, DpsType.AttackDamage);
-    }
+            {
+                var (attackerFull, attackerSectioned) = SetLogInfos(log.AttackerUuid, log);
+                attackerFull.IsNpcData = true;
+                attackerSectioned.IsNpcData = true;
+                UpdateDpsData(attackerFull, attackerSectioned, log, DpsType.AttackDamage);
+            }
         }
     }
 
@@ -676,7 +670,7 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
 
     /// <summary>
     /// ⭐ 新增: 处理NPC攻击数据(输出伤害)
-  /// </summary>
+    /// </summary>
     /// <param name="log">The battle log to process</param>
     /// <remarks>
     /// Records NPC attack output when NPC attacks players or other NPCs.
@@ -688,24 +682,24 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
         if (!log.IsHeal && !log.IsAttackerPlayer)
         {
             var (attackerFull, attackerSectioned) = SetLogInfos(log.AttackerUuid, log);
- attackerFull.IsNpcData = true;
+            attackerFull.IsNpcData = true;
             attackerSectioned.IsNpcData = true;
-      UpdateDpsData(attackerFull, attackerSectioned, log, DpsType.AttackDamage);
-    }
+            UpdateDpsData(attackerFull, attackerSectioned, log, DpsType.AttackDamage);
+        }
 
         // 如果目标也是NPC,记录其承伤
         if (!log.IsTargetPlayer)
         {
-         var (targetFull, targetSectioned) = SetLogInfos(log.TargetUuid, log);
-     targetFull.IsNpcData = true;
-   targetSectioned.IsNpcData = true;
+            var (targetFull, targetSectioned) = SetLogInfos(log.TargetUuid, log);
+            targetFull.IsNpcData = true;
+            targetSectioned.IsNpcData = true;
             UpdateDpsData(targetFull, targetSectioned, log, DpsType.TakenDamage);
-      }
-   // 如果目标是玩家,记录玩家承伤
-  else
+        }
+        // 如果目标是玩家,记录玩家承伤
+        else
         {
-   var (targetFull, targetSectioned) = SetLogInfos(log.TargetUuid, log);
-    UpdateDpsData(targetFull, targetSectioned, log, DpsType.TakenDamage);
+            var (targetFull, targetSectioned) = SetLogInfos(log.TargetUuid, log);
+            UpdateDpsData(targetFull, targetSectioned, log, DpsType.TakenDamage);
         }
     }
 
