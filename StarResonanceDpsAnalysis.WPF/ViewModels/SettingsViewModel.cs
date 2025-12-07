@@ -31,9 +31,10 @@ public partial class SettingsViewModel(
     private List<Option<Language>> _availableLanguages =
     [
         new(Language.Auto, Language.Auto.GetLocalizedDescription()),
-      new(Language.ZhCn, Language.ZhCn.GetLocalizedDescription()),
+        new(Language.ZhCn, Language.ZhCn.GetLocalizedDescription()),
         new(Language.EnUs, Language.EnUs.GetLocalizedDescription()),
-   new(Language.PtBr, Language.PtBr.GetLocalizedDescription()),
+        new(Language.PtBr, Language.PtBr.GetLocalizedDescription()),
+        new(Language.KoKr, Language.KoKr.GetLocalizedDescription())
     ];
 
     [ObservableProperty] private List<NetworkAdapterInfo> _availableNetworkAdapters = [];
@@ -49,8 +50,8 @@ public partial class SettingsViewModel(
     private bool _networkHandlerSubscribed;
     private bool _isLoaded; // becomes true after LoadedAsync completes
     private bool _hasUnsavedChanges; // tracks whether any property changed after load
-    
- // Store original values for cancel/restore
+
+    // Store original values for cancel/restore
     private AppConfig _originalConfig = null!;
 
     [ObservableProperty] private Option<Language>? _selectedLanguage;
@@ -61,18 +62,18 @@ public partial class SettingsViewModel(
     partial void OnAppConfigChanging(AppConfig value)
     {
         // Unsubscribe from the old instance before changing
-    _appConfig.PropertyChanged -= OnAppConfigPropertyChanged;
+        _appConfig.PropertyChanged -= OnAppConfigPropertyChanged;
     }
 
     partial void OnAppConfigChanged(AppConfig value)
     {
         // Subscribe to the new instance
-      value.PropertyChanged += OnAppConfigPropertyChanged;
+        value.PropertyChanged += OnAppConfigPropertyChanged;
 
         localization.ApplyLanguage(value.Language);
         UpdateLanguageDependentCollections();
         SyncOptions();
- }
+    }
 
     partial void OnSelectedNumberDisplayModeChanged(Option<NumberDisplayMode>? value)
     {
@@ -84,28 +85,28 @@ public partial class SettingsViewModel(
     {
         if (value == null) return;
         AppConfig.Language = value.Value;
-   localization.ApplyLanguage(value.Value);
+        localization.ApplyLanguage(value.Value);
     }
 
     partial void OnAvailableNetworkAdaptersChanged(List<NetworkAdapterInfo> value)
     {
         AppConfig.PreferredNetworkAdapter ??= value.FirstOrDefault();
-  }
+    }
 
     [RelayCommand(AllowConcurrentExecutions = false)]
     private async Task LoadedAsync()
- {
-    // Clone current config for editing
-     AppConfig = configManager.CurrentConfig.Clone();
-        
-      // Store original config for cancel/restore (deep clone)
+    {
+        // Clone current config for editing
+        AppConfig = configManager.CurrentConfig.Clone();
+
+        // Store original config for cancel/restore (deep clone)
         _originalConfig = configManager.CurrentConfig.Clone();
 
         SubscribeHandlers();
 
         UpdateLanguageDependentCollections();
-     localization.ApplyLanguage(AppConfig.Language);
-   await LoadNetworkAdaptersAsync();
+        localization.ApplyLanguage(AppConfig.Language);
+        await LoadNetworkAdaptersAsync();
 
         _hasUnsavedChanges = false;
         _isLoaded = true;
@@ -114,61 +115,61 @@ public partial class SettingsViewModel(
     private void SubscribeHandlers()
     {
         if (!_cultureHandlerSubscribed)
-   {
-    localization.CultureChanged += OnCultureChanged;
+        {
+            localization.CultureChanged += OnCultureChanged;
             _cultureHandlerSubscribed = true;
         }
 
-     if (!_networkHandlerSubscribed)
+        if (!_networkHandlerSubscribed)
         {
             NetworkChange.NetworkAvailabilityChanged += OnSystemNetworkChanged;
             NetworkChange.NetworkAddressChanged += OnSystemNetworkChanged;
-     _networkHandlerSubscribed = true;
+            _networkHandlerSubscribed = true;
         }
     }
 
-  private async Task LoadNetworkAdaptersAsync()
+    private async Task LoadNetworkAdaptersAsync()
     {
         var adapters = await deviceManagementService.GetNetworkAdaptersAsync();
         AvailableNetworkAdapters = adapters.Select(a => new NetworkAdapterInfo(a.name, a.description)).ToList();
         AppConfig.PreferredNetworkAdapter =
-  AvailableNetworkAdapters.FirstOrDefault(a => a.Name == AppConfig.PreferredNetworkAdapter?.Name);
+            AvailableNetworkAdapters.FirstOrDefault(a => a.Name == AppConfig.PreferredNetworkAdapter?.Name);
     }
 
     [RelayCommand(AllowConcurrentExecutions = false)]
-  private async Task NetworkAdapterAutoSelect()
- {
+    private async Task NetworkAdapterAutoSelect()
+    {
         var ret = await deviceManagementService.GetAutoSelectedNetworkAdapterAsync();
         if (ret != null)
         {
-       AppConfig.PreferredNetworkAdapter = ret;
-         deviceManagementService.SetActiveNetworkAdapter(ret);
-         return;
-      }
-      MessageBox.Show(localization.GetString(ResourcesKeys.Settings_NetworkAdapterAutoSelect_Failed)); // Temporary message dialog
+            AppConfig.PreferredNetworkAdapter = ret;
+            deviceManagementService.SetActiveNetworkAdapter(ret);
+            return;
+        }
+        MessageBox.Show(localization.GetString(ResourcesKeys.Settings_NetworkAdapterAutoSelect_Failed)); // Temporary message dialog
     }
 
     private async void OnSystemNetworkChanged(object? sender, EventArgs e)
     {
         try
         {
-       await LoadNetworkAdaptersAsync();
+            await LoadNetworkAdaptersAsync();
         }
-      catch
-  {
-      // ignore
+        catch
+        {
+            // ignore
         }
     }
 
     /// <summary>
-  /// Handle shortcut key input for mouse through shortcut
+    /// Handle shortcut key input for mouse through shortcut
     /// </summary>
     [RelayCommand]
     private void HandleMouseThroughShortcut(object parameter)
     {
-      if (parameter is KeyEventArgs e)
+        if (parameter is KeyEventArgs e)
         {
-         HandleShortcutInput(e, ShortcutType.MouseThrough);
+            HandleShortcutInput(e, ShortcutType.MouseThrough);
         }
     }
 
@@ -179,19 +180,19 @@ public partial class SettingsViewModel(
     [RelayCommand]
     private void HandleClearDataShortcut(object parameter)
     {
-     if (parameter is KeyEventArgs e)
+        if (parameter is KeyEventArgs e)
         {
-         HandleShortcutInput(e, ShortcutType.ClearData);
+            HandleShortcutInput(e, ShortcutType.ClearData);
         }
     }
 
     [RelayCommand]
     private void HandleTopMostShortcut(object parameter)
     {
-  if (parameter is KeyEventArgs e)
+        if (parameter is KeyEventArgs e)
         {
-HandleShortcutInput(e, ShortcutType.TopMost);
-    }
+            HandleShortcutInput(e, ShortcutType.TopMost);
+        }
     }
 
     /// <summary>
@@ -202,7 +203,7 @@ HandleShortcutInput(e, ShortcutType.TopMost);
     {
         if (parameter is KeyEventArgs e)
         {
-    HandleShortcutInput(e, ShortcutType.ToggleDps);
+            HandleShortcutInput(e, ShortcutType.ToggleDps);
         }
     }
 
@@ -210,37 +211,47 @@ HandleShortcutInput(e, ShortcutType.TopMost);
     {
         if (sender is not AppConfig config)
         {
-        return;
-   }
+            return;
+        }
 
         if (e.PropertyName == nameof(AppConfig.Language))
         {
-        localization.ApplyLanguage(config.Language);
+            localization.ApplyLanguage(config.Language);
             UpdateLanguageDependentCollections();
+        }
+        else if (e.PropertyName == nameof(AppConfig.MaskPlayerName) && _isLoaded && !config.MaskPlayerName)
+        {
+            var title = localization.GetString(ResourcesKeys.Settings_PlayerNameMask_Warning_Title);
+            var message = localization.GetString(ResourcesKeys.Settings_PlayerNameMask_Warning_Message);
+            var result = messageDialogService.Show(title, message);
+            if (result != true)
+            {
+                config.MaskPlayerName = true;
+            }
         }
         else if (e.PropertyName == nameof(AppConfig.PreferredNetworkAdapter))
         {
             var adapter = AppConfig.PreferredNetworkAdapter;
-       if (adapter != null)
- {
- deviceManagementService.SetActiveNetworkAdapter(adapter);
+            if (adapter != null)
+            {
+                deviceManagementService.SetActiveNetworkAdapter(adapter);
             }
- }
+        }
         else if (e.PropertyName == nameof(AppConfig.Opacity))
-    {
+        {
             // Real-time preview: immediately apply opacity to the actual config
             if (_isLoaded)
-          {
-       ApplyOpacityImmediately(config.Opacity);
-     }
+            {
+                ApplyOpacityImmediately(config.Opacity);
+            }
         }
 
         if (_isLoaded)
         {
-     _hasUnsavedChanges = true;
+            _hasUnsavedChanges = true;
         }
     }
-    
+
     /// <summary>
     /// Immediately apply opacity change to the running application config for real-time preview
     /// </summary>
@@ -251,28 +262,28 @@ HandleShortcutInput(e, ShortcutType.TopMost);
         configManager.CurrentConfig.Opacity = opacity;
     }
 
- /// <summary>
+    /// <summary>
     /// Generic shortcut input handler
     /// </summary>
-  private void HandleShortcutInput(KeyEventArgs e, ShortcutType shortcutType)
+    private void HandleShortcutInput(KeyEventArgs e, ShortcutType shortcutType)
     {
         e.Handled = true; // we'll handle the key
 
         var modifiers = Keyboard.Modifiers;
-    var key = e.Key == Key.System ? e.SystemKey : e.Key;
+        var key = e.Key == Key.System ? e.SystemKey : e.Key;
 
-     // Allow Delete to clear
+        // Allow Delete to clear
         if (key == Key.Delete)
         {
- ClearShortcut(shortcutType);
- return;
+            ClearShortcut(shortcutType);
+            return;
         }
 
         // Ignore modifier-only presses
         if (key.IsControlKey() || key.IsAltKey() || key.IsShiftKey())
         {
-   return;
-    }
+            return;
+        }
 
         UpdateShortcut(shortcutType, key, modifiers);
     }
@@ -287,19 +298,19 @@ HandleShortcutInput(e, ShortcutType.TopMost);
         switch (shortcutType)
         {
             case ShortcutType.MouseThrough:
-     AppConfig.MouseThroughShortcut = shortcutData;
-   break;
+                AppConfig.MouseThroughShortcut = shortcutData;
+                break;
             case ShortcutType.ClearData:
                 AppConfig.ClearDataShortcut = shortcutData;
-     break;
+                break;
             case ShortcutType.TopMost:
-         AppConfig.TopmostShortcut = shortcutData;
-        break;
-         case ShortcutType.ToggleDps:
+                AppConfig.TopmostShortcut = shortcutData;
+                break;
+            case ShortcutType.ToggleDps:
                 AppConfig.ToggleDpsShortcut = shortcutData;
                 break;
             default:
-      throw new ArgumentOutOfRangeException(nameof(shortcutType), shortcutType, null);
+                throw new ArgumentOutOfRangeException(nameof(shortcutType), shortcutType, null);
         }
     }
 
@@ -310,78 +321,75 @@ HandleShortcutInput(e, ShortcutType.TopMost);
     {
         var shortCut = new KeyBinding(Key.None, ModifierKeys.None);
         switch (shortcutType)
-     {
-         case ShortcutType.MouseThrough:
-              AppConfig.MouseThroughShortcut = shortCut;
-           break;
-     case ShortcutType.ClearData:
-    AppConfig.ClearDataShortcut = shortCut;
-  break;
-         case ShortcutType.TopMost:
-           AppConfig.TopmostShortcut = shortCut;
-       break;
-case ShortcutType.ToggleDps:
-      AppConfig.ToggleDpsShortcut = shortCut;
-             break;
+        {
+            case ShortcutType.MouseThrough:
+                AppConfig.MouseThroughShortcut = shortCut;
+                break;
+            case ShortcutType.ClearData:
+                AppConfig.ClearDataShortcut = shortCut;
+                break;
+            case ShortcutType.TopMost:
+                AppConfig.TopmostShortcut = shortCut;
+                break;
+            case ShortcutType.ToggleDps:
+                AppConfig.ToggleDpsShortcut = shortCut;
+                break;
         }
     }
 
     public Task ApplySettingsAsync()
     {
-    return configManager.SaveAsync(AppConfig);
+        return configManager.SaveAsync(AppConfig);
     }
 
     [RelayCommand]
     private async Task Confirm()
     {
-      await ApplySettingsAsync();
+        await ApplySettingsAsync();
         UnsubscribeHandlers();
-   RequestClose?.Invoke();
+        RequestClose?.Invoke();
     }
 
     [RelayCommand]
     private async Task Cancel()
     {
         if (!_hasUnsavedChanges)
-   {
-         UnsubscribeHandlers();
-            RequestClose?.Invoke();
-    return;
-    }
-
-      var title = localization.GetString(ResourcesKeys.Settings_CancelConfirm_Title);
-     var message = localization.GetString(ResourcesKeys.Settings_CancelConfirm_Message);
-
- var result = messageDialogService.Show(
- title,
-    message);
-
- if (result == true)
         {
-    // User chose to discard changes - restore original config
-  RestoreOriginalConfig();
-  
+            UnsubscribeHandlers();
+            RequestClose?.Invoke();
+            return;
+        }
+
+        var title = localization.GetString(ResourcesKeys.Settings_CancelConfirm_Title);
+        var message = localization.GetString(ResourcesKeys.Settings_CancelConfirm_Message);
+
+        var result = messageDialogService.Show(title, message);
+        if (result == true)
+        {
+            // User chose to discard changes - restore original config
+            RestoreOriginalConfig();
+
             _hasUnsavedChanges = false;
             UnsubscribeHandlers();
-      RequestClose?.Invoke();
+            RequestClose?.Invoke();
         }
     }
-    
+
     /// <summary>
     /// Restore the original config when user cancels
     /// </summary>
     private void RestoreOriginalConfig()
     {
         if (_originalConfig == null) return;
-        
-    // Restore opacity to original value
-    configManager.CurrentConfig.Opacity = _originalConfig.Opacity;
-   
-   // Note: Other properties are already isolated in the cloned AppConfig
+
+        // Restore opacity to original value
+        configManager.CurrentConfig.Opacity = _originalConfig.Opacity;
+
+        // Note: Other properties are already isolated in the cloned AppConfig
         // so they don't affect the running application until saved
     }
 
- private void OnCultureChanged(object? sender, CultureInfo culture)
+    private void OnCultureChanged(object? sender, CultureInfo culture)
     {
         UpdateLanguageDependentCollections();
     }
@@ -389,18 +397,18 @@ case ShortcutType.ToggleDps:
     private void UnsubscribeHandlers()
     {
         if (_cultureHandlerSubscribed)
-  {
-        localization.CultureChanged -= OnCultureChanged;
+        {
+            localization.CultureChanged -= OnCultureChanged;
             _cultureHandlerSubscribed = false;
         }
 
-     if (_networkHandlerSubscribed)
+        if (_networkHandlerSubscribed)
         {
-  NetworkChange.NetworkAvailabilityChanged -= OnSystemNetworkChanged;
-       NetworkChange.NetworkAddressChanged -= OnSystemNetworkChanged;
+            NetworkChange.NetworkAvailabilityChanged -= OnSystemNetworkChanged;
+            NetworkChange.NetworkAddressChanged -= OnSystemNetworkChanged;
             _networkHandlerSubscribed = false;
-      }
- }
+        }
+    }
 }
 
 public partial class SettingsViewModel

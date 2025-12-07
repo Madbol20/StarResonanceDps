@@ -25,14 +25,14 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
         new DesignTopmostService(),
         new DesignAppControlService(),
         Dispatcher.CurrentDispatcher,
-  new DebugFunctions(
-    Dispatcher.CurrentDispatcher,
+        new DebugFunctions(
+            Dispatcher.CurrentDispatcher,
             NullLogger<DebugFunctions>.Instance,
             new DesignLogObservable(),
             new DesignOptionsMonitor(),
-      null!,
-    LocalizationManager.Instance),
-        new DesignBattleSnapshotService()) // ? Ìí¼ÓÉè¼ÆÊ±¿ìÕÕ·şÎñ
+            null!,
+            LocalizationManager.Instance),
+        new DesignBattleSnapshotService()) // ? æ·»åŠ è®¾è®¡æ—¶å¿«ç…§æœåŠ¡
     {
         // Initialize AppConfig
         AppConfig = new AppConfig { DebugEnabled = true };
@@ -53,12 +53,12 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
 
     #region Stub Implementations
 
-    // ? ĞŞ¸´: Éè¼ÆÊ±¿ìÕÕ·şÎñ£¨Ìí¼Ó IConfigManager ²ÎÊı£©
+    // ? ä¿®å¤: è®¾è®¡æ—¶å¿«ç…§æœåŠ¡ï¼ˆæ·»åŠ  IConfigManager å‚æ•°ï¼‰
     private sealed class DesignBattleSnapshotService : BattleSnapshotService
     {
         public DesignBattleSnapshotService() : base(
-    NullLogger<BattleSnapshotService>.Instance,
-            new DesignConfigManager()) // ? ĞÂÔö£º´«ÈëÅäÖÃ¹ÜÀíÆ÷
+            NullLogger<BattleSnapshotService>.Instance,
+            new DesignConfigManager()) // ? æ–°å¢ï¼šä¼ å…¥é…ç½®ç®¡ç†å™¨
         {
         }
     }
@@ -102,13 +102,13 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
         public PlayerInfo CurrentPlayerInfo { get; } = new();
 
         public ReadOnlyDictionary<long, PlayerInfo> ReadOnlyPlayerInfoDatas { get; } =
-     new(new Dictionary<long, PlayerInfo>());
+            new(new Dictionary<long, PlayerInfo>());
 
         public ReadOnlyDictionary<long, DpsData> ReadOnlyFullDpsDatas => ReadOnlySectionedDpsDatas;
         public IReadOnlyList<DpsData> ReadOnlyFullDpsDataList { get; } = [];
 
         public ReadOnlyDictionary<long, DpsData> ReadOnlySectionedDpsDatas { get; } =
-                  new(new Dictionary<long, DpsData>());
+            new(new Dictionary<long, DpsData>());
 
         public IReadOnlyList<DpsData> ReadOnlySectionedDpsDataList { get; } = [];
         public TimeSpan SectionTimeout { get; set; } = TimeSpan.FromSeconds(5);

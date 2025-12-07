@@ -47,6 +47,7 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
     [ObservableProperty] private int _skillDisplayLimit = 8;
     [ObservableProperty] private SortDirectionEnum _sortDirection = SortDirectionEnum.Descending;
     [ObservableProperty] private string _sortMemberPath = "Value";
+    [ObservableProperty] private bool _suppressSorting;
 
     public DpsStatisticsSubViewModel(ILogger<DpsStatisticsViewModel> logger, Dispatcher dispatcher, StatisticType type,
         IDataStorage storage,
@@ -112,10 +113,16 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
     /// <summary>
     /// Sorts the slots collection in-place based on the current sort criteria
     /// </summary>
-    public void SortSlotsInPlace()
+    public void SortSlotsInPlace(bool force = false)
     {
         if (Data.Count == 0 || string.IsNullOrWhiteSpace(SortMemberPath))
             return;
+
+        if (!force && SuppressSorting)
+        {
+            UpdateItemIndices();
+            return;
+        }
 
         try
         {
@@ -204,47 +211,47 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
             // Update slot values with pre-computed data
             slot.Value = processed.Value;
             slot.Duration = processed.Duration;
-            
-      // ? ÐÞ¸´: ¸üÐÂËùÓÐÈýÖÖ¼¼ÄÜÁÐ±íÊý¾Ý
-     slot.Damage.FilteredSkillList = processed.FilteredSkillList;
-       slot.Damage.TotalSkillList = processed.TotalSkillList;
-       
-   slot.Heal.FilteredSkillList = processed.FilteredHealSkillList;
-slot.Heal.TotalSkillList = processed.TotalHealSkillList;
-  
-    slot.TakenDamage.FilteredSkillList = processed.FilteredTakenDamageSkillList;
+
+            // ? ä¿®å¤: æ›´æ–°æ‰€æœ‰ä¸‰ç§æŠ€èƒ½åˆ—è¡¨æ•°æ®
+            slot.Damage.FilteredSkillList = processed.FilteredSkillList;
+            slot.Damage.TotalSkillList = processed.TotalSkillList;
+
+            slot.Heal.FilteredSkillList = processed.FilteredHealSkillList;
+            slot.Heal.TotalSkillList = processed.TotalHealSkillList;
+
+            slot.TakenDamage.FilteredSkillList = processed.FilteredTakenDamageSkillList;
             slot.TakenDamage.TotalSkillList = processed.TotalTakenDamageSkillList;
 
-      // Update player info
-      slot.Player.Name = processed.PlayerName;
-          slot.Player.Class = processed.PlayerClass;
-      slot.Player.Spec = processed.PlayerSpec;
-   slot.Player.Uid = uid;
+            // Update player info
+            slot.Player.Name = processed.PlayerName;
+            slot.Player.Class = processed.PlayerClass;
+            slot.Player.Spec = processed.PlayerSpec;
+            slot.Player.Uid = uid;
             slot.Player.PowerLevel = processed.PowerLevel;
 
             // Set current player slot if this is the current player
-      if (hasCurrentPlayer && uid == currentPlayerUid)
-        {
-  SelectedSlot = slot;
+            if (hasCurrentPlayer && uid == currentPlayerUid)
+            {
+                SelectedSlot = slot;
                 CurrentPlayerSlot = slot;
             }
-      }
+        }
 
-  // Batch calculate percentages
-      if (Data.Count > 0)
+        // Batch calculate percentages
+        if (Data.Count > 0)
         {
             var maxValue = Data.Max(d => d.Value);
-var totalValue = Data.Sum(d => Convert.ToDouble(d.Value));
+            var totalValue = Data.Sum(d => Convert.ToDouble(d.Value));
 
             var hasMaxValue = maxValue > 0;
             var hasTotalValue = totalValue > 0;
 
-         foreach (var slot in Data)
-   {
-              slot.PercentOfMax = hasMaxValue ? slot.Value / (double)maxValue * 100 : 0;
-    slot.Percent = hasTotalValue ? slot.Value / totalValue : 0;
-         }
-    }
+            foreach (var slot in Data)
+            {
+                slot.PercentOfMax = hasMaxValue ? slot.Value / (double)maxValue * 100 : 0;
+                slot.Percent = hasTotalValue ? slot.Value / totalValue : 0;
+            }
+        }
 
         // Sort data in place 
         SortSlotsInPlace();
@@ -393,7 +400,7 @@ var totalValue = Data.Sum(d => Convert.ToDouble(d.Value));
         }
 
         // Trigger immediate re-sort
-        SortSlotsInPlace();
+        SortSlotsInPlace(force: true);
     }
 
     /// <summary>
@@ -402,7 +409,7 @@ var totalValue = Data.Sum(d => Convert.ToDouble(d.Value));
     [RelayCommand]
     private void ManualSort()
     {
-        SortSlotsInPlace();
+        SortSlotsInPlace(force: true);
     }
 
     /// <summary>
@@ -422,7 +429,7 @@ var totalValue = Data.Sum(d => Convert.ToDouble(d.Value));
     {
         SortMemberPath = "Name";
         SortDirection = SortDirectionEnum.Ascending;
-        SortSlotsInPlace();
+        SortSlotsInPlace(force: true);
     }
 
     /// <summary>

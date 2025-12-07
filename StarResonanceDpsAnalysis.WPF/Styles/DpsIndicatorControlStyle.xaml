@@ -51,7 +51,7 @@
                             x:Name="PART_Popup"
                             AllowsTransparency="True"
                             IsHitTestVisible="False"
-                            Placement="MousePoint"
+                            Placement="Custom"
                             PlacementTarget="{Binding ElementName=Root}"
                             PopupAnimation="Fade"
                             StaysOpen="True">

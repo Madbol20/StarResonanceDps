@@ -267,7 +267,7 @@
                                     <Border x:Name="bb" Style="{StaticResource SectionTitleBorder}">
 
                                         <Grid>
-                                            <TextBlock Style="{StaticResource SectionListTitleText}" Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Language_Title}}" />
+                                            <TextBlock Style="{StaticResource SectionListTitleText}" Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Display_Title}}" />
 
                                             <Border Style="{StaticResource SectionTitlePointer}" />
                                         </Grid>
@@ -310,6 +310,27 @@
 
                                         <Grid>
                                             <TextBlock Style="{StaticResource SectionListTitleText}" Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Shortcut_Title}}" />
+
+                                            <Border Style="{StaticResource SectionTitlePointer}" />
+                                        </Grid>
+                                    </Border>
+
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="bb" Property="Background" Value="#EEE" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+
+                        <Button Click="Nav_Character_Click" Style="{StaticResource SectionTitleButton}">
+                            <Button.Template>
+                                <ControlTemplate>
+                                    <Border x:Name="bb" Style="{StaticResource SectionTitleBorder}">
+
+                                        <Grid>
+                                            <TextBlock Style="{StaticResource SectionListTitleText}" Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Character_Title}}" />
 
                                             <Border Style="{StaticResource SectionTitlePointer}" />
                                         </Grid>
@@ -374,11 +395,32 @@
                         <StackPanel>
                             <ctrl:CardHeader
                                 x:Name="SectionLanguage"
-                                Title="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Language_Title}}"
+                                Title="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Display_Title}}"
                                 Subtitle="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Language_Description}}" />
 
                             <Border Style="{StaticResource SectionBorder}">
                                 <StackPanel Style="{StaticResource SectionStackPanel}">
+
+                                    <Border Style="{StaticResource SectionFieldBorder}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="39*" />
+                                                <ColumnDefinition Width="*" MinWidth="10" />
+                                                <ColumnDefinition Width="60*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock
+                                                Grid.Column="0"
+                                                Style="{StaticResource FieldName}"
+                                                Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Language_Title}}" />
+                                            <ComboBox
+                                                Grid.Column="2"
+                                                ItemTemplate="{StaticResource LocalizedEnumTextBlockDataTemplate}"
+                                                ItemsSource="{Binding AvailableLanguages}"
+                                                SelectedItem="{Binding SelectedLanguage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                Style="{StaticResource FieldComboBox}" />
+                                        </Grid>
+                                    </Border>
 
                                     <Border Style="{StaticResource SectionFieldBorderBase}">
                                         <Grid>
@@ -391,13 +433,13 @@
                                             <TextBlock
                                                 Grid.Column="0"
                                                 Style="{StaticResource FieldName}"
-                                                Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Language_Title}}" />
-                                            <ComboBox
-                                                Grid.Column="2"
-                                                ItemTemplate="{StaticResource LocalizedEnumTextBlockDataTemplate}"
-                                                ItemsSource="{Binding AvailableLanguages}"
-                                                SelectedItem="{Binding SelectedLanguage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                Style="{StaticResource FieldComboBox}" />
+                                                Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Display_PlayerNameBlur}}" />
+                                            <Border Grid.Column="2" HorizontalAlignment="Right">
+                                                <ctrl:SwitchControl
+                                                    IsChecked="{Binding AppConfig.MaskPlayerName, Mode=TwoWay}"
+                                                    OffContent="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Switch_Off}}"
+                                                    OnContent="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Switch_On}}" />
+                                            </Border>
                                         </Grid>
                                     </Border>
 
@@ -510,7 +552,7 @@
                                         </Grid>
                                     </Border>
 
-                                    <Border Style="{StaticResource SectionFieldBorderBase}">
+                                    <Border Style="{StaticResource SectionFieldBorder}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="39*" />
@@ -538,30 +580,30 @@
 
                                     <!--  ⭐ 新增: 开关伤害统计快捷键  -->
                                     <Border Style="{StaticResource SectionFieldBorderBase}">
-  <Grid>
-              <Grid.ColumnDefinitions>
- <ColumnDefinition Width="39*" />
-     <ColumnDefinition Width="*" MinWidth="10" />
-                  <ColumnDefinition Width="60*" />
-         </Grid.ColumnDefinitions>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="39*" />
+                                                <ColumnDefinition Width="*" MinWidth="10" />
+                                                <ColumnDefinition Width="60*" />
+                                            </Grid.ColumnDefinitions>
 
-       <TextBlock
-            Grid.Column="0"
-            Style="{StaticResource FieldName}"
-       Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Shortcut_ToggleDps}}" />
-<TextBox
- x:Name="ToggleDpsTextBox"
-                 Grid.Column="2"
- IsReadOnly="True"
-       Style="{StaticResource AntTextBoxStyle}"
-         Text="{Binding AppConfig.ToggleDpsShortcut, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource KeyToStringConverter}}"
-  ToolTip="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Shortcut_ToggleDps_Tooltip}}">
-                    <b:Interaction.Behaviors>
-   <behaviors:KeyDownCommandBehavior Command="{Binding HandleToggleDpsShortcutCommand}" />
-         </b:Interaction.Behaviors>
-  </TextBox>
-        </Grid>
-     </Border>
+                                            <TextBlock
+                                                Grid.Column="0"
+                                                Style="{StaticResource FieldName}"
+                                                Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Shortcut_ToggleDps}}" />
+                                            <TextBox
+                                                x:Name="ToggleDpsTextBox"
+                                                Grid.Column="2"
+                                                IsReadOnly="True"
+                                                Style="{StaticResource AntTextBoxStyle}"
+                                                Text="{Binding AppConfig.ToggleDpsShortcut, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource KeyToStringConverter}}"
+                                                ToolTip="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Shortcut_ToggleDps_Tooltip}}">
+                                                <b:Interaction.Behaviors>
+                                                    <behaviors:KeyDownCommandBehavior Command="{Binding HandleToggleDpsShortcutCommand}" />
+                                                </b:Interaction.Behaviors>
+                                            </TextBox>
+                                        </Grid>
+                                    </Border>
 
                                 </StackPanel>
                             </Border>
@@ -569,39 +611,39 @@
                             <!--  ⭐ 新增: 角色设置区域  -->
                             <ctrl:CardHeader
                                 x:Name="SectionCharacter"
-                                 Title="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Character_Title}}"
-                                   Subtitle="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Character_Sub}}" />
+                                Title="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Character_Title}}"
+                                Subtitle="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Character_Sub}}" />
 
-     <Border Style="{StaticResource SectionBorder}">
-             <StackPanel Style="{StaticResource SectionStackPanel}">
+                            <Border Style="{StaticResource SectionBorder}">
+                                <StackPanel Style="{StaticResource SectionStackPanel}">
 
-       <Border Style="{StaticResource SectionFieldBorderBase}">
-               <Grid>
-                <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="39*" />
-               <ColumnDefinition Width="*" MinWidth="10" />
- <ColumnDefinition Width="60*" />
-     </Grid.ColumnDefinitions>
+                                    <Border Style="{StaticResource SectionFieldBorderBase}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="39*" />
+                                                <ColumnDefinition Width="*" MinWidth="10" />
+                                                <ColumnDefinition Width="60*" />
+                                            </Grid.ColumnDefinitions>
 
- <TextBlock
-  Grid.Column="0"
-     Style="{StaticResource FieldName}"
-          Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Character_Uid}}" />
-      <TextBox
-   Grid.Column="2"
-        Style="{StaticResource AntTextBoxStyle}"
-                Text="{Binding AppConfig.Uid, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            ToolTip="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Character_Uid_Tooltip}}" />
- </Grid>
-         </Border>
+                                            <TextBlock
+                                                Grid.Column="0"
+                                                Style="{StaticResource FieldName}"
+                                                Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Character_Uid}}" />
+                                            <TextBox
+                                                Grid.Column="2"
+                                                Style="{StaticResource AntTextBoxStyle}"
+                                                Text="{Binding AppConfig.Uid, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                ToolTip="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Character_Uid_Tooltip}}" />
+                                        </Grid>
+                                    </Border>
 
-        </StackPanel>
- </Border>
+                                </StackPanel>
+                            </Border>
 
-            <ctrl:CardHeader
-    x:Name="SectionCombat"
-    Title="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Combat_Title}}"
-    Subtitle="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Combat_Sub}}" />
+                            <ctrl:CardHeader
+                                x:Name="SectionCombat"
+                                Title="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Combat_Title}}"
+                                Subtitle="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Combat_Sub}}" />
 
                             <Border Style="{StaticResource SectionBorder}">
                                 <StackPanel Style="{StaticResource SectionStackPanel}">
@@ -619,21 +661,21 @@
                                                 Style="{StaticResource FieldName}"
                                                 Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_ClearAfterBattle}}" />
                                             <Grid Grid.Column="2">
-                                                <Grid.ColumnDefinitions>
+                                            <Grid.ColumnDefinitions>
                                                     <ColumnDefinition />
                                                     <ColumnDefinition Width="10" />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
 
-         <TextBox
-        Grid.Column="0"
-     Style="{StaticResource AntTextBoxStyle}"
-    Text="{Binding AppConfig.CombatTimeClearDelay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-      <TextBlock
-     Grid.Column="2"
-       Style="{StaticResource SuffixText}"
-              Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Common_Seconds}}" />
-     </Grid>
+                                                <TextBox
+                                                    Grid.Column="0"
+                                                    Style="{StaticResource AntTextBoxStyle}"
+                                                    Text="{Binding AppConfig.CombatTimeClearDelay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    Style="{StaticResource SuffixText}"
+                                                    Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Common_Seconds}}" />
+                                            </Grid>
                                         </Grid>
                                     </Border>
 
@@ -670,59 +712,59 @@
                                                 Grid.Column="0"
                                                 Style="{StaticResource FieldName}"
                                                 Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_DpsUpdateMode}}"
-   ToolTip="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_DpsUpdateMode_Tooltip}}" Grid.ColumnSpan="3" Margin="0,0,260,0" />
-   <Border Grid.Column="2" HorizontalAlignment="Right">
-          <ctrl:SwitchControl
-        IsChecked="{Binding AppConfig.DpsUpdateMode, Mode=TwoWay, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Active}"
-   OffContent="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_DpsUpdateMode_Passive}}"
-    OnContent="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_DpsUpdateMode_Active}}"
-       ToolTip="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_DpsUpdateMode_Tooltip}}" />
-       </Border>
-       </Grid>
-</Border>
+                                                ToolTip="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_DpsUpdateMode_Tooltip}}" Grid.ColumnSpan="3" Margin="0,0,260,0" />
+                                            <Border Grid.Column="2" HorizontalAlignment="Right">
+                                                <ctrl:SwitchControl
+                                                    IsChecked="{Binding AppConfig.DpsUpdateMode, Mode=TwoWay, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Active}"
+                                                    OffContent="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_DpsUpdateMode_Passive}}"
+                                                    OnContent="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_DpsUpdateMode_Active}}"
+                                                    ToolTip="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_DpsUpdateMode_Tooltip}}" />
+                                            </Border>
+                                        </Grid>
+                                    </Border>
 
-          <Border Style="{StaticResource SectionFieldBorder}">
-    <Grid>
-         <Grid.ColumnDefinitions>
- <ColumnDefinition Width="39*" />
-    <ColumnDefinition Width="*" MinWidth="10" />
-  <ColumnDefinition Width="60*" />
-      </Grid.ColumnDefinitions>
+                                    <Border Style="{StaticResource SectionFieldBorder}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="39*" />
+                                                <ColumnDefinition Width="*" MinWidth="10" />
+                                                <ColumnDefinition Width="60*" />
+                                            </Grid.ColumnDefinitions>
 
-    <TextBlock
-         Grid.Column="0"
-         Style="{StaticResource FieldName}"
-    Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_DpsUpdateInterval}}"
-       ToolTip="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_DpsUpdateInterval_Tooltip}}" />
-    <Grid Grid.Column="2">
-           <Grid.ColumnDefinitions>
-      <ColumnDefinition />
-       <ColumnDefinition Width="10" />
-<ColumnDefinition Width="35" />
-     <ColumnDefinition Width="5" />
-<ColumnDefinition Width="Auto" />
-     </Grid.ColumnDefinitions>
+                                            <TextBlock
+                                                Grid.Column="0"
+                                                Style="{StaticResource FieldName}"
+                                                Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_DpsUpdateInterval}}"
+                                                ToolTip="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_DpsUpdateInterval_Tooltip}}" />
+                                            <Grid Grid.Column="2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="10" />
+                                                    <ColumnDefinition Width="35" />
+                                                    <ColumnDefinition Width="5" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
 
-  <Slider
-     Grid.Column="0"
- IsEnabled="{Binding AppConfig.DpsUpdateMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Active}"
-           IsSnapToTickEnabled="True"
-          Maximum="5000"
-       Minimum="100"
-  Style="{StaticResource AntSliderStyle}"
-   TickFrequency="100"
-    Value="{Binding AppConfig.DpsUpdateInterval, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-    <TextBlock
-   Grid.Column="2"
-      Style="{StaticResource SuffixText}"
-Text="{Binding AppConfig.DpsUpdateInterval, Mode=OneWay}" />
-     <TextBlock
-       Grid.Column="4"
-  Style="{StaticResource SuffixText}"
-   Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Common_Milliseconds}}" />
- </Grid>
-    </Grid>
-</Border>
+                                                <Slider
+                                                    Grid.Column="0"
+                                                    IsEnabled="{Binding AppConfig.DpsUpdateMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Active}"
+                                                    IsSnapToTickEnabled="True"
+                                                    Maximum="5000"
+                                                    Minimum="100"
+                                                    Style="{StaticResource AntSliderStyle}"
+                                                    TickFrequency="100"
+                                                    Value="{Binding AppConfig.DpsUpdateInterval, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    Style="{StaticResource SuffixText}"
+                                                    Text="{Binding AppConfig.DpsUpdateInterval, Mode=OneWay}" />
+                                                <TextBlock
+                                                    Grid.Column="4"
+                                                    Style="{StaticResource SuffixText}"
+                                                    Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Common_Milliseconds}}" />
+                                            </Grid>
+                                        </Grid>
+                                    </Border>
 
                                     <Border Style="{StaticResource SectionFieldBorder}">
                                         <Grid>
@@ -757,168 +799,168 @@ Text="{Binding AppConfig.DpsUpdateInterval, Mode=OneWay}" />
                                                 Grid.Column="0"
                                                 Style="{StaticResource FieldName}"
                                                 Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Display_Opacity}}" />
-      <Grid Grid.Column="2">
-        <Grid.ColumnDefinitions>
-  <ColumnDefinition />
-          <ColumnDefinition Width="10" />
-  <ColumnDefinition Width="35" />
-   </Grid.ColumnDefinitions>
+                                            <Grid Grid.Column="2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="10" />
+                                                    <ColumnDefinition Width="35" />
+                                                </Grid.ColumnDefinitions>
 
-        <Slider
-              Grid.Column="0"
-           IsSnapToTickEnabled="True"
-            Maximum="95"
-           Minimum="5"
-        Style="{StaticResource AntSliderStyle}"
-        TickFrequency="1"
-       Value="{Binding AppConfig.Opacity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-          <TextBlock
-                Grid.Column="2"
-   Style="{StaticResource SuffixText}"
-       Text="{Binding AppConfig.Opacity, Mode=OneWay}" />
-      </Grid>
-   </Grid>
-         </Border>
+                                                <Slider
+                                                    Grid.Column="0"
+                                                    IsSnapToTickEnabled="True"
+                                                    Maximum="95"
+                                                    Minimum="5"
+                                                    Style="{StaticResource AntSliderStyle}"
+                                                    TickFrequency="1"
+                                                    Value="{Binding AppConfig.Opacity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    Style="{StaticResource SuffixText}"
+                                                    Text="{Binding AppConfig.Opacity, Mode=OneWay}" />
+                                            </Grid>
+                                        </Grid>
+                                    </Border>
 
-     <Border Style="{StaticResource SectionFieldBorderBase}">
-  <Grid>
-           <Grid.ColumnDefinitions>
-         <ColumnDefinition Width="39*" />
-         <ColumnDefinition Width="*" MinWidth="10" />
-   <ColumnDefinition Width="60*" />
-        </Grid.ColumnDefinitions>
+                                    <Border Style="{StaticResource SectionFieldBorderBase}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="39*" />
+                                                <ColumnDefinition Width="*" MinWidth="10" />
+                                                <ColumnDefinition Width="60*" />
+                                            </Grid.ColumnDefinitions>
 
-<TextBlock
-Grid.Column="0"
-     Style="{StaticResource FieldName}"
-  Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_MaxHistoryCount}}"
-          ToolTip="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_MaxHistoryCount_Tooltip}}" />
-         <Grid Grid.Column="2">
-            <Grid.ColumnDefinitions>
-       <ColumnDefinition />
-   <ColumnDefinition Width="10" />
-   <ColumnDefinition Width="35" />
-      <ColumnDefinition Width="5" />
-   <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
+                                            <TextBlock
+                                                Grid.Column="0"
+                                                Style="{StaticResource FieldName}"
+                                                Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_MaxHistoryCount}}"
+                                                ToolTip="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Combat_MaxHistoryCount_Tooltip}}" />
+                                            <Grid Grid.Column="2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="10" />
+                                                    <ColumnDefinition Width="35" />
+                                                    <ColumnDefinition Width="5" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
 
-       <Slider
-        Grid.Column="0"
-     IsSnapToTickEnabled="True"
-             Maximum="50"
-       Minimum="5"
-      Style="{StaticResource AntSliderStyle}"
-       TickFrequency="5"
-            Value="{Binding AppConfig.MaxHistoryCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                   <TextBlock
-              Grid.Column="2"
-    Style="{StaticResource SuffixText}"
-            Text="{Binding AppConfig.MaxHistoryCount, Mode=OneWay}" />
-         <TextBlock
-   Grid.Column="4"
-            Style="{StaticResource SuffixText}"
-             Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Common_Records}}" />
-   </Grid>
-    </Grid>
-        </Border>
+                                                <Slider
+                                                    Grid.Column="0"
+                                                    IsSnapToTickEnabled="True"
+                                                    Maximum="50"
+                                                    Minimum="5"
+                                                    Style="{StaticResource AntSliderStyle}"
+                                                    TickFrequency="5"
+                                                    Value="{Binding AppConfig.MaxHistoryCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    Style="{StaticResource SuffixText}"
+                                                    Text="{Binding AppConfig.MaxHistoryCount, Mode=OneWay}" />
+                                                <TextBlock
+                                                    Grid.Column="4"
+                                                    Style="{StaticResource SuffixText}"
+                                                    Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Common_Records}}" />
+                                            </Grid>
+                                        </Grid>
+                                    </Border>
 
-                    </StackPanel>
-         </Border>
+                                </StackPanel>
+                            </Border>
 
-    <ctrl:CardHeader
-             x:Name="SectionTheme"
-     Title="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Theme_Title}}"
-      Subtitle="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Theme_Description}}" />
+                            <ctrl:CardHeader
+                                x:Name="SectionTheme"
+                                Title="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Theme_Title}}"
+                                Subtitle="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Section_Theme_Description}}" />
 
-           <Border Style="{StaticResource SectionBorder}">
-        <StackPanel Style="{StaticResource SectionStackPanel}">
+                            <Border Style="{StaticResource SectionBorder}">
+                                <StackPanel Style="{StaticResource SectionStackPanel}">
 
-    <Border Style="{StaticResource SectionFieldBorder}">
-            <Grid>
-<Grid.ColumnDefinitions>
-          <ColumnDefinition Width="39*" />
-<ColumnDefinition Width="*" MinWidth="10" />
-            <ColumnDefinition Width="60*" />
-          </Grid.ColumnDefinitions>
+                                    <Border Style="{StaticResource SectionFieldBorder}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="39*" />
+                                                <ColumnDefinition Width="*" MinWidth="10" />
+                                                <ColumnDefinition Width="60*" />
+                                            </Grid.ColumnDefinitions>
 
-    <TextBlock
- Grid.Column="0"
-               Style="{StaticResource FieldName}"
-             Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Theme_WindowColor}}" />
-                      <Border Grid.Column="2" HorizontalAlignment="Right">
-             <WrapPanel>
-          <Button Background="#1690F8" Style="{StaticResource ThemeButton_Active}" />
-     <Button Background="#FFA9A8" Style="{StaticResource ThemeButton}" />
-  <Button Background="#F7A0DD" Style="{StaticResource ThemeButton}" />
-       <Button Background="#2F2F2F" Style="{StaticResource ThemeButton}" />
-      <Button Background="#D0D0D0" Style="{StaticResource ThemeButton}" />
-    <Button Style="{StaticResource ThemeButton}">
-    <Button.Template>
-  <ControlTemplate>
-<Border Style="{StaticResource ThemeButtonBorder}">
-           <Grid>
-           <Grid.RowDefinitions>
- <RowDefinition Height="*" />
-      <RowDefinition Height="*" />
-  </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-   <ColumnDefinition Width="*" />
-        <ColumnDefinition Width="*" />
-          </Grid.ColumnDefinitions>
+                                            <TextBlock
+                                                Grid.Column="0"
+                                                Style="{StaticResource FieldName}"
+                                                Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Theme_WindowColor}}" />
+                                            <Border Grid.Column="2" HorizontalAlignment="Right">
+                                                <WrapPanel>
+                                                    <Button Background="#1690F8" Style="{StaticResource ThemeButton_Active}" />
+                                                    <Button Background="#FFA9A8" Style="{StaticResource ThemeButton}" />
+                                                    <Button Background="#F7A0DD" Style="{StaticResource ThemeButton}" />
+                                                    <Button Background="#2F2F2F" Style="{StaticResource ThemeButton}" />
+                                                    <Button Background="#D0D0D0" Style="{StaticResource ThemeButton}" />
+                                                    <Button Style="{StaticResource ThemeButton}">
+                                                        <Button.Template>
+                                                            <ControlTemplate>
+                                                                <Border Style="{StaticResource ThemeButtonBorder}">
+                                                                    <Grid>
+                                                                        <Grid.RowDefinitions>
+                                                                            <RowDefinition Height="*" />
+                                                                            <RowDefinition Height="*" />
+                                                                        </Grid.RowDefinitions>
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition Width="*" />
+                                                                            <ColumnDefinition Width="*" />
+                                                                        </Grid.ColumnDefinitions>
 
-    <Border
-                Grid.Row="0"
-      Grid.Column="0"
-           Background="#1FD1B5"
-   CornerRadius="5,0,0,0" />
-         <Border
-         Grid.Row="0"
-         Grid.Column="1"
-   Background="#FFD400"
-         CornerRadius="0,5,0,0" />
-    <Border
-     Grid.Row="1"
-             Grid.Column="0"
- Background="#00A2FD"
-    CornerRadius="0,0,0,5" />
-             <Border
-        Grid.Row="1"
-              Grid.Column="1"
-            Background="#FF6663"
-        CornerRadius="0,0,5,0" />
-                </Grid>
-               </Border>
-               </ControlTemplate>
-               </Button.Template>
-  </Button>
-    </WrapPanel>
-         </Border>
- </Grid>
-       </Border>
+                                                                        <Border
+                                                                            Grid.Row="0"
+                                                                            Grid.Column="0"
+                                                                            Background="#1FD1B5"
+                                                                            CornerRadius="5,0,0,0" />
+                                                                        <Border
+                                                                            Grid.Row="0"
+                                                                            Grid.Column="1"
+                                                                            Background="#FFD400"
+                                                                            CornerRadius="0,5,0,0" />
+                                                                        <Border
+                                                                            Grid.Row="1"
+                                                                            Grid.Column="0"
+                                                                            Background="#00A2FD"
+                                                                            CornerRadius="0,0,0,5" />
+                                                                        <Border
+                                                                            Grid.Row="1"
+                                                                            Grid.Column="1"
+                                                                            Background="#FF6663"
+                                                                            CornerRadius="0,0,5,0" />
+                                                                    </Grid>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Button.Template>
+                                                    </Button>
+                                                </WrapPanel>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
 
-       <Border Style="{StaticResource SectionFieldBorderBase}">
-          <Grid>
-        <Grid.ColumnDefinitions>
-           <ColumnDefinition Width="39*" />
-     <ColumnDefinition Width="*" MinWidth="10" />
-  <ColumnDefinition Width="60*" />
-   </Grid.ColumnDefinitions>
+                                    <Border Style="{StaticResource SectionFieldBorderBase}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="39*" />
+                                                <ColumnDefinition Width="*" MinWidth="10" />
+                                                <ColumnDefinition Width="60*" />
+                                            </Grid.ColumnDefinitions>
 
-   <TextBlock
-            Grid.Column="0"
-       Style="{StaticResource FieldName}"
-    Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Theme_BackgroundImage}}" />
-           <Border Grid.Column="2" HorizontalAlignment="Right">
-        <Button Content="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Theme_SelectImage}}" Style="{StaticResource ImageSelectButton}" />
-           </Border>
-                </Grid>
-        </Border>
+                                            <TextBlock
+                                                Grid.Column="0"
+                                                Style="{StaticResource FieldName}"
+                                                Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Theme_BackgroundImage}}" />
+                                            <Border Grid.Column="2" HorizontalAlignment="Right">
+                                                <Button Content="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Theme_SelectImage}}" Style="{StaticResource ImageSelectButton}" />
+                                            </Border>
+                                        </Grid>
+                                    </Border>
 
-         </StackPanel>
- </Border>
+                                </StackPanel>
+                            </Border>
 
-      </StackPanel>
-    </ScrollViewer>
+                        </StackPanel>
+                    </ScrollViewer>
                 </Border>
 
             </Grid>

@@ -7,102 +7,112 @@
     xmlns:viewModels="clr-namespace:StarResonanceDpsAnalysis.WPF.ViewModels"
     xmlns:converters="clr-namespace:StarResonanceDpsAnalysis.WPF.Converters"
     x:Name="root"
-    d:DataContext="{d:DesignInstance Type=viewModels:StatisticDataViewModel,
-          IsDesignTimeCreatable=false}"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
+    d:DataContext="{d:DesignInstance Type=viewModels:StatisticDataViewModel, IsDesignTimeCreatable=false}"
+    d:DesignHeight="550"
+    d:DesignWidth="400"
+    Focusable="False"
+    IsHitTestVisible="False"
+    Background="Transparent"
+    IsEnabled="False"
     mc:Ignorable="d">
-    
+
     <UserControl.Resources>
         <converters:ConditionalPercentToColorConverter x:Key="BgColorConverter" />
     </UserControl.Resources>
-    
+
     <!--  唯一的Border  -->
     <Border
-    MaxWidth="360"
+        MaxWidth="360"
         Padding="12"
+        Margin="10,0,10,0"
         CornerRadius="8"
         BorderThickness="0"
         IsHitTestVisible="False">
         <!--  ⭐ 背景颜色的透明度由Converter控制,文字不受影响  -->
         <Border.Background>
             <SolidColorBrush>
-       <SolidColorBrush.Color>
-         <MultiBinding Converter="{StaticResource BgColorConverter}" ConverterParameter="#000000">
-  <Binding Path="DataContext.AppConfig.Opacity" RelativeSource="{RelativeSource AncestorType=Window}" />
- <Binding Path="DataContext.AppConfig.MouseThroughEnabled" RelativeSource="{RelativeSource AncestorType=Window}" />
-             </MultiBinding>
-     </SolidColorBrush.Color>
+                <SolidColorBrush.Color>
+                    <MultiBinding Converter="{StaticResource BgColorConverter}" ConverterParameter="#000000">
+                        <Binding Path="DataContext.AppConfig.Opacity" RelativeSource="{RelativeSource AncestorType=Window}" />
+                        <Binding Path="DataContext.AppConfig.MouseThroughEnabled" RelativeSource="{RelativeSource AncestorType=Window}" />
+                    </MultiBinding>
+                </SolidColorBrush.Color>
             </SolidColorBrush>
         </Border.Background>
         <!--  阴影效果-->
         <Border.Effect>
-            <DropShadowEffect
-   BlurRadius="10"
-                Opacity="0.3"
-          ShadowDepth="2" />
-  </Border.Effect>
-    
+            <DropShadowEffect BlurRadius="10" Opacity="0.3" ShadowDepth="2" />
+        </Border.Effect>
+
         <!--  内容 - 不设置Opacity,文字始终清晰  -->
         <StackPanel>
             <!--  顶部标题区域  -->
-       <StackPanel Margin="0,0,0,8">
-  <!--  玩家昵称 - 黄色 (16px)  -->
- <TextBlock
-            FontSize="16"
-          FontWeight="Bold"
-      Foreground="#FFD700"
-             Style="{StaticResource FooterTextContent}"
-          Text="{Binding Title, ElementName=root, FallbackValue='玩家昵称'}" Height="20" />
-           
-            <!--  技能详情 - 灰色 (11px) ⭐ 往下移8px (0,2,0,0 → 0,10,0,0)  -->
- <TextBlock
-Margin="0,0,0,0"
-         FontSize="11"
-    FontWeight="Normal"
-  Foreground="#AAAAAA"
-    Style="{StaticResource FooterTextContent}"
-        Text="技能详情" />
-          </StackPanel>
+            <StackPanel Margin="0,0,0,8">
+                <!--  玩家昵称  -->
+                <TextBlock
+                    Height="20"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    Foreground="#FFD700"
+                    Style="{StaticResource FooterTextContent}">
+                    <TextBlock.Text>
+                        <MultiBinding Converter="{StaticResource PlayerNameMaskConverter}">
+                            <Binding ElementName="root" Path="PlayerName" />
+                            <Binding ElementName="root" Path="PlayerUid" />
+                            <Binding Path="DataContext.AppConfig.MaskPlayerName" RelativeSource="{RelativeSource AncestorType=Window}" />
+                            <Binding ElementName="root" Path="TemporaryMaskPlayerName" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+
+                <!--  技能详情 - 灰色 (11px) ⭐ 往下移8px (0,2,0,0 → 0,10,0,0)  -->
+                <TextBlock
+                    Margin="0,0,0,0"
+                    FontSize="11"
+                    FontWeight="Normal"
+                    Foreground="#AAAAAA"
+                    Style="{StaticResource FooterTextContent}"
+                    Text="技能详情" />
+            </StackPanel>
 
             <!--  技能列表  -->
             <ItemsControl ItemsSource="{Binding SkillList, ElementName=root}">
-<ItemsControl.ItemTemplate>
-        <DataTemplate>
-     <StackPanel Margin="0,6,0,0">
-         <!--  技能名 (13px)  -->
-             <TextBlock
-      FontSize="13"
-        FontWeight="Bold"
-           Foreground="Gold"
-      Style="{StaticResource FooterTextContent}"
-           Text="{Binding SkillName}" />
-        
-         <!--  总伤害 (12px)  -->
-      <TextBlock 
-  Margin="0,2,0,0"
-              FontSize="12"
-             Style="{StaticResource FooterTextContent}">
-       <Run Foreground="#CCCCCC" Text="总伤害：" />
-  <Run Foreground="White" FontWeight="SemiBold" Text="{Binding TotalDamage}" />
-       </TextBlock>
-                 
-                 <!--  详细数据 (11px)  -->
-   <TextBlock 
-    Margin="0,1,0,0"
-        FontSize="11"
-         Style="{StaticResource FooterTextContent}">
-            <Run Foreground="#AAAAAA" Text="命中：" />
- <Run Foreground="#DDDDDD" Text="{Binding HitCount}" />
-          <Run Foreground="#AAAAAA" Text="  暴击：" />
-   <Run Foreground="#DDDDDD" Text="{Binding CritCount}" />
-  <Run Foreground="#AAAAAA" Text="  平均：" />
- <Run Foreground="#DDDDDD" Text="{Binding AvgDamage}" />
-        </TextBlock>
-          </StackPanel>
-    </DataTemplate>
-      </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="0,6,0,0">
+                            <!--  技能名 (13px)  -->
+                            <TextBlock
+                                FontSize="13"
+                                FontWeight="Bold"
+                                Foreground="Gold"
+                                Style="{StaticResource FooterTextContent}"
+                                Text="{Binding SkillName}" />
+
+                            <!--  总伤害 (12px)  -->
+                            <TextBlock
+                                Margin="0,2,0,0"
+                                FontSize="12"
+                                Style="{StaticResource FooterTextContent}">
+                                <Run Foreground="#CCCCCC" Text="总伤害：" />
+                                <Run Foreground="White" FontWeight="SemiBold" Text="{Binding TotalDamage}" />
+                            </TextBlock>
+
+                            <!--  详细数据 (11px)  -->
+                            <TextBlock
+                                Margin="0,1,0,0"
+                                FontSize="11"
+                                Style="{StaticResource FooterTextContent}">
+                                <Run Foreground="#AAAAAA" Text="命中：" />
+                                <Run Foreground="#DDDDDD" Text="{Binding HitCount}" />
+                                <Run Foreground="#AAAAAA" Text="  暴击：" />
+                                <Run Foreground="#DDDDDD" Text="{Binding CritCount}" />
+                                <Run Foreground="#AAAAAA" Text="  平均：" />
+                                <Run Foreground="#DDDDDD" Text="{Binding AvgDamage}" />
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
             </ItemsControl>
-   </StackPanel>
+        </StackPanel>
     </Border>
 </UserControl>

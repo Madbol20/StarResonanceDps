@@ -160,7 +160,7 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
-        ///   查找类似 A combat data analytics tool built for Star Resonance players. 的本地化字符串。
+        ///   查找类似 A combat data analytics tool built for BPSR players. 的本地化字符串。
         /// </summary>
         public static string About_Intro_Primary {
             get {
@@ -610,7 +610,7 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
-        ///   查找类似 Pcap Test 的本地化字符串。
+        ///   查找类似 Test Pcap 的本地化字符串。
         /// </summary>
         public static string Debug_Button_PcapTest {
             get {
@@ -1141,11 +1141,38 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
+        ///   查找类似 Exit Snapshot Mode 的本地化字符串。
+        /// </summary>
+        public static string Menu_ExitSnapshotMode {
+            get {
+                return ResourceManager.GetString("Menu_ExitSnapshotMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 History 的本地化字符串。
         /// </summary>
         public static string Menu_History {
             get {
                 return ResourceManager.GetString("Menu_History", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Current Battle 的本地化字符串。
+        /// </summary>
+        public static string Menu_History_Current {
+            get {
+                return ResourceManager.GetString("Menu_History_Current", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Full Battle 的本地化字符串。
+        /// </summary>
+        public static string Menu_History_Total {
+            get {
+                return ResourceManager.GetString("Menu_History_Total", resourceCulture);
             }
         }
         
@@ -1213,15 +1240,6 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
-        ///   查找类似 Skill Diary 的本地化字符串。
-        /// </summary>
-        public static string Menu_SkillDiary {
-            get {
-                return ResourceManager.GetString("Menu_SkillDiary", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 Skill Display 的本地化字符串。
         /// </summary>
         public static string Menu_SkillDisplay {
@@ -1285,38 +1303,20 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
+        ///   查找类似 Temporary masking 的本地化字符串。
+        /// </summary>
+        public static string Menu_TemporaryMaskPlayerName {
+            get {
+                return ResourceManager.GetString("Menu_TemporaryMaskPlayerName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Training Mode 的本地化字符串。
         /// </summary>
         public static string Menu_Training {
             get {
                 return ResourceManager.GetString("Menu_Training", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Extreme Training 的本地化字符串。
-        /// </summary>
-        public static string Menu_Training_Extreme {
-            get {
-                return ResourceManager.GetString("Menu_Training_Extreme", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Faction Training 的本地化字符串。
-        /// </summary>
-        public static string Menu_Training_Faction {
-            get {
-                return ResourceManager.GetString("Menu_Training_Faction", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Solo Training 的本地化字符串。
-        /// </summary>
-        public static string Menu_Training_Personal {
-            get {
-                return ResourceManager.GetString("Menu_Training_Personal", resourceCulture);
             }
         }
         
@@ -1546,6 +1546,25 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
+        ///   查找类似 Character UID 的本地化字符串。
+        /// </summary>
+        public static string Settings_Character_Uid {
+            get {
+                return ResourceManager.GetString("Settings_Character_Uid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Enter your character UID (number)
+        ///How to get: After a fight, your character will automatically appear in the stats window 的本地化字符串。
+        /// </summary>
+        public static string Settings_Character_Uid_Tooltip {
+            get {
+                return ResourceManager.GetString("Settings_Character_Uid_Tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Clear data after combat 的本地化字符串。
         /// </summary>
         public static string Settings_Combat_ClearAfterBattle {
@@ -1592,7 +1611,7 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
-        ///   查找类似 Active 的本地化字符串。
+        ///   查找类似 Timer Based 的本地化字符串。
         /// </summary>
         public static string Settings_Combat_DpsUpdateMode_Active {
             get {
@@ -1601,7 +1620,7 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
-        ///   查找类似 Passive 的本地化字符串。
+        ///   查找类似 Real Time 的本地化字符串。
         /// </summary>
         public static string Settings_Combat_DpsUpdateMode_Passive {
             get {
@@ -1610,12 +1629,32 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
-        ///   查找类似 Passive: Event-driven updates (low CPU usage)
-        ///Active: Timer-based periodic updates (configurable refresh interval) 的本地化字符串。
+        ///   查找类似 Real Time: Event-driven updates
+        ///
+        ///Timer Based: Timer-based periodic updates
+        ///(low CPU usage, configurable refresh interval) 的本地化字符串。
         /// </summary>
         public static string Settings_Combat_DpsUpdateMode_Tooltip {
             get {
                 return ResourceManager.GetString("Settings_Combat_DpsUpdateMode_Tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 History Record Limit 的本地化字符串。
+        /// </summary>
+        public static string Settings_Combat_MaxHistoryCount {
+            get {
+                return ResourceManager.GetString("Settings_Combat_MaxHistoryCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Maximum number of battle records to keep (5-50) 的本地化字符串。
+        /// </summary>
+        public static string Settings_Combat_MaxHistoryCount_Tooltip {
+            get {
+                return ResourceManager.GetString("Settings_Combat_MaxHistoryCount_Tooltip", resourceCulture);
             }
         }
         
@@ -1629,7 +1668,16 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
-        ///   查找类似 sec 的本地化字符串。
+        ///   查找类似 records 的本地化字符串。
+        /// </summary>
+        public static string Settings_Common_Records {
+            get {
+                return ResourceManager.GetString("Settings_Common_Records", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 s 的本地化字符串。
         /// </summary>
         public static string Settings_Common_Seconds {
             get {
@@ -1652,6 +1700,15 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         public static string Settings_Display_Opacity {
             get {
                 return ResourceManager.GetString("Settings_Display_Opacity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Mask player names 的本地化字符串。
+        /// </summary>
+        public static string Settings_Display_PlayerNameBlur {
+            get {
+                return ResourceManager.GetString("Settings_Display_PlayerNameBlur", resourceCulture);
             }
         }
         
@@ -1701,6 +1758,15 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
+        ///   查找类似 Language 的本地化字符串。
+        /// </summary>
+        public static string Settings_Language_Title {
+            get {
+                return ResourceManager.GetString("Settings_Language_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Capture Adapter 的本地化字符串。
         /// </summary>
         public static string Settings_NetworkAdapter_Label {
@@ -1728,6 +1794,24 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
+        ///   查找类似 Do not use data results to discriminate or harm the game community environment. 的本地化字符串。
+        /// </summary>
+        public static string Settings_PlayerNameMask_Warning_Message {
+            get {
+                return ResourceManager.GetString("Settings_PlayerNameMask_Warning_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Warning 的本地化字符串。
+        /// </summary>
+        public static string Settings_PlayerNameMask_Warning_Title {
+            get {
+                return ResourceManager.GetString("Settings_PlayerNameMask_Warning_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Adjust manually when auto detection fails 的本地化字符串。
         /// </summary>
         public static string Settings_Section_Basic_Sub {
@@ -1742,6 +1826,24 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         public static string Settings_Section_Basic_Title {
             get {
                 return ResourceManager.GetString("Settings_Section_Basic_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Set your character UID for Solo/Training mode 的本地化字符串。
+        /// </summary>
+        public static string Settings_Section_Character_Sub {
+            get {
+                return ResourceManager.GetString("Settings_Section_Character_Sub", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Character Settings 的本地化字符串。
+        /// </summary>
+        public static string Settings_Section_Character_Title {
+            get {
+                return ResourceManager.GetString("Settings_Section_Character_Title", resourceCulture);
             }
         }
         
@@ -1764,7 +1866,7 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
-        ///   查找类似 Display 的本地化字符串。
+        ///   查找类似 Display Settings 的本地化字符串。
         /// </summary>
         public static string Settings_Section_Display_Title {
             get {
@@ -1773,7 +1875,7 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
-        ///   查找类似 Choose the interface language 的本地化字符串。
+        ///   查找类似 Interface display preferences 的本地化字符串。
         /// </summary>
         public static string Settings_Section_Language_Description {
             get {
@@ -1782,7 +1884,7 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
-        ///   查找类似 Language 的本地化字符串。
+        ///   查找类似 Display Settings 的本地化字符串。
         /// </summary>
         public static string Settings_Section_Language_Title {
             get {
@@ -1859,6 +1961,24 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         public static string Settings_Shortcut_MouseThrough_Tooltip {
             get {
                 return ResourceManager.GetString("Settings_Shortcut_MouseThrough_Tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Toggle DPS Window 的本地化字符串。
+        /// </summary>
+        public static string Settings_Shortcut_ToggleDps {
+            get {
+                return ResourceManager.GetString("Settings_Shortcut_ToggleDps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Focus this box and press a shortcut (e.g. F10). Press Delete to clear. 的本地化字符串。
+        /// </summary>
+        public static string Settings_Shortcut_ToggleDps_Tooltip {
+            get {
+                return ResourceManager.GetString("Settings_Shortcut_ToggleDps_Tooltip", resourceCulture);
             }
         }
         
@@ -2403,7 +2523,7 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
-        ///   查找类似 野外Boss状态查看器 的本地化字符串。
+        ///   查找类似 Boss Status Tracker 的本地化字符串。
         /// </summary>
         public static string Window_BossTracker_Title {
             get {
@@ -2466,7 +2586,7 @@ namespace StarResonanceDpsAnalysis.WPF.Properties {
         }
         
         /// <summary>
-        ///   查找类似 训练模式 的本地化字符串。
+        ///   查找类似 Training 的本地化字符串。
         /// </summary>
         public static string Window_Training_Title {
             get {

@@ -124,7 +124,7 @@
     <value>Configurações</value>
   </data>
   <data name="Menu_StatisticBoss" xml:space="preserve">
-    <value>Rastrear Apenas Npc</value>
+    <value>Rastrear Apenas NPC</value>
   </data>
   <data name="Menu_ShowTotal" xml:space="preserve">
     <value>Mostrar Dano Total</value>
@@ -162,23 +162,11 @@
   <data name="Menu_History" xml:space="preserve">
     <value>Histórico</value>
   </data>
-  <data name="Menu_Training" xml:space="preserve">
-    <value>Modo Treino</value>
-  </data>
-  <data name="Menu_Training_Personal" xml:space="preserve">
-    <value>Treino Solo</value>
-  </data>
-  <data name="Menu_Training_Faction" xml:space="preserve">
-    <value>Treino de Facção</value>
-  </data>
-  <data name="Menu_Training_Extreme" xml:space="preserve">
-    <value>Treino Extremo</value>
-  </data>
-  <data name="Menu_SkillDiary" xml:space="preserve">
-    <value>Diário de Habilidades</value>
-  </data>
   <data name="Menu_Exit" xml:space="preserve">
     <value>Sair</value>
+  </data>
+  <data name="Menu_Training" xml:space="preserve">
+    <value>Modo Treino</value>
   </data>
   <data name="Tooltip_ToggleScope" xml:space="preserve">
     <value>Alternar: Total / Atual</value>
@@ -249,11 +237,26 @@
   <data name="Settings_Display_Opacity" xml:space="preserve">
     <value>Opacidade da sobreposição</value>
   </data>
-  <data name="Settings_Section_Language_Title" xml:space="preserve">
+  <data name="Settings_Display_PlayerNameBlur" xml:space="preserve">
+    <value>Ocultar nomes dos jogadores</value>
+  </data>
+  <data name="Settings_PlayerNameMask_Warning_Title" xml:space="preserve">
+    <value>Aviso</value>
+  </data>
+  <data name="Settings_PlayerNameMask_Warning_Message" xml:space="preserve">
+    <value>Não use os resultados dos dados para discriminar ou prejudicar a comunidade do jogo.</value>
+  </data>
+  <data name="Menu_TemporaryMaskPlayerName" xml:space="preserve">
+    <value>Mascaramento temporário</value>
+  </data>
+  <data name="Settings_Section_Display_Title" xml:space="preserve">
+    <value>Configurações de exibição</value>
+  </data>
+  <data name="Settings_Language_Title" xml:space="preserve">
     <value>Idioma</value>
   </data>
   <data name="Settings_Section_Language_Description" xml:space="preserve">
-    <value>Escolha o idioma da interface</value>
+    <value>Preferências de exibição da interface</value>
   </data>
   <data name="Settings_Language_Auto" xml:space="preserve">
     <value>Do Sistema</value>
@@ -277,10 +280,10 @@
     <value>Sobre</value>
   </data>
   <data name="About_Intro_Primary" xml:space="preserve">
-    <value>Uma ferramenta de análise de dados de combate construída para jogadores de Star Resonance.</value>
+    <value>Uma ferramenta de análise de dados de combate construída para jogadores de BPSR.</value>
   </data>
   <data name="About_Intro_Details" xml:space="preserve">
-    <value>Esta ferramenta não requer modificações no cliente e permanece dentro dos termos de serviço do jogo. Ela ajuda os jogadores a entender dados de combate, reduzir esforços desnecessários e melhorar a experiência de jogo. Por favor, não use os resultados para discriminação de poder ou qualquer comportamento que prejudique a comunidade.</value>
+    <value>Esta ferramenta não requer modificações no cliente e permanece dentro dos termos de serviço do jogo. Ela ajuda os jogadores a entender dados de combate, reduzir esforços desnecessários e melhorar a experiência de jogo em BPSR. Por favor, não use os resultados para discriminação de poder ou qualquer comportamento que prejudique a comunidade.</value>
   </data>
   <data name="About_Version_Label" xml:space="preserve">
     <value>Versão atual:</value>
@@ -639,28 +642,28 @@
   <data name="SkillBreakdown_Label_LuckRate" xml:space="preserve">
     <value>Taxa de sorte</value>
   </data>
-  <data name="SkillBreakdown_Label_CritDamage" type="System.Resources.ResXNullRef, System.Windows.Forms">
+  <data name="SkillBreakdown_Label_CritDamage" xml:space="preserve">
     <value />
   </data>
-  <data name="SkillBreakdown_Info_Name" type="System.Resources.ResXNullRef, System.Windows.Forms">
+  <data name="SkillBreakdown_Info_Name" xml:space="preserve">
     <value />
   </data>
-  <data name="SkillBreakdown_Info_Power" type="System.Resources.ResXNullRef, System.Windows.Forms">
+  <data name="SkillBreakdown_Info_Power" xml:space="preserve">
     <value />
   </data>
-  <data name="SkillBreakdown_Info_Level" type="System.Resources.ResXNullRef, System.Windows.Forms">
+  <data name="SkillBreakdown_Info_Level" xml:space="preserve">
     <value />
   </data>
-  <data name="SkillBreakdown_Info_Badge" type="System.Resources.ResXNullRef, System.Windows.Forms">
+  <data name="SkillBreakdown_Info_Badge" xml:space="preserve">
     <value />
   </data>
-  <data name="SkillBreakdown_Placeholder_Graph" type="System.Resources.ResXNullRef, System.Windows.Forms">
+  <data name="SkillBreakdown_Placeholder_Graph" xml:space="preserve">
     <value />
   </data>
   <data name="DpsStatistics_TestButton_Content" xml:space="preserve">
     <value>T</value>
   </data>
-  <data name="DpsStatistics_TestButton_Tooltip" type="System.Resources.ResXNullRef, System.Windows.Forms">
+  <data name="DpsStatistics_TestButton_Tooltip" xml:space="preserve">
     <value />
   </data>
   <data name="Common_Dash" xml:space="preserve">
@@ -753,10 +756,7 @@
   <data name="Settings_NetworkAdapterAutoSelect_Button" xml:space="preserve">
     <value>Automático</value>
   </data>
-  <data name="Debug_Localization_Language" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
-  <data name="Debug_Localization_Apply" type="System.Resources.ResXNullRef, System.Windows.Forms">
+  <data name="Debug_Localization_Language" xml:space="preserve">
     <value />
   </data>
   <data name="MainView_Plugin_Search_PlaceHolder" xml:space="preserve">
@@ -811,14 +811,16 @@
     <value>Modo de Atualização de DPS</value>
   </data>
   <data name="Settings_Combat_DpsUpdateMode_Tooltip" xml:space="preserve">
-    <value>Passivo: Atualizações baseadas em eventos (baixo uso de CPU)
-Ativo: Atualizações periódicas baseadas em temporizador (intervalo configurável)</value>
+    <value>Tempo real: atualizações acionadas por eventos.
+
+Baseado em timer: atualizações periódicas controladas por timer
+(com baixo uso de CPU e intervalo de atualização configurável)</value>
   </data>
   <data name="Settings_Combat_DpsUpdateMode_Passive" xml:space="preserve">
-    <value>Passivo</value>
+    <value>Tempo real</value>
   </data>
   <data name="Settings_Combat_DpsUpdateMode_Active" xml:space="preserve">
-    <value>Ativo</value>
+    <value>Baseado em timer</value>
   </data>
   <data name="Settings_Combat_DpsUpdateInterval" xml:space="preserve">
     <value>Intervalo de Atualização de DPS</value>
@@ -839,19 +841,17 @@ Recomendado: 500-2000 milissegundos</value>
   <data name="MainView_Plugin_Training_Description" xml:space="preserve">
     <value />
   </data>
-  <!--  ⭐ 新增: 开关伤害统计快捷键  -->
   <data name="Settings_Shortcut_ToggleDps" xml:space="preserve">
-  <value>Alternar Estatísticas de Dano</value>
+    <value>Alternar Estatísticas de Dano</value>
   </data>
   <data name="Settings_Shortcut_ToggleDps_Tooltip" xml:space="preserve">
     <value>Foque nesta caixa e pressione um atalho (ex: F10). Pressione Delete para limpar.</value>
   </data>
-  <!--  ⭐ 新增: 角色设置  -->
   <data name="Settings_Section_Character_Title" xml:space="preserve">
     <value>Configurações de Personagem</value>
   </data>
   <data name="Settings_Section_Character_Sub" xml:space="preserve">
- <value>Configure o UID do seu personagem para o modo de treino solo</value>
+    <value>Configure o UID do seu personagem para o modo de treino solo</value>
   </data>
   <data name="Settings_Character_Uid" xml:space="preserve">
     <value>UID do Personagem</value>
@@ -860,7 +860,6 @@ Recomendado: 500-2000 milissegundos</value>
     <value>Digite o UID do seu personagem (número)
 Como obter: Após uma luta, seu personagem aparecerá automaticamente na janela de estatísticas</value>
   </data>
-  <!--  ⭐ 新增: 历史记录保存数量  -->
   <data name="Settings_Combat_MaxHistoryCount" xml:space="preserve">
     <value>Limite de Registros de Histórico</value>
   </data>
@@ -869,5 +868,23 @@ Como obter: Após uma luta, seu personagem aparecerá automaticamente na janela 
   </data>
   <data name="Settings_Common_Records" xml:space="preserve">
     <value>registros</value>
+  </data>
+  <data name="Menu_Training_Personal" xml:space="preserve">
+    <value>Treino Solo</value>
+  </data>
+  <data name="Menu_Training_Faction" xml:space="preserve">
+    <value>Treino de Facção</value>
+  </data>
+  <data name="Menu_Training_Extreme" xml:space="preserve">
+    <value>Treino Extremo</value>
+  </data>
+  <data name="Menu_SkillDiary" xml:space="preserve">
+    <value>Diário de Habilidades</value>
+  </data>
+  <data name="Debug_Localization_Apply" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Settings_Language_Korean" xml:space="preserve">
+    <value>한국어</value>
   </data>
 </root>

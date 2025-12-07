@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using Microsoft.Extensions.Logging;
 using StarResonanceDpsAnalysis.WPF.Config;
+using StarResonanceDpsAnalysis.WPF.Helpers;
 using StarResonanceDpsAnalysis.WPF.ViewModels;
 
 namespace StarResonanceDpsAnalysis.WPF.Services;
@@ -223,10 +224,9 @@ public sealed class GlobalHotkeyService(
     {
         try
         {
-            var window = windowManager.DpsStatisticsView;
             var newState = !_config.MouseThroughEnabled;
             _config.MouseThroughEnabled = newState;
-            mousePenetration.SetMousePenetrate(window, newState);
+            MouseThroughHelper.ApplyToCoreWindows(_config, windowManager, mousePenetration);
             _ = configManager.SaveAsync(_config); // persist asynchronously
         }
         catch (Exception ex)

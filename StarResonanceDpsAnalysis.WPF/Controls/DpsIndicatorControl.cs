@@ -1,8 +1,11 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using WPFLocalizeExtension.Providers;
+using Forms = System.Windows.Forms;
 
 namespace StarResonanceDpsAnalysis.WPF.Controls;
 
@@ -67,9 +70,9 @@ public class DpsIndicatorControl : Control
 
     public DpsIndicatorControl()
     {
-        // ? ÐÞ¸Ä: MouseEnterÊ±´¥·¢tooltipÊý¾ÝË¢ÐÂ
+        // ? ä¿®æ”¹: MouseEnteræ—¶è§¦å‘tooltipæ•°æ®åˆ·æ–°
         MouseEnter += OnMouseEnterRefreshTooltip;
-      MouseLeave += (s, e) => Debug.WriteLine("[DpsIndicatorControl] MouseLeave");
+        MouseLeave += OnMouseLeaveResetHover;
     }
 
     public double TrackOpacity
@@ -168,22 +171,37 @@ public class DpsIndicatorControl : Control
         Debug.WriteLine($"[DpsIndicatorControl] PopupContent changed: {oldPlayerName} -> {newPlayerName}");
     }
 
+    private Popup? _popup;
+
+    public override void OnApplyTemplate()
+    {
+        base.OnApplyTemplate();
+
+        if (GetTemplateChild("PART_Popup") is Popup popup)
+        {
+            _popup = popup;
+            popup.Placement = PlacementMode.Custom;
+            popup.CustomPopupPlacementCallback = PlacePopup;
+        }
+    }
+
     /// <summary>
-    /// ? ÐÂÔö: Êó±ê½øÈëÊ±Ë¢ÐÂtooltipÖÐµÄ¼¼ÄÜÁÐ±í
+    /// ? æ–°å¢ž: é¼ æ ‡è¿›å…¥æ—¶åˆ·æ–°tooltipä¸­çš„æŠ€èƒ½åˆ—è¡¨
     /// </summary>
     private void OnMouseEnterRefreshTooltip(object sender, System.Windows.Input.MouseEventArgs e)
     {
+        UpdateHoverSorting(true);
         Debug.WriteLine($"[DpsIndicatorControl] MouseEnter - PopupContent: {PopupContent?.GetType().Name ?? "null"}");
 
-        // ? ¹Ø¼ü: ´ÓPopupContent»ñÈ¡StatisticDataViewModel,Ë¢ÐÂÆäFilteredSkillList
+        // ? å…³é”®: ä»ŽPopupContentèŽ·å–StatisticDataViewModel,åˆ·æ–°å…¶FilteredSkillList
         if (PopupContent is not ViewModels.StatisticDataViewModel slot)
         {
             return;
         }
 
-        // »ñÈ¡µ±Ç°µÄ¼¼ÄÜÏÔÊ¾ÌõÊýÏÞÖÆ
-        // ×¢Òâ: ÕâÀïÐèÒª´Ó¸¸¼¶DpsStatisticsViewModel»ñÈ¡SkillDisplayLimit
-        // ÓÉÓÚDpsIndicatorControlÊÇ¶ÀÁ¢µÄControl,ÎÒÃÇÐèÒªÍ¨¹ýDataContextÁ´ÕÒµ½¸¸¼¶ViewModel
+        // èŽ·å–å½“å‰çš„æŠ€èƒ½æ˜¾ç¤ºæ¡æ•°é™åˆ¶
+        // æ³¨æ„: è¿™é‡Œéœ€è¦ä»Žçˆ¶çº§DpsStatisticsViewModelèŽ·å–SkillDisplayLimit
+        // ç”±äºŽDpsIndicatorControlæ˜¯ç‹¬ç«‹çš„Control,æˆ‘ä»¬éœ€è¦é€šè¿‡DataContexté“¾æ‰¾åˆ°çˆ¶çº§ViewModel
         var window = Window.GetWindow(this);
         if (window?.DataContext is not ViewModels.DpsStatisticsViewModel parentVm)
         {
@@ -193,15 +211,68 @@ public class DpsIndicatorControl : Control
 
         var skillDisplayLimit = parentVm.CurrentStatisticData?.SkillDisplayLimit ?? 8;
 
-        // ? Ë¢ÐÂÈýÀà¼¼ÄÜµÄFilteredSkillList
-        // RefreshFilteredList»á´¥·¢PropertyChanged,WPF°ó¶¨ÏµÍ³»á×Ô¶¯¸üÐÂ
+        // ? åˆ·æ–°ä¸‰ç±»æŠ€èƒ½çš„FilteredSkillList
+        // RefreshFilteredListä¼šè§¦å‘PropertyChanged,WPFç»‘å®šç³»ç»Ÿä¼šè‡ªåŠ¨æ›´æ–°
         slot.Damage.RefreshFilteredList(skillDisplayLimit);
         slot.Heal.RefreshFilteredList(skillDisplayLimit);
         slot.TakenDamage.RefreshFilteredList(skillDisplayLimit);
-   
-        // ? ¹Ø¼ü: µÝÔöË¢ÐÂ´¥·¢Æ÷,Ç¿ÖÆMultiBindingÖØÐÂÆÀ¹À
+
+        // ? å…³é”®: é€’å¢žåˆ·æ–°è§¦å‘å™¨,å¼ºåˆ¶MultiBindingé‡æ–°è¯„ä¼°
         slot.SkillListRefreshTrigger++;
 
         Debug.WriteLine($"[DpsIndicatorControl] Refreshed skill lists for player: {slot.Player.Name}, limit: {skillDisplayLimit}, trigger: {slot.SkillListRefreshTrigger}");
+    }
+
+    private void OnMouseLeaveResetHover(object sender, System.Windows.Input.MouseEventArgs e)
+    {
+        UpdateHoverSorting(false);
+        Debug.WriteLine("[DpsIndicatorControl] MouseLeave");
+    }
+
+    private void UpdateHoverSorting(bool isHovering)
+    {
+        var window = Window.GetWindow(this);
+        if (window?.DataContext is not ViewModels.DpsStatisticsViewModel vm)
+        {
+            return;
+        }
+
+        vm.SetIndicatorHover(isHovering);
+    }
+
+    private CustomPopupPlacement[] PlacePopup(Size popupSize, Size targetSize, Point offset)
+    {
+        const double gap = 10;
+        const double defOffsetY = -4;
+        const double defPopupWidth = 250;
+
+        // Default: right side
+        var preferred = new Point(targetSize.Width + gap, defOffsetY);
+
+        // If we cannot get placement target or screen info, use default
+        if (_popup?.PlacementTarget is not UIElement target)
+        {
+            return [new CustomPopupPlacement(preferred, PopupPrimaryAxis.Horizontal)];
+        }
+
+        while (target is not ListBoxItem)
+        {
+            target = (UIElement)target.GetParent(true);
+        }
+
+        // Compute target top-left in screen coordinates
+        var targetScreenPoint = target.PointToScreen(new Point(0, 0));
+        var screenPoint = new System.Drawing.Point((int)targetScreenPoint.X, (int)targetScreenPoint.Y);
+        var screen = Forms.Screen.FromPoint(screenPoint);
+        var screenRight = screen.WorkingArea.Right;
+
+        // If showing on the right would overflow screen, flip to left
+        var rightEdge = targetScreenPoint.X + target.RenderSize.Width + gap + defPopupWidth;
+        var useLeft = rightEdge > screenRight;
+        var placement = useLeft
+            ? new Point(-popupSize.Width, defOffsetY)
+            : preferred;
+
+        return [new CustomPopupPlacement(placement, PopupPrimaryAxis.Horizontal)];
     }
 }

@@ -76,13 +76,19 @@ public partial class AppConfig : ObservableObject
     private bool _clearLogAfterTeleport;
 
     /// <summary>
-    /// 不透明度（0-100）, 默认100, 0为全透明
+    /// 不透明度 (0-100) (有效范围: 5-95), 默认95, 0为全透明(会影响鼠标交互)
     /// </summary>
     [ObservableProperty]
     private double _opacity = 100;
 
     /// <summary>
-    /// 鼠标穿透开关（WPF）
+    /// 玩家名脱敏
+    /// </summary>
+    [ObservableProperty]
+    private bool _maskPlayerName = true;
+
+    /// <summary>
+    /// 鼠标穿透开关 (WPF)
     /// </summary>
     [ObservableProperty]
     private bool _mouseThroughEnabled;

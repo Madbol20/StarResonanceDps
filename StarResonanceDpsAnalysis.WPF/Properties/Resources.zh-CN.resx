@@ -124,7 +124,7 @@
     <value>设置</value>
   </data>
   <data name="Menu_StatisticBoss" xml:space="preserve">
-    <value>统计Npc</value>
+    <value>统计NPC</value>
   </data>
   <data name="Menu_ShowTotal" xml:space="preserve">
     <value>显示总伤</value>
@@ -187,7 +187,7 @@
     <value>设置</value>
   </data>
   <data name="Window_DpsStatistics_Title" xml:space="preserve">
-    <value>DpsStatisticsForm</value>
+    <value>别查我DPS</value>
   </data>
   <data name="Settings_Heading" xml:space="preserve">
     <value>设置</value>
@@ -219,6 +219,9 @@
   <data name="Settings_Section_Display_Title" xml:space="preserve">
     <value>显示设置</value>
   </data>
+  <data name="Settings_Language_Title" xml:space="preserve">
+    <value>语言</value>
+  </data>
   <data name="Settings_Section_Combat_Title" xml:space="preserve">
     <value>战斗设置</value>
   </data>
@@ -249,11 +252,23 @@
   <data name="Settings_Display_Opacity" xml:space="preserve">
     <value>窗体透明度</value>
   </data>
+  <data name="Settings_Display_PlayerNameBlur" xml:space="preserve">
+    <value>玩家名脱敏</value>
+  </data>
+  <data name="Settings_PlayerNameMask_Warning_Title" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="Settings_PlayerNameMask_Warning_Message" xml:space="preserve">
+    <value>禁止将数据结果用于战力歧视等破坏游戏社区环境的行为。</value>
+  </data>
+  <data name="Menu_TemporaryMaskPlayerName" xml:space="preserve">
+    <value>临时脱敏</value>
+  </data>
   <data name="Settings_Section_Language_Title" xml:space="preserve">
-    <value>语言</value>
+    <value>显示设置</value>
   </data>
   <data name="Settings_Section_Language_Description" xml:space="preserve">
-    <value>选择界面语言</value>
+    <value>关于界面的显示设置</value>
   </data>
   <data name="Settings_Language_Auto" xml:space="preserve">
     <value>跟随系统</value>
@@ -382,7 +397,7 @@
     <value>以上数据仅供娱乐与参考，严禁用于战力歧视等破坏游戏社区环境的行为；一经发现，永久取消该功能的使用资格。</value>
   </data>
   <data name="Window_Debug_Title" xml:space="preserve">
-    <value>Debug View</value>
+    <value>调试窗口</value>
   </data>
   <data name="Debug_LoadPcap" xml:space="preserve">
     <value>加载 PCAP</value>
@@ -715,13 +730,13 @@
     <value>Summary</value>
   </data>
   <data name="SkillBreakdown_Tab_Details" xml:space="preserve">
-    <value>Details</value>
+    <value>详情</value>
   </data>
   <data name="SkillBreakdown_Placeholder_Details" xml:space="preserve">
     <value>详情占位</value>
   </data>
   <data name="SkillBreakdown_Tab_Graph" xml:space="preserve">
-    <value>Graph</value>
+    <value>图表</value>
   </data>
   <data name="SkillBreakdown_Placeholder_Graph" xml:space="preserve">
     <value>图表占位</value>
@@ -760,7 +775,7 @@
     <value>鼠标穿透已启用</value>
   </data>
   <data name="Settings_Shortcut_TopMost" xml:space="preserve">
-    <value>.window置顶</value>
+    <value>窗口置顶</value>
   </data>
   <data name="DpsStatistics_Indicator_WindowTopMost_Tooltip" xml:space="preserve">
     <value>切换置顶</value>
@@ -826,11 +841,7 @@
     <value>自动</value>
   </data>
   <data name="Window_BossTracker_Title" xml:space="preserve">
-    <value>Boss Status Tracker</value>
-  </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Debug_Localization_Apply" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
+    <value>野外Boss状态查看器</value>
   </data>
   <data name="MainView_Plugin_Search_PlaceHolder" xml:space="preserve">
     <value>搜索...</value>
@@ -884,14 +895,16 @@
     <value>DPS更新模式</value>
   </data>
   <data name="Settings_Combat_DpsUpdateMode_Tooltip" xml:space="preserve">
-    <value>被动模式：基于事件触发更新
-主动模式：基于定时器定期更新（可配置刷新间隔）</value>
+    <value>实时模式：基于事件触发更新
+
+定时模式：基于定时器定期更新
+（可配置刷新间隔，以降低CPU占用）</value>
   </data>
   <data name="Settings_Combat_DpsUpdateMode_Passive" xml:space="preserve">
-    <value>被动</value>
+    <value>实时模式</value>
   </data>
   <data name="Settings_Combat_DpsUpdateMode_Active" xml:space="preserve">
-    <value>主动</value>
+    <value>定时模式</value>
   </data>
   <data name="Settings_Combat_DpsUpdateInterval" xml:space="preserve">
     <value>DPS更新间隔</value>
@@ -904,7 +917,7 @@
     <value>毫秒</value>
   </data>
   <data name="Window_Training_Title" xml:space="preserve">
-    <value />
+    <value>训练模式</value>
   </data>
   <data name="MainView_Plugin_Training_Title" xml:space="preserve">
     <value>训练模式</value>
@@ -912,19 +925,17 @@
   <data name="MainView_Plugin_Training_Description" xml:space="preserve">
     <value>提供训练模式、分析技能伤害分布与各职业排行榜功能</value>
   </data>
-  <!--  ⭐ 新增: 开关伤害统计快捷键  -->
   <data name="Settings_Shortcut_ToggleDps" xml:space="preserve">
- <value>开关伤害统计</value>
+    <value>开关伤害统计</value>
   </data>
   <data name="Settings_Shortcut_ToggleDps_Tooltip" xml:space="preserve">
     <value>在此聚焦并按下快捷键（例如 F10）。按 Delete 清除。</value>
   </data>
-  <!--  ⭐ 新增: 角色设置  -->
   <data name="Settings_Section_Character_Title" xml:space="preserve">
     <value>角色设置</value>
   </data>
-<data name="Settings_Section_Character_Sub" xml:space="preserve">
-<value>设置你的角色UID用于个人打桩模式</value>
+  <data name="Settings_Section_Character_Sub" xml:space="preserve">
+    <value>设置你的角色UID用于个人打桩模式</value>
   </data>
   <data name="Settings_Character_Uid" xml:space="preserve">
     <value>角色UID</value>
@@ -933,7 +944,6 @@
     <value>输入你的角色UID（数字）
 如何获取：在游戏战斗后打开统计窗口，你的角色会自动显示</value>
   </data>
-  <!--  ⭐ 新增: 历史记录保存数量  -->
   <data name="Settings_Combat_MaxHistoryCount" xml:space="preserve">
     <value>历史记录保存数量</value>
   </data>
@@ -942,5 +952,15 @@
   </data>
   <data name="Settings_Common_Records" xml:space="preserve">
     <value>条</value>
+  </data>
+  <data name="Menu_SkillDiary" xml:space="preserve">
+    <value>技能日志</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Debug_Localization_Apply" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Settings_Language_Korean" xml:space="preserve">
+    <value>한국어</value>
   </data>
 </root>

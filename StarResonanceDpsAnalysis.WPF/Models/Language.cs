@@ -18,7 +18,10 @@ public enum Language
     EnUs,
     [LocalizedDescription(ResourcesKeys.Settings_Language_Portuguese)]
     [CultureAttribute.pt_BR]
-    PtBr
+    PtBr,
+    [LocalizedDescription("Settings_Language_Korean")]
+    [CultureAttribute.ko_KR]
+    KoKr
 }
 
 public abstract class CultureAttribute(CultureInfo info) : Attribute
@@ -29,6 +32,7 @@ public abstract class CultureAttribute(CultureInfo info) : Attribute
     public sealed class zh_CN() : CultureAttribute(new CultureInfo("zh-CN"));
     public sealed class en_US() : CultureAttribute(new CultureInfo("en-US"));
     public sealed class pt_BR() : CultureAttribute(new CultureInfo("pt-BR"));
+    public sealed class ko_KR() : CultureAttribute(new CultureInfo("ko-KR"));
     // ReSharper restore InconsistentNaming
 }
 

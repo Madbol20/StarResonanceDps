@@ -121,157 +121,154 @@
     <value>StarResonance ToolBox</value>
   </data>
   <data name="Menu_Settings" xml:space="preserve">
-    <value>Settings</value>
+    <value>설정</value>
   </data>
   <data name="Menu_StatisticBoss" xml:space="preserve">
-    <value>Track Boss Only</value>
+    <value>보스만 집계하기</value>
   </data>
   <data name="Menu_ShowTotal" xml:space="preserve">
-    <value>Show Total Damage</value>
+    <value>총 피해량 표시</value>
   </data>
   <data name="Menu_Personal_Training_Mode" xml:space="preserve">
-    <value>Solo/Traning Mode</value>
+    <value>개인/훈련 모드</value>
   </data>
   <data name="Menu_RecordSettings" xml:space="preserve">
-    <value>Record Options</value>
+    <value>기록 옵션</value>
   </data>
   <data name="Menu_Record_Always" xml:space="preserve">
-    <value>Record Every Fight</value>
+    <value>모든 전투 기록</value>
   </data>
   <data name="Menu_Record_Skip1Min" xml:space="preserve">
-    <value>Ignore fights &lt; 1 min</value>
+    <value>1분 미만 전투 제외</value>
   </data>
   <data name="Menu_Record_Skip2Min" xml:space="preserve">
-    <value>Ignore fights &lt; 2 min</value>
+    <value>2분 미만 전투 제외</value>
   </data>
   <data name="Menu_SkillDisplay" xml:space="preserve">
-    <value>Skill Display</value>
+    <value>스킬 표시</value>
   </data>
   <data name="Menu_SkillDisplay_Top5" xml:space="preserve">
-    <value>Top 5</value>
+    <value>상위 5개</value>
   </data>
   <data name="Menu_SkillDisplay_Top8" xml:space="preserve">
-    <value>Top 8</value>
+    <value>상위 8개</value>
   </data>
   <data name="Menu_SkillDisplay_Top10" xml:space="preserve">
-    <value>Top 10</value>
+    <value>상위 10개</value>
   </data>
   <data name="Menu_SkillDisplay_Top15" xml:space="preserve">
-    <value>Top 15</value>
+    <value>상위 15개</value>
   </data>
   <data name="Menu_SkillDisplay_All" xml:space="preserve">
-    <value>Show All</value>
+    <value>모두 표시</value>
   </data>
   <data name="Menu_History" xml:space="preserve">
-    <value>History</value>
+    <value>기록</value>
   </data>
   <data name="Menu_History_Current" xml:space="preserve">
-    <value>Current Battle</value>
+    <value>현재 전투</value>
   </data>
   <data name="Menu_History_Total" xml:space="preserve">
-    <value>Full Battle</value>
+    <value>전체 전투</value>
   </data>
   <data name="Menu_ExitSnapshotMode" xml:space="preserve">
-    <value>Exit Snapshot Mode</value>
+    <value>스냅샷 모드 종료</value>
   </data>
   <data name="Menu_Exit" xml:space="preserve">
-    <value>Exit</value>
+    <value>종료</value>
   </data>
   <data name="Menu_Training" xml:space="preserve">
-    <value>Training Mode</value>
+    <value>훈련 모드</value>
   </data>
   <data name="Tooltip_ToggleScope" xml:space="preserve">
-    <value>Toggle: Full / Current</value>
+    <value>전환: 전체 / 현재</value>
   </data>
   <data name="Window_Settings_Title" xml:space="preserve">
-    <value>Settings</value>
+    <value>설정</value>
   </data>
   <data name="Window_DpsStatistics_Title" xml:space="preserve">
-    <value>DPS Statistics</value>
+    <value>DPS 통계</value>
   </data>
   <data name="Settings_Heading" xml:space="preserve">
-    <value>Settings</value>
+    <value>설정</value>
   </data>
   <data name="Settings_Section_Basic_Title" xml:space="preserve">
-    <value>Basic Settings</value>
+    <value>기본 설정</value>
   </data>
   <data name="Settings_Section_Basic_Sub" xml:space="preserve">
-    <value>Adjust manually when auto detection fails</value>
+    <value>자동 감지에 실패할 경우 수동으로 조정하세요</value>
   </data>
   <data name="Settings_Section_Shortcut_Title" xml:space="preserve">
-    <value>Shortcuts</value>
+    <value>단축키 설정</value>
   </data>
   <data name="Settings_Section_Shortcut_Sub" xml:space="preserve">
-    <value>Press [Delete] to clear the selected shortcut</value>
+    <value>[Delete] 키로 선택된 단축키를 삭제합니다</value>
   </data>
   <data name="Settings_Shortcut_MouseThrough" xml:space="preserve">
-    <value>Mouse Through</value>
+    <value>마우스 통과</value>
   </data>
   <data name="Settings_Shortcut_ClearData" xml:space="preserve">
-    <value>Clear Data</value>
+    <value>데이터 초기화</value>
   </data>
   <data name="Settings_Shortcut_MouseThrough_Tooltip" xml:space="preserve">
-    <value>Focus this box and press a shortcut (e.g. Ctrl+F6). Press Delete to clear.</value>
+    <value>이 칸을 선택한 뒤 단축키를 누르세요 (예: Ctrl+F6). Delete 키로 삭제할 수 있습니다.</value>
   </data>
   <data name="Settings_Shortcut_ClearData_Tooltip" xml:space="preserve">
-    <value>Focus this box and press a shortcut (e.g. F9). Press Delete to clear.</value>
+    <value>이 칸을 선택한 뒤 단축키를 누르세요 (예: F9). Delete 키로 삭제할 수 있습니다.</value>
   </data>
   <data name="Settings_Section_Display_Title" xml:space="preserve">
-    <value>Display Settings</value>
-  </data>
-  <data name="Settings_Language_Title" xml:space="preserve">
-    <value>Language</value>
+    <value>표시 설정</value>
   </data>
   <data name="Settings_Section_Combat_Title" xml:space="preserve">
-    <value>Combat Settings</value>
+    <value>전투 설정</value>
   </data>
   <data name="Settings_Section_Combat_Sub" xml:space="preserve">
-    <value>[Clear data after combat] resets only the current data, not the total.</value>
+    <value>[전투 종료 시 데이터 초기화]는 현재 전투만 초기화하며, 전체 누적값은 유지됩니다.</value>
   </data>
   <data name="Settings_NetworkAdapter_Label" xml:space="preserve">
-    <value>Capture Adapter</value>
+    <value>캡처 어댑터</value>
   </data>
   <data name="Settings_Combat_ClearAfterBattle" xml:space="preserve">
-    <value>Clear data after combat</value>
+    <value>전투 종료 시 데이터 초기화</value>
   </data>
   <data name="Settings_Common_Seconds" xml:space="preserve">
-    <value>s</value>
+    <value>초</value>
   </data>
   <data name="Settings_Combat_ClearAfterTeleport" xml:space="preserve">
-    <value>Reset on map change</value>
+    <value>맵 변경 시 전체 데이터 초기화</value>
   </data>
   <data name="Settings_Switch_On" xml:space="preserve">
-    <value>On</value>
+    <value>켜짐</value>
   </data>
   <data name="Settings_Switch_Off" xml:space="preserve">
-    <value>Off</value>
+    <value>꺼짐</value>
   </data>
   <data name="Settings_Display_NumberMode" xml:space="preserve">
-    <value>Number display mode</value>
+    <value>숫자 표시 방식</value>
   </data>
   <data name="Settings_Display_Opacity" xml:space="preserve">
-    <value>Overlay opacity</value>
+    <value>오버레이 투명도</value>
   </data>
   <data name="Settings_Display_PlayerNameBlur" xml:space="preserve">
-    <value>Mask player names</value>
+    <value>플레이어 이름 익명 처리</value>
   </data>
   <data name="Settings_PlayerNameMask_Warning_Title" xml:space="preserve">
-    <value>Warning</value>
+    <value>경고</value>
   </data>
   <data name="Settings_PlayerNameMask_Warning_Message" xml:space="preserve">
-    <value>Do not use data results to discriminate or harm the game community environment.</value>
+    <value>전투 데이터를 이용해 전투력 차별 등 커뮤니티를 해치는 행동을 하지 마세요.</value>
   </data>
   <data name="Menu_TemporaryMaskPlayerName" xml:space="preserve">
-    <value>Temporary masking</value>
+    <value>임시 마스킹</value>
   </data>
   <data name="Settings_Section_Language_Title" xml:space="preserve">
-    <value>Display Settings</value>
+    <value>표시 설정</value>
   </data>
   <data name="Settings_Section_Language_Description" xml:space="preserve">
-    <value>Interface display preferences</value>
+    <value>인터페이스 표시 관련 설정</value>
   </data>
   <data name="Settings_Language_Auto" xml:space="preserve">
-    <value>Follow system</value>
+    <value>시스템 설정 따르기</value>
   </data>
   <data name="Settings_Language_Chinese" xml:space="preserve">
     <value>简体中文</value>
@@ -283,28 +280,28 @@
     <value>Português (Brasil)</value>
   </data>
   <data name="NumberDisplay_Wan" xml:space="preserve">
-    <value>Wan (East Asian)</value>
+    <value>동아시아식 (만억조)</value>
   </data>
   <data name="NumberDisplay_KMB" xml:space="preserve">
-    <value>KMBT (Western)</value>
+    <value>서양식 (KMBT)</value>
   </data>
   <data name="Window_About_Title" xml:space="preserve">
-    <value>About</value>
+    <value>정보</value>
   </data>
   <data name="About_Intro_Primary" xml:space="preserve">
-    <value>A combat data analytics tool built for BPSR players.</value>
+    <value>BPSR 플레이어를 위한 전투 데이터 분석 도구입니다.</value>
   </data>
   <data name="About_Intro_Details" xml:space="preserve">
-    <value>This tool requires no client modifications and stays within the game's terms of service. It helps players understand combat data, reduce unnecessary effort, and improve the gameplay experience. Please do not use the results for power discrimination or any behaviour that harms the community.</value>
+    <value>이 도구는 게임 클라이언트를 수정하지 않으며, 게임 서비스 약관을 위반하지 않습니다. 전투 데이터를 이해하고 불필요한 피로를 줄이며, 게임 경험을 향상하는 것이 목적입니다. 데이터를 이용해 전투력 차별 등 커뮤니티를 해치는 행동은 절대 삼가 주십시오.</value>
   </data>
   <data name="About_Version_Label" xml:space="preserve">
-    <value>Current version:</value>
+    <value>현재 버전:</value>
   </data>
   <data name="About_Developers_Label" xml:space="preserve">
-    <value>Contributors for this release (in no particular order):</value>
+    <value>이번 버전의 개발자(순서 무관):</value>
   </data>
   <data name="About_Developer_Lead" xml:space="preserve">
-    <value>惊奇猫猫盒 (anying1073: project founder)</value>
+    <value>惊奇猫猫盒 (anying1073: 프로젝트 개시자)</value>
   </data>
   <data name="About_Developer_RocyJune" xml:space="preserve">
     <value>露詩（Rocy-June）</value>
@@ -316,52 +313,52 @@
     <value>尻鸭（ihonliu）</value>
   </data>
   <data name="About_OpenSource_Prefix" xml:space="preserve">
-    <value>This project is open source at</value>
+    <value>이 프로젝트는 다음 주소에서 오픈 소스로 공개됩니다:</value>
   </data>
   <data name="About_OpenSource_RepositoryUrl" xml:space="preserve">
     <value>https://github.com/anying1073/StarResonanceDps</value>
   </data>
   <data name="About_OpenSource_Suffix" xml:space="preserve">
-    <value>, If you encounter any issues, please open an issue there.</value>
+    <value>. 문제가 있다면 해당 저장소에 이슈를 등록해 주세요.</value>
   </data>
   <data name="About_Contribution" xml:space="preserve">
-    <value>To contribute, please fork the repository and submit a pull request.</value>
+    <value>기여를 원하시면 저장소를 포크한 뒤 Pull Request를 보내 주세요.</value>
   </data>
   <data name="About_Community_Invite" xml:space="preserve">
-    <value>If you cannot access GitHub or want to find teammates, join the Tencent QQ groups:</value>
+    <value>GitHub에 접속하기 어렵거나 파티원을 찾고 싶다면 QQ 그룹에 참여해 주세요:</value>
   </data>
   <data name="About_Community_GroupOne" xml:space="preserve">
-    <value>678150498 (Group 1)</value>
+    <value>678150498 (그룹 1)</value>
   </data>
   <data name="About_Community_GroupTwo" xml:space="preserve">
-    <value>1022797551 (Group 2)</value>
+    <value>1022797551 (그룹 2)</value>
   </data>
   <data name="About_Thanks_Prefix" xml:space="preserve">
-    <value>Special thanks to</value>
+    <value>다음 프로젝트에 특별히 감사드립니다:</value>
   </data>
   <data name="About_Thanks_RepositoryUrl" xml:space="preserve">
     <value>https://github.com/dmlgzs/StarResonanceDamageCounter</value>
   </data>
   <data name="About_Thanks_Suffix" xml:space="preserve">
-    <value>for supporting and inspiring this project.</value>
+    <value>이 프로젝트에 많은 영감과 도움을 주었습니다.</value>
   </data>
   <data name="About_Copyright" xml:space="preserve">
     <value>Copyright (C) 2025 anying1073/StarResonanceDps Team.</value>
   </data>
   <data name="About_PoweredBy" xml:space="preserve">
-    <value>Powered by .NET 8, Licensed under the GNU AGPL v3.</value>
+    <value>.NET 8 기반, GNU AGPL v3 라이선스.</value>
   </data>
   <data name="Window_DamageReference_Title" xml:space="preserve">
-    <value>Damage Reference</value>
+    <value>피해 참고</value>
   </data>
   <data name="DamageReference_Header_Title" xml:space="preserve">
-    <value>Skill Breakdown</value>
+    <value>스킬 상세</value>
   </data>
   <data name="DamageReference_Ribbon_Title" xml:space="preserve">
-    <value>Damage Reference</value>
+    <value>피해 참고표</value>
   </data>
   <data name="DamageReference_Classes_All" xml:space="preserve">
-    <value>All Classes</value>
+    <value>전체 직업</value>
   </data>
   <data name="Classes_Stormblade" xml:space="preserve">
     <value>Stormblade</value>
@@ -388,19 +385,19 @@
     <value>Soul Musician</value>
   </data>
   <data name="DamageReference_Table_Title" xml:space="preserve">
-    <value>Damage Reference</value>
+    <value>피해 참고표</value>
   </data>
   <data name="DamageReference_NoData" xml:space="preserve">
-    <value>No data yet</value>
+    <value>표시할 데이터가 없습니다</value>
   </data>
   <data name="DamageReference_Disclaimer" xml:space="preserve">
-    <value>Data is for entertainment and reference only. Do not use it for power discrimination or any behaviour that harms the community; violations will result in permanent revocation.</value>
+    <value>이 데이터는 오로지 참고와 즐거움을 위한 것입니다. 전투력 차별 등 커뮤니티를 해치는 행동에 사용을 금지하며, 위반 시 해당 기능 사용 권한이 영구 박탈될 수 있습니다.</value>
   </data>
   <data name="Window_Debug_Title" xml:space="preserve">
-    <value>Debug View</value>
+    <value>디버그 창</value>
   </data>
   <data name="Debug_LoadPcap" xml:space="preserve">
-    <value>Load PCAP</value>
+    <value>PCAP 불러오기</value>
   </data>
   <data name="Debug_AddSampleData" xml:space="preserve">
     <value>AddSampleData</value>
@@ -409,13 +406,13 @@
     <value>Clear Logs</value>
   </data>
   <data name="Debug_AddTestLog" xml:space="preserve">
-    <value>Add Test Log</value>
+    <value>테스트 로그 추가</value>
   </data>
   <data name="Debug_SaveLogs" xml:space="preserve">
-    <value>Save Logs</value>
+    <value>로그 저장</value>
   </data>
   <data name="Debug_AutoScroll" xml:space="preserve">
-    <value>Auto Scroll</value>
+    <value>자동 스크롤</value>
   </data>
   <data name="Debug_Filter_Level" xml:space="preserve">
     <value>Level:</value>
@@ -427,561 +424,543 @@
     <value>Filter logs by message or category content</value>
   </data>
   <data name="Debug_Header_Time" xml:space="preserve">
-    <value>Time</value>
+    <value>시간</value>
   </data>
   <data name="Debug_Header_Level" xml:space="preserve">
-    <value>Level</value>
+    <value>등급</value>
   </data>
   <data name="Debug_Header_Category" xml:space="preserve">
-    <value>Category</value>
+    <value>분류</value>
   </data>
   <data name="Debug_Header_Message" xml:space="preserve">
-    <value>Message</value>
+    <value>메시지</value>
   </data>
   <data name="Debug_Status_TotalPrefix" xml:space="preserve">
-    <value>Total: </value>
+    <value>총합:</value>
   </data>
   <data name="Debug_Status_TotalSuffix" xml:space="preserve">
-    <value> logs</value>
+    <value> 개 로그</value>
   </data>
   <data name="Debug_Status_FilteredPrefix" xml:space="preserve">
-    <value>Filtered: </value>
+    <value>필터링:</value>
   </data>
   <data name="Debug_Status_FilteredSuffix" xml:space="preserve">
-    <value> logs</value>
+    <value> 개 로그</value>
   </data>
   <data name="Debug_Status_LastPrefix" xml:space="preserve">
-    <value>Last: </value>
+    <value>마지막:</value>
   </data>
   <data name="Debug_ThemeTestText" xml:space="preserve">
-    <value>Theme switch test text</value>
+    <value>테마 전환 테스트 텍스트</value>
   </data>
   <data name="Debug_Button_PcapTest" xml:space="preserve">
-    <value>Test Pcap</value>
+    <value>Pcap 테스트</value>
   </data>
   <data name="Debug_Button_SkillBreakdown" xml:space="preserve">
-    <value>Skill Breakdown View</value>
+    <value>스킬 상세 창</value>
   </data>
   <data name="Debug_Button_DamageReference" xml:space="preserve">
-    <value>Damage Reference View</value>
+    <value>피해 참고 창</value>
   </data>
   <data name="Debug_Button_Settings" xml:space="preserve">
-    <value>Settings View</value>
+    <value>설정 창</value>
   </data>
   <data name="Debug_Button_About" xml:space="preserve">
-    <value>About View</value>
+    <value>정보 창</value>
   </data>
   <data name="Debug_Group_Title" xml:space="preserve">
-    <value>Debug utilities</value>
+    <value>디버그 도구</value>
   </data>
   <data name="MainView_Header_Title" xml:space="preserve">
     <value>StarResonance ToolBox</value>
   </data>
   <data name="MainView_PluginList_Title" xml:space="preserve">
-    <value>Plugins</value>
+    <value>플러그인 목록</value>
   </data>
   <data name="MainView_Plugin_Label_Intro" xml:space="preserve">
-    <value>Intro:</value>
+    <value>소개:</value>
   </data>
   <data name="MainView_Plugin_DpsTool_Title" xml:space="preserve">
-    <value>DPS Toolkit</value>
+    <value>DPS 툴킷</value>
   </data>
   <data name="MainView_Plugin_DpsTool_Description" xml:space="preserve">
-    <value>Provides DPS statistics and skill breakdown tools</value>
+    <value>DPS 통계 및 스킬 분해 기능을 제공합니다</value>
   </data>
   <data name="MainView_Plugin_Label_Author" xml:space="preserve">
-    <value>Author:</value>
+    <value>작성자:</value>
   </data>
   <data name="MainView_Plugin_Author_OfficialTeam" xml:space="preserve">
-    <value>[Official] StarResonanceToolBox Team</value>
+    <value>[공식] StarResonanceToolBox 개발팀</value>
   </data>
   <data name="MainView_Plugin_AutoStart" xml:space="preserve">
-    <value>Auto start</value>
+    <value>툴박스 실행 시 함께 시작</value>
   </data>
   <data name="Common_Action_Open" xml:space="preserve">
-    <value>Launch</value>
+    <value>실행</value>
   </data>
   <data name="MainView_Plugin_ModuleSolver_Title" xml:space="preserve">
-    <value>Module Solver</value>
+    <value>모듈 계산기</value>
   </data>
   <data name="MainView_Plugin_ModuleSolver_Description" xml:space="preserve">
-    <value>Quickly calculates optimal module combinations</value>
+    <value>모듈의 최적 조합을 빠르게 계산합니다</value>
   </data>
   <data name="MainView_Plugin_WorldBoss_Title" xml:space="preserve">
-    <value>World Boss Status Tracker</value>
+    <value>월드 보스 상태 보기</value>
   </data>
   <data name="MainView_Plugin_WorldBoss_Description" xml:space="preserve">
-    <value>Crowdsourced live data for each channel's world boss status</value>
+    <value>여러 플레이어의 제보를 바탕으로 각 채널 월드 보스 생존 정보를 제공합니다</value>
   </data>
   <data name="MainView_Plugin_PigTracker_Title" xml:space="preserve">
-    <value>Pig Nabo Status Tracker</value>
+    <value>돼지 나보 상태 보기</value>
   </data>
   <data name="MainView_Plugin_PigTracker_Description" xml:space="preserve">
-    <value>Community-driven tracker for Pig Nabo routes and locations</value>
+    <value>커뮤니티 제보를 통해 돼지 나보의 동선과 위치를 공유합니다</value>
   </data>
   <data name="MainView_Debug_Group_Title" xml:space="preserve">
-    <value>Debug utilities</value>
+    <value>디버그 도구</value>
   </data>
   <data name="MainView_Debug_ThemeTest" xml:space="preserve">
-    <value>Theme switch test text</value>
+    <value>테마 전환 테스트 텍스트</value>
   </data>
   <data name="MainView_Debug_Button_PcapTest" xml:space="preserve">
-    <value>Pcap Test</value>
+    <value>Pcap 테스트</value>
   </data>
   <data name="MainView_Debug_Button_SkillBreakdown" xml:space="preserve">
-    <value>Skill Breakdown View</value>
+    <value>스킬 상세 창</value>
   </data>
   <data name="MainView_Debug_Button_DamageReference" xml:space="preserve">
-    <value>Damage Reference View</value>
+    <value>피해 참고 창</value>
   </data>
   <data name="MainView_Debug_Button_Settings" xml:space="preserve">
-    <value>Settings View</value>
+    <value>설정 창</value>
   </data>
   <data name="MainView_Debug_Button_About" xml:space="preserve">
-    <value>About View</value>
+    <value>정보 창</value>
   </data>
   <data name="Window_ModuleSolve_Title" xml:space="preserve">
-    <value>Module Solver</value>
+    <value>모듈 계산기</value>
   </data>
   <data name="ModuleSolve_Header_Title" xml:space="preserve">
-    <value>Module Solver</value>
+    <value>모듈 계산기</value>
   </data>
   <data name="ModuleSolve_TargetProperties_Title" xml:space="preserve">
-    <value>Target stats and levels (0 = default) [type to search]</value>
+    <value>목표 옵션 및 레벨 (0 = 기본값) [검색어 입력 가능]</value>
   </data>
   <data name="ModuleSolve_Property1_Label" xml:space="preserve">
-    <value>Stat 1:</value>
+    <value>속성 1:</value>
   </data>
   <data name="ModuleSolve_Property2_Label" xml:space="preserve">
-    <value>Stat 2:</value>
+    <value>속성 2:</value>
   </data>
   <data name="ModuleSolve_Property3_Label" xml:space="preserve">
-    <value>Stat 3:</value>
+    <value>속성 3:</value>
   </data>
   <data name="ModuleSolve_Property4_Label" xml:space="preserve">
-    <value>Stat 4:</value>
+    <value>속성 4:</value>
   </data>
   <data name="ModuleSolve_Property5_Label" xml:space="preserve">
-    <value>Stat 5:</value>
+    <value>속성 5:</value>
   </data>
   <data name="ModuleSolve_ExpectedLevel_Label" xml:space="preserve">
-    <value>Desired level:</value>
+    <value>목표 레벨:</value>
   </data>
   <data name="ModuleSolve_ExcludeProperties_Title" xml:space="preserve">
-    <value>Exclude stats (conflicts with targets) [type to search]</value>
+    <value>제외 옵션 (목표와 충돌) [검색어 입력 가능]</value>
   </data>
   <data name="ModuleSolve_ModuleType_Label" xml:space="preserve">
-    <value>Module type:</value>
+    <value>모듈 유형:</value>
   </data>
   <data name="ModuleSolve_ModuleType_All" xml:space="preserve">
-    <value>All</value>
+    <value>전체</value>
   </data>
   <data name="ModuleSolve_ModuleType_Offense" xml:space="preserve">
-    <value>Offense</value>
+    <value>공격 모듈</value>
   </data>
   <data name="ModuleSolve_ModuleType_Defense" xml:space="preserve">
-    <value>Defense</value>
+    <value>방어 모듈</value>
   </data>
   <data name="ModuleSolve_ModuleType_Support" xml:space="preserve">
-    <value>Support</value>
+    <value>보조 모듈</value>
   </data>
   <data name="ModuleSolve_Sort_Label" xml:space="preserve">
-    <value>Sort by:</value>
+    <value>정렬 기준:</value>
   </data>
   <data name="ModuleSolve_Sort_Attribute" xml:space="preserve">
-    <value>Stat priority</value>
+    <value>속성 우선</value>
   </data>
   <data name="ModuleSolve_Sort_Level" xml:space="preserve">
-    <value>Level priority</value>
+    <value>레벨 우선</value>
   </data>
   <data name="ModuleSolve_Analyze_Button" xml:space="preserve">
-    <value>Analyze modules</value>
+    <value>모듈 분석</value>
   </data>
   <data name="ModuleSolve_UsingTip" xml:space="preserve">
-    <value>After opening this window, change zone or relog before analyzing. Right-click a stat option to clear it.</value>
+    <value>이 창을 연 뒤에는 한 번 지역을 이동하거나 재접속한 후에 분석해 주세요. (옵션 항목을 우클릭하면 해당 칸이 초기화됩니다)</value>
   </data>
   <data name="Window_SkillBreakdown_Title" xml:space="preserve">
-    <value>Skill Details</value>
+    <value>스킬 상세</value>
   </data>
   <data name="SkillBreakdown_Header_Title" xml:space="preserve">
-    <value>Skill Breakdown</value>
+    <value>스킬 상세</value>
   </data>
   <data name="SkillBreakdown_Card_RealtimeChart" xml:space="preserve">
-    <value>Realtime DPS/HPS/DTPS charts</value>
+    <value>DPS/HPS/DTPS 실시간 그래프</value>
   </data>
-  <data name="SkillBreakdown_Placeholder_LineChart" xml:space="preserve">
-    <value>Imagine a line chart here</value>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="SkillBreakdown_Placeholder_LineChart" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="SkillBreakdown_Card_ShareChart" xml:space="preserve">
-    <value>Skill contribution chart</value>
+    <value>스킬 비율 차트</value>
   </data>
-  <data name="SkillBreakdown_Placeholder_PieChart" xml:space="preserve">
-    <value>Imagine a pie chart here</value>
+  <data name="SkillBreakdown_Placeholder_PieChart" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="SkillBreakdown_Card_DamageDistribution" xml:space="preserve">
-    <value>Damage distribution</value>
+    <value>피해 분포</value>
   </data>
-  <data name="SkillBreakdown_Placeholder_BarChart" xml:space="preserve">
-    <value>Imagine a bar chart here</value>
+  <data name="SkillBreakdown_Placeholder_BarChart" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="SkillBreakdown_Section_DamageInfo" xml:space="preserve">
-    <value>Damage info</value>
+    <value>피해 정보</value>
   </data>
   <data name="SkillBreakdown_Label_TotalDamage" xml:space="preserve">
-    <value>Total damage</value>
+    <value>총 피해량</value>
   </data>
-  <data name="SkillBreakdown_Value_TotalDamage" xml:space="preserve">
-    <value>42.64K</value>
+  <data name="SkillBreakdown_Value_TotalDamage" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="SkillBreakdown_Label_Dps" xml:space="preserve">
     <value>DPS</value>
   </data>
-  <data name="SkillBreakdown_Value_Dps" xml:space="preserve">
-    <value>29.01K</value>
+  <data name="SkillBreakdown_Value_Dps" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="SkillBreakdown_Label_HitCount" xml:space="preserve">
-    <value>Hits</value>
+    <value>타수</value>
   </data>
-  <data name="SkillBreakdown_Value_HitCount" xml:space="preserve">
-    <value>6</value>
+  <data name="SkillBreakdown_Value_HitCount" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="SkillBreakdown_Label_CritRate" xml:space="preserve">
-    <value>Crit rate</value>
+    <value>치명타 확률</value>
   </data>
-  <data name="SkillBreakdown_Value_CritRate" xml:space="preserve">
-    <value>16.67%</value>
+  <data name="SkillBreakdown_Value_CritRate" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="SkillBreakdown_Label_LuckRate" xml:space="preserve">
-    <value>Luck rate</value>
+    <value>행운 확률</value>
   </data>
-  <data name="SkillBreakdown_Value_LuckRate" xml:space="preserve">
-    <value>0%</value>
+  <data name="SkillBreakdown_Value_LuckRate" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="SkillBreakdown_Label_CritCount" xml:space="preserve">
-    <value>Critical hits</value>
+    <value>치명타 횟수</value>
   </data>
-  <data name="SkillBreakdown_Value_CritCount" xml:space="preserve">
-    <value>1</value>
+  <data name="SkillBreakdown_Value_CritCount" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="SkillBreakdown_Label_NormalDamage" xml:space="preserve">
-    <value>Normal damage</value>
+    <value>일반 피해</value>
   </data>
-  <data name="SkillBreakdown_Value_NormalDamage" xml:space="preserve">
-    <value>28.71K</value>
+  <data name="SkillBreakdown_Value_NormalDamage" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="SkillBreakdown_Label_CritDamage" xml:space="preserve">
-    <value>Critical damage</value>
+    <value>치명타 피해</value>
   </data>
-  <data name="SkillBreakdown_Value_CritDamage" xml:space="preserve">
-    <value>13.92K</value>
+  <data name="SkillBreakdown_Value_CritDamage" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="SkillBreakdown_Label_LuckCount" xml:space="preserve">
-    <value>Lucky hits</value>
+    <value>행운 횟수</value>
   </data>
-  <data name="SkillBreakdown_Value_LuckCount" xml:space="preserve">
-    <value>0</value>
+  <data name="SkillBreakdown_Value_LuckCount" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="SkillBreakdown_Label_LuckDamage" xml:space="preserve">
-    <value>Lucky damage</value>
+    <value>행운 피해</value>
   </data>
-  <data name="SkillBreakdown_Value_LuckDamage" xml:space="preserve">
-    <value>0</value>
+  <data name="SkillBreakdown_Value_LuckDamage" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="SkillBreakdown_Label_AverageDamage" xml:space="preserve">
-    <value>Average hit</value>
+    <value>평균 피해</value>
   </data>
-  <data name="SkillBreakdown_Value_AverageDamage" xml:space="preserve">
-    <value>7106</value>
+  <data name="SkillBreakdown_Value_AverageDamage" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="SkillBreakdown_Label_DamageTakenCount" xml:space="preserve">
-    <value>Times hit</value>
+    <value>피격 횟수</value>
   </data>
-  <data name="SkillBreakdown_Value_DamageTakenCount" xml:space="preserve">
-    <value>3</value>
+  <data name="SkillBreakdown_Value_DamageTakenCount" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
-  <data name="SkillBreakdown_Placeholder_Form" xml:space="preserve">
-    <value>Imagine a data table here</value>
+  <data name="SkillBreakdown_Placeholder_Form" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="SkillBreakdown_Info_Name" xml:space="preserve">
-    <value>--Sample Name--</value>
+    <value>--테스트 이름--</value>
   </data>
   <data name="SkillBreakdown_Info_Uid" xml:space="preserve">
     <value>UID: 123456</value>
   </data>
   <data name="SkillBreakdown_Info_Power" xml:space="preserve">
-    <value>Power: 25000</value>
+    <value>전투력: 25000</value>
   </data>
   <data name="SkillBreakdown_Info_Level" xml:space="preserve">
-    <value>Level: 60</value>
+    <value>레벨: 60</value>
   </data>
   <data name="SkillBreakdown_Info_Badge" xml:space="preserve">
-    <value>Badge: 190</value>
+    <value>배지: 190</value>
   </data>
   <data name="SkillBreakdown_Tab_Output" xml:space="preserve">
-    <value>DPS</value>
+    <value>공격</value>
   </data>
   <data name="SkillBreakdown_Tab_Healing" xml:space="preserve">
-    <value>Healing</value>
+    <value>치유</value>
   </data>
   <data name="SkillBreakdown_Tab_Tanking" xml:space="preserve">
-    <value>Damage Taken</value>
+    <value>피격</value>
   </data>
   <data name="SkillBreakdown_Tab_Summary" xml:space="preserve">
-    <value>Summary</value>
+    <value>요약</value>
   </data>
   <data name="SkillBreakdown_Tab_Details" xml:space="preserve">
-    <value>Details</value>
+    <value>상세</value>
   </data>
-  <data name="SkillBreakdown_Placeholder_Details" xml:space="preserve">
-    <value>Details placeholder</value>
+  <data name="SkillBreakdown_Placeholder_Details" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="SkillBreakdown_Tab_Graph" xml:space="preserve">
-    <value>Graph</value>
+    <value>그래프</value>
   </data>
-  <data name="SkillBreakdown_Placeholder_Graph" xml:space="preserve">
-    <value>Graph placeholder</value>
+  <data name="SkillBreakdown_Placeholder_Graph" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="DpsStatistics_TestButton_Content" xml:space="preserve">
     <value>T</value>
   </data>
   <data name="DpsStatistics_TestButton_Tooltip" xml:space="preserve">
-    <value>Add Test Item</value>
+    <value>테스트 데이터 추가</value>
   </data>
   <data name="Common_Dash" xml:space="preserve">
     <value>-</value>
   </data>
   <data name="SkillBreakdown_Section_DamageDistribution" xml:space="preserve">
-    <value>Damage distribution</value>
+    <value>피해 분포</value>
   </data>
   <data name="StatisticType_Damage" xml:space="preserve">
-    <value>Damage</value>
+    <value>피해</value>
   </data>
   <data name="StatisticType_Healing" xml:space="preserve">
-    <value>Healing</value>
+    <value>치유</value>
   </data>
   <data name="StatisticType_TakenDamage" xml:space="preserve">
-    <value>Dmg In</value>
+    <value>받은 피해</value>
   </data>
   <data name="StatisticType_NpcTakenDamage" xml:space="preserve">
-    <value>NPC Dmg In</value>
+    <value>NPC 받은 피해</value>
   </data>
   <data name="ScopeTime_Current" xml:space="preserve">
-    <value>Current</value>
+    <value>현재</value>
   </data>
   <data name="ScopeTime_Total" xml:space="preserve">
-    <value>Total</value>
+    <value>전체</value>
   </data>
   <data name="DpsStatistics_Indicator_ClickThrough_Tooltip" xml:space="preserve">
-    <value>Mouse click-through enabled</value>
-    <comment>鼠标穿透已启用</comment>
+    <value>마우스 통과 켜짐</value>
   </data>
   <data name="Settings_Shortcut_TopMost" xml:space="preserve">
-    <value>Always on Top</value>
+    <value>항상 위에 두기</value>
   </data>
   <data name="DpsStatistics_Indicator_WindowTopMost_Tooltip" xml:space="preserve">
-    <value>Toggle Always on Top</value>
-    <comment>切换置顶</comment>
+    <value>창을 항상 위에 고정/해제</value>
   </data>
   <data name="Settings_Shortcut_TopMost_Tooltip" xml:space="preserve">
-    <value>Focus this box and press a shortcut (e.g. Ctrl+F9). Press Delete to clear.</value>
+    <value>이 칸을 선택한 뒤 단축키를 누르세요 (예: Ctrl+F9). Delete 키로 삭제할 수 있습니다.</value>
   </data>
   <data name="ClassSpec_Unknown" xml:space="preserve">
     <value>Unknown</value>
-    <comment>Unknown = 0</comment>
   </data>
   <data name="ClassSpec_ShieldKnightRecovery" xml:space="preserve">
     <value>Recovery</value>
-    <comment>ShieldKnightRecovery</comment>
   </data>
   <data name="ClassSpec_ShieldKnightShield" xml:space="preserve">
     <value>Shield</value>
-    <comment>ShieldKnightShield</comment>
   </data>
   <data name="ClassSpec_HeavyGuardianEarthfort" xml:space="preserve">
     <value>Earthfort</value>
-    <comment>HeavyGuardianEarthfort</comment>
   </data>
   <data name="ClassSpec_HeavyGuardianBlock" xml:space="preserve">
     <value>Block</value>
-    <comment>HeavyGuardianBlock</comment>
   </data>
   <data name="ClassSpec_StormbladeIaidoSlash" xml:space="preserve">
     <value>IaidoSlash</value>
-    <comment>StormbladeIaidoSlash</comment>
   </data>
   <data name="ClassSpec_StormbladeMoonStrike" xml:space="preserve">
     <value>MoonStrike</value>
-    <comment>StormbladeMoonStrike</comment>
   </data>
   <data name="ClassSpec_WindKnightVanGuard" xml:space="preserve">
     <value>VanGuard</value>
-    <comment>WindKnightVanGuard</comment>
   </data>
   <data name="ClassSpec_WindKnightSkyward" xml:space="preserve">
     <value>Skyward</value>
-    <comment>WindKnightSkyward</comment>
   </data>
   <data name="ClassSpec_FrostMageIcicle" xml:space="preserve">
     <value>Icicle</value>
-    <comment>FrostMageIcicle</comment>
   </data>
   <data name="ClassSpec_FrostMageFrostBeam" xml:space="preserve">
     <value>FrostBeam</value>
-    <comment>FrostMageFrostBeam</comment>
   </data>
   <data name="ClassSpec_MarksmanWildpack" xml:space="preserve">
     <value>Wildpack</value>
-    <comment>MarksmanWildpack</comment>
   </data>
   <data name="ClassSpec_MarksmanFalconry" xml:space="preserve">
     <value>Falconry</value>
-    <comment>MarksmanFalconry</comment>
   </data>
   <data name="ClassSpec_VerdantOracleSmite" xml:space="preserve">
     <value>Smite</value>
-    <comment>VerdantOracleSmite</comment>
   </data>
   <data name="ClassSpec_VerdantOracleLifeBind" xml:space="preserve">
     <value>LifeBind</value>
-    <comment>VerdantOracleLifeBind</comment>
   </data>
   <data name="ClassSpec_SoulMusicianDissonance" xml:space="preserve">
     <value>Dissonance</value>
-    <comment>SoulMusicianDissonance</comment>
   </data>
   <data name="ClassSpec_SoulMusicianConcerto" xml:space="preserve">
     <value>Concerto</value>
-    <comment>SoulMusicianConcerto</comment>
   </data>
   <data name="Settings_NetworkAdapterAutoSelect_Failed" xml:space="preserve">
-    <value>Network adapter auto select failed, please check you have proper network connections</value>
+    <value>네트워크 어댑터 자동 선택에 실패했습니다. 적절한 네트워크 연결이 있는지 확인하세요.</value>
   </data>
   <data name="Settings_NetworkAdapterAutoSelect_Button" xml:space="preserve">
-    <value>Auto</value>
+    <value>자동</value>
   </data>
   <data name="Window_BossTracker_Title" xml:space="preserve">
-    <value>Boss Status Tracker</value>
-  </data>
-  <data name="Debug_Localization_Language" xml:space="preserve">
-    <value>Language:</value>
-  </data>
-  <data name="Debug_Localization_TestKey" xml:space="preserve">
-    <value>Test Key:</value>
-  </data>
-  <data name="Debug_Localization_Test" xml:space="preserve">
-    <value>Test</value>
+    <value>월드 보스 상태 보기</value>
   </data>
   <data name="MainView_Plugin_Search_PlaceHolder" xml:space="preserve">
-    <value>Search...</value>
+    <value>검색...</value>
   </data>
   <data name="MainView_Plugin_State_Inactive" xml:space="preserve">
-    <value>Inactive</value>
+    <value>꺼짐</value>
   </data>
   <data name="MainView_Plugin_State_Running" xml:space="preserve">
-    <value>Running</value>
+    <value>켜짐</value>
   </data>
   <data name="MainView_Plugin_Settings" xml:space="preserve">
-    <value>Settings</value>
+    <value>설정</value>
   </data>
   <data name="Settings_Section_Theme_Title" xml:space="preserve">
-    <value>Theme Settings</value>
+    <value>테마 설정</value>
   </data>
   <data name="Settings_Section_Theme_Description" xml:space="preserve">
-    <value>Customize your own tool box</value>
+    <value>툴박스를 더 나답게 꾸며 보세요</value>
   </data>
   <data name="Settings_Theme_WindowColor" xml:space="preserve">
-    <value>Window Color</value>
+    <value>창 색상</value>
   </data>
   <data name="Settings_Theme_BackgroundImage" xml:space="preserve">
-    <value>Background Image</value>
+    <value>배경 이미지</value>
   </data>
   <data name="Settings_Theme_SelectImage" xml:space="preserve">
-    <value>Select Image...</value>
+    <value>이미지 선택...</value>
   </data>
   <data name="Settings_CancelConfirm_Title" xml:space="preserve">
-    <value>Discard Changes</value>
+    <value>변경 취소</value>
   </data>
   <data name="Settings_CancelConfirm_Message" xml:space="preserve">
-    <value>Discard all changes? Unsaved changes will be lost.</value>
+    <value>취소하면 변경 내용이 저장되지 않습니다. 계속하시겠습니까?</value>
   </data>
   <data name="MainView_Plugin_AutoRunState_Enabled" xml:space="preserve">
-    <value>Auto On</value>
+    <value>자동 시작 켜짐</value>
   </data>
   <data name="MainView_Plugin_AutoRunState_Disabled" xml:space="preserve">
-    <value>Auto Off</value>
+    <value>자동 시작 꺼짐</value>
   </data>
   <data name="MainView_Plugin_ThirdPartySdkTips" xml:space="preserve">
-    <value>Plugin SDK coming soon!</value>
+    <value>플러그인 SDK가 곧 제공될 예정입니다!</value>
   </data>
   <data name="App_Exit_Confirm_Title" xml:space="preserve">
-    <value>Confirmation</value>
+    <value>확인</value>
   </data>
   <data name="App_Exit_Confirm_Content" xml:space="preserve">
-    <value>Close application?</value>
+    <value>애플리케이션을 종료하시겠습니까?</value>
   </data>
   <data name="Settings_Combat_DpsUpdateMode" xml:space="preserve">
-    <value>DPS Update Mode</value>
+    <value>DPS 갱신 모드</value>
   </data>
   <data name="Settings_Combat_DpsUpdateMode_Tooltip" xml:space="preserve">
-    <value>Real Time: Event-driven updates
+    <value>실시간 갱신: 전투 이벤트가 발생할 때마다 바로 갱신
 
-Timer Based: Timer-based periodic updates
-(low CPU usage, configurable refresh interval)</value>
+주기적 갱신: 타이머 주기마다 한 번씩 갱신
+(낮은 CPU 사용량, 갱신 주기 설정 가능)</value>
   </data>
   <data name="Settings_Combat_DpsUpdateMode_Passive" xml:space="preserve">
-    <value>Real Time</value>
+    <value>실시간 갱신</value>
   </data>
   <data name="Settings_Combat_DpsUpdateMode_Active" xml:space="preserve">
-    <value>Timer Based</value>
+    <value>주기적 갱신</value>
   </data>
   <data name="Settings_Combat_DpsUpdateInterval" xml:space="preserve">
-    <value>DPS Update Interval</value>
+    <value>DPS 갱신 간격</value>
   </data>
   <data name="Settings_Combat_DpsUpdateInterval_Tooltip" xml:space="preserve">
-    <value>Only effective in Active mode
-Recommended: 500-2000 milliseconds</value>
+    <value>능동 모드에서만 적용됩니다.
+권장 값: 500~2000 밀리초</value>
   </data>
   <data name="Settings_Common_Milliseconds" xml:space="preserve">
     <value>ms</value>
   </data>
   <data name="Window_Training_Title" xml:space="preserve">
-    <value>Training</value>
+    <value>훈련 모드</value>
   </data>
   <data name="MainView_Plugin_Training_Title" xml:space="preserve">
-    <value />
+    <value>훈련 모드</value>
   </data>
   <data name="MainView_Plugin_Training_Description" xml:space="preserve">
-    <value />
+    <value>훈련 모드, 스킬 피해 분포 분석 및 직업별 랭킹 기능을 제공합니다</value>
   </data>
   <data name="Settings_Shortcut_ToggleDps" xml:space="preserve">
-    <value>Toggle DPS Window</value>
+    <value>DPS 창 토글</value>
   </data>
   <data name="Settings_Shortcut_ToggleDps_Tooltip" xml:space="preserve">
-    <value>Focus this box and press a shortcut (e.g. F10). Press Delete to clear.</value>
+    <value>이 칸을 선택한 뒤 단축키를 누르세요 (예: F10). Delete 키로 삭제할 수 있습니다.</value>
   </data>
   <data name="Settings_Section_Character_Title" xml:space="preserve">
-    <value>Character Settings</value>
+    <value>캐릭터 설정</value>
   </data>
   <data name="Settings_Section_Character_Sub" xml:space="preserve">
-    <value>Set your character UID for Solo/Training mode</value>
+    <value>개인/훈련 모드를 위해 캐릭터 UID를 설정합니다</value>
   </data>
   <data name="Settings_Character_Uid" xml:space="preserve">
-    <value>Character UID</value>
+    <value>캐릭터 UID</value>
   </data>
   <data name="Settings_Character_Uid_Tooltip" xml:space="preserve">
-    <value>Enter your character UID (number)
-How to get: After a fight, your character will automatically appear in the stats window</value>
+    <value>캐릭터 UID(숫자)를 입력하세요.
+획득 방법: 전투 후 통계 창을 열면 캐릭터가 자동으로 표시됩니다.</value>
   </data>
   <data name="Settings_Combat_MaxHistoryCount" xml:space="preserve">
-    <value>History Record Limit</value>
+    <value>기록 보관 개수</value>
   </data>
   <data name="Settings_Combat_MaxHistoryCount_Tooltip" xml:space="preserve">
-    <value>Maximum number of battle records to keep (5-50)</value>
+    <value>보관할 최대 전투 기록 수를 설정합니다 (5~50)</value>
   </data>
   <data name="Settings_Common_Records" xml:space="preserve">
-    <value>records</value>
+    <value>개</value>
   </data>
-  <data name="Debug_Localization_Apply" xml:space="preserve">
-    <value>Apply</value>
+  <data name="Menu_SkillDiary" xml:space="preserve">
+    <value>스킬 기록</value>
+  </data>
+  <data name="Debug_Localization_Apply" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="Settings_Language_Korean" xml:space="preserve">
+    <value>한국어</value>
+  </data>
+  <data name="Settings_Language_Title" xml:space="preserve">
+    <value>언어</value>
   </data>
 </root>
