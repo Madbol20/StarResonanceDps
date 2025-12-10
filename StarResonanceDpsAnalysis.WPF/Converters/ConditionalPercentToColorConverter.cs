@@ -22,6 +22,10 @@ public sealed class ConditionalPercentToColorConverter : IMultiValueConverter
 
         var factor = GetOpacityFactor(values[0], culture);
         var isMouseThroughEnabled = values[1] as bool? ?? (values[1] is string s && bool.TryParse(s, out var b) && b);
+        if (!isMouseThroughEnabled)
+        {
+            return baseColor;
+        }
 
         // Apply opacity normally regardless of mouse-through state
         var scaled = Math.Clamp(Math.Round(factor * 255d), 0d, 255d);

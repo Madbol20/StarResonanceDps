@@ -43,12 +43,12 @@ public class ConditionalPercentToColorConverterTests
     }
 
     [Fact]
-    public void Convert_Disabled_ReturnsOpaqueBaseColor()
+    public void Convert_Disabled_ReturnsBaseColor()
     {
         var baseColor = Color.FromArgb(10, 1, 2, 3);
         var result = _converter.Convert([25, false], typeof(Color), baseColor, _culture);
         var color = Assert.IsType<Color>(result);
-        Assert.Equal((byte)255, color.A);
+        Assert.Equal(10, color.A);
         Assert.Equal(baseColor.R, color.R);
         Assert.Equal(baseColor.G, color.G);
         Assert.Equal(baseColor.B, color.B);

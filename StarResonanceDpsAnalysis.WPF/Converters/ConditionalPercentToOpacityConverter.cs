@@ -17,6 +17,12 @@ public sealed class ConditionalPercentToOpacityConverter : IMultiValueConverter
         var opacityPercent = values[0];
         // Mouse-through state is no longer used to override opacity
 
+        var enabled = values[1] is true;
+        if (!enabled)
+        {
+            return 1d;
+        }
+
         return opacityPercent switch
         {
             // Scale percent to 0..1, support double/int/string like PercentToOpacityConverter

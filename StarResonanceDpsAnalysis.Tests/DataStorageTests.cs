@@ -154,7 +154,7 @@ public class DataStorageTests : IDisposable
     [Fact]
     public void ClearAllDpsData_ClearsAllDps()
     {
-        DataStorage.AddBattleLog(new BattleLog { AttackerUuid = 1, Value = 100 });
+        DataStorage.AddBattleLog(new BattleLog { AttackerUuid = 1, Value = 100, IsAttackerPlayer = true });
         Assert.NotEmpty(DataStorage.ReadOnlyFullDpsDatas);
         Assert.NotEmpty(DataStorage.ReadOnlySectionedDpsDatas);
 
