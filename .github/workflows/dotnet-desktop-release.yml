@@ -2,9 +2,11 @@ name: .NET Build and GitHub Release
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master" ]     
+    tags:
+      - 'v*'                   
   workflow_dispatch:
-  
+
 permissions:
   contents: write  # Needed to create releases
 
@@ -58,13 +60,15 @@ jobs:
           echo "body=$body" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
           
       - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')   
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: AUTO.GitHub.RELEASE.v.${{ github.run_number }}
-          name: "StarResonanceDpsAnalysis v${{ github.run_number }}"
+          tag_name: ${{ github.ref_name }}          
+          name: "StarResonanceDpsAnalysis ${{ github.ref_name }}"
           body: |
             ✅ Automated Release from GitHub Actions
             • Build: ${{ github.run_number }}
+            • Tag: ${{ github.ref_name }}
             • Commit SHA: ${{ github.sha }}
             • Commit Author: ${{ steps.commit.outputs.author }}
             • Commit Message: ${{ steps.commit.outputs.message }}
