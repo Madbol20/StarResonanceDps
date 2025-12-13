@@ -39,10 +39,10 @@ jobs:
         run: dir publish
 
       - name: Create ZIP package
-        run: Compress-Archive -Path publish/* -DestinationPath StarResonanceDpsAnalysis-${{ github.run_number }}.zip
+        run: Compress-Archive -Path publish/* -DestinationPath StarResonanceDpsAnalysis-v${{ github.run_number }}.zip
 
       - name: Verify ZIP file
-        run: dir StarResonanceDpsAnalysis-${{ github.run_number }}.zip
+        run: dir StarResonanceDpsAnalysis-v${{ github.run_number }}.zip
 
       - name: Get latest commit info
         id: commit
@@ -59,17 +59,17 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.run_number }}          
-          name: "StarResonanceDpsAnalysis ${{ github.run_number }}"
+          tag_name: v${{ github.run_number }}          
+          name: "StarResonanceDpsAnalysis v${{ github.run_number }}"
           body: |
             ✅ Automated Release from GitHub Actions
-            • Build: ${{ github.run_number }}
-            • Tag: ${{ github.run_number }}
+            • Build: v${{ github.run_number }}
+            • Tag: v${{ github.run_number }}
             • Commit SHA: ${{ github.sha }}
             • Commit Author: ${{ steps.commit.outputs.author }}
             • Commit Message: ${{ steps.commit.outputs.message }}
             • Commit Description: ${{ steps.commit.outputs.body }}
           files: |
-            StarResonanceDpsAnalysis-${{ github.run_number }}.zip
+            StarResonanceDpsAnalysis-v${{ github.run_number }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
