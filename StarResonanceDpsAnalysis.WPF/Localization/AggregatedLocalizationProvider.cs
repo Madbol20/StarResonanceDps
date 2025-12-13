@@ -24,13 +24,13 @@ public class AggregatedLocalizationProvider : ILocalizationProvider
         _resxProvider = resxProvider; // ?? ResxLocalizationProvider.Instance;
 
         // Subscribe to inner providers to bubble up events
-        _jsonProvider.ProviderChanged += (s, e) => OnProviderChanged(e);
-        _jsonProvider.ProviderError += (s, e) => OnProviderError(e);
-        _jsonProvider.ValueChanged += (s, e) => OnValueChanged(e);
+        _jsonProvider.ProviderChanged += (_, e) => OnProviderChanged(e);
+        _jsonProvider.ProviderError += (_, e) => OnProviderError(e);
+        _jsonProvider.ValueChanged += (_, e) => OnValueChanged(e);
 
-        _resxProvider.ProviderChanged += (s, e) => OnProviderChanged(e);
-        _resxProvider.ProviderError += (s, e) => OnProviderError(e);
-        _resxProvider.ValueChanged += (s, e) => OnValueChanged(e);
+        _resxProvider.ProviderChanged += (_, e) => OnProviderChanged(e);
+        _resxProvider.ProviderError += (_, e) => OnProviderError(e);
+        _resxProvider.ValueChanged += (_, e) => OnValueChanged(e);
 
         RefreshAvailableCultures();
     }
@@ -56,30 +56,7 @@ public class AggregatedLocalizationProvider : ILocalizationProvider
     /// <returns>The localized object, or null if not found.</returns>
     public object? GetLocalizedObject(string? key, DependencyObject? target, CultureInfo? culture)
     {
-        if (string.IsNullOrEmpty(key)) return null;
-
-        // Start from the requested culture, walk up to parent cultures, then invariant.
-        var current = culture ?? CultureInfo.CurrentUICulture;
-
-        while (!Equals(current, CultureInfo.InvariantCulture))
-        {
-            // Try JSON first
-            var fromJson = _jsonProvider.GetLocalizedObject(key, target, current);
-            if (fromJson != null) return fromJson;
-
-            // Fallback to resx
-            var fromResx = _resxProvider.GetLocalizedObject(key, target, current);
-            if (fromResx != null) return fromResx;
-
-            // Move to parent culture
-            current = current.Parent;
-            // Safety: break if parent has no name and equals invariant
-            if (Equals(current, CultureInfo.InvariantCulture)) break;
-        }
-
-        // Final attempt with invariant/neutral culture
-        var invariantJson = _jsonProvider.GetLocalizedObject(key, target, CultureInfo.InvariantCulture);
-        return invariantJson ?? _resxProvider.GetLocalizedObject(key, target, CultureInfo.InvariantCulture);
+        return ProbeKey(key, target, culture).SuccessStep?.Value;
     }
 
     /// <summary>
@@ -101,6 +78,59 @@ public class AggregatedLocalizationProvider : ILocalizationProvider
     /// Occurs when a value changes.
     /// </summary>
     public event ValueChangedEventHandler? ValueChanged;
+
+    /// <summary>
+    /// Collects a detailed trace of how the localization key is resolved across providers.
+    /// </summary>
+    public LocalizationLookupResult ProbeKey(string? key, DependencyObject? target, CultureInfo? culture,
+        bool includeInvariantFallback = true)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            return LocalizationLookupResult.Empty;
+        }
+
+        var steps = new List<LocalizationLookupStep>();
+        var current = culture ?? CultureInfo.CurrentUICulture;
+
+        while (!Equals(current, CultureInfo.InvariantCulture))
+        {
+            var jsonHit = CaptureStep(_jsonProvider, "JSON", key, target, current, steps);
+            if (jsonHit != null)
+            {
+                return BuildResult(jsonHit, steps);
+            }
+
+            var resxHit = CaptureStep(_resxProvider, "RESX", key, target, current, steps);
+            if (resxHit != null)
+            {
+                return BuildResult(resxHit, steps);
+            }
+
+            current = current.Parent;
+            if (Equals(current, CultureInfo.InvariantCulture))
+            {
+                break;
+            }
+        }
+
+        if (includeInvariantFallback)
+        {
+            var invariantJson = CaptureStep(_jsonProvider, "JSON", key, target, CultureInfo.InvariantCulture, steps);
+            if (invariantJson != null)
+            {
+                return BuildResult(invariantJson, steps);
+            }
+
+            var invariantResx = CaptureStep(_resxProvider, "RESX", key, target, CultureInfo.InvariantCulture, steps);
+            if (invariantResx != null)
+            {
+                return BuildResult(invariantResx, steps);
+            }
+        }
+
+        return BuildResult(null, steps);
+    }
 
     private void OnProviderChanged(ProviderChangedEventArgs e)
     {
@@ -130,4 +160,47 @@ public class AggregatedLocalizationProvider : ILocalizationProvider
         foreach (var c in cultures)
             AvailableCultures.Add(c);
     }
+
+    private static LocalizationLookupStep? CaptureStep(ILocalizationProvider provider, string providerName, string key,
+        DependencyObject? target, CultureInfo culture, ICollection<LocalizationLookupStep> steps)
+    {
+        var value = provider.GetLocalizedObject(key, target, culture);
+        var step = new LocalizationLookupStep(providerName, culture, value);
+        steps.Add(step);
+        return value != null ? step : null;
+    }
+
+    private static LocalizationLookupResult BuildResult(LocalizationLookupStep? successStep,
+        ICollection<LocalizationLookupStep> steps)
+    {
+        return new LocalizationLookupResult(successStep, steps.ToArray());
+    }
+}
+
+/// <summary>
+/// Represents a single lookup attempt against a specific provider/culture pair.
+/// </summary>
+public sealed record LocalizationLookupStep(string Provider, CultureInfo Culture, object? Value)
+{
+    public bool IsHit => Value is not null;
+}
+
+/// <summary>
+/// Aggregates all lookup attempts and indicates which one succeeded.
+/// </summary>
+public sealed class LocalizationLookupResult
+{
+    public LocalizationLookupResult(LocalizationLookupStep? successStep, IReadOnlyList<LocalizationLookupStep> steps)
+    {
+        SuccessStep = successStep;
+        Steps = steps;
+    }
+
+    public static LocalizationLookupResult Empty { get; } = new(null, Array.Empty<LocalizationLookupStep>());
+
+    public LocalizationLookupStep? SuccessStep { get; }
+
+    public IReadOnlyList<LocalizationLookupStep> Steps { get; }
+
+    public bool HasValue => SuccessStep is not null;
 }

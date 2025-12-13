@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
-using StarResonanceDpsAnalysis.Core.Data.Models;
 
 namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 
@@ -14,10 +12,19 @@ public record PlotOptions
     public string? YAxisTitle { get; init; }
     public string? LineSeriesTitle { get; init; }
     public string? PiePlotTitle { get; init; }
+    public string? DistributionPlotTitle { get; set; }
+    public string? HitTypeNormal { get; set; }
+    public string? HitTypeCritical { get; set; }
+    public string? HitTypeLucky { get; set; }
 }
 
 public partial class PlotViewModel : BaseViewModel
 {
+    private readonly CategoryAxis _hitTypeBarCategoryAxis;
+    [ObservableProperty] private PlotModel _hitTypeBarPlotModel;
+    [ObservableProperty] private PlotModel _piePlotModel;
+    [ObservableProperty] private PlotModel _seriesPlotModel;
+
     public PlotViewModel(PlotOptions? options)
     {
         LineSeriesData = new LineSeries
@@ -68,17 +75,19 @@ public partial class PlotViewModel : BaseViewModel
             Background = OxyColors.Transparent,
             Series = { PieSeriesData }
         };
+
+        // Bar chart model for hit type percentages (Normal, Critical, Lucky)
+        (_hitTypeBarPlotModel, _hitTypeBarCategoryAxis) = CreateHitTypeBarPlotModel(options);
     }
 
     public LineSeries LineSeriesData { get; }
     public PieSeries PieSeriesData { get; }
-    [ObservableProperty] private PlotModel _seriesPlotModel;
-    [ObservableProperty] private PlotModel _piePlotModel;
 
     public void SetPieSeriesData(IReadOnlyList<SkillItemViewModel> skills)
     {
         var colors = GenerateDistinctColors(skills.Count);
 
+        PieSeriesData.Slices.Clear();
         for (var i = 0; i < skills.Count; i++)
         {
             var skill = skills[i];
@@ -90,6 +99,26 @@ public partial class PlotViewModel : BaseViewModel
         }
 
         RefreshPie();
+    }
+
+    public void SetHitTypeDistribution(double normalPercent, double criticalPercent, double luckyPercent)
+    {
+        if (HitTypeBarPlotModel.Series.Count == 0)
+        {
+            return;
+        }
+
+        if (HitTypeBarPlotModel.Series[0] is not BarSeries barSeries)
+        {
+            return;
+        }
+
+        barSeries.Items.Clear();
+        barSeries.Items.Add(new BarItem(normalPercent));
+        barSeries.Items.Add(new BarItem(criticalPercent));
+        barSeries.Items.Add(new BarItem(luckyPercent));
+
+        HitTypeBarPlotModel.InvalidatePlot(true);
     }
 
     public void RefreshSeries()
@@ -114,6 +143,56 @@ public partial class PlotViewModel : BaseViewModel
         }
 
         return colors;
+    }
+
+    private static (PlotModel model, CategoryAxis cateAxis) CreateHitTypeBarPlotModel(PlotOptions? options)
+    {
+        var model = new PlotModel
+        {
+            Background = OxyColors.Transparent,
+            PlotAreaBorderColor = OxyColor.FromRgb(224, 224, 224)
+        };
+
+        // Categories on Y axis (required by BarSeriesBase)
+        var categoryAxis = new CategoryAxis
+        {
+            Position = AxisPosition.Left,
+            ItemsSource = new[]
+            {
+                options?.HitTypeNormal ?? "Normal", options?.HitTypeCritical ?? "Critical",
+                options?.HitTypeLucky ?? "Lucky"
+            }
+        };
+
+        // Values on X axis
+        var valueAxis = new LinearAxis
+        {
+            Position = AxisPosition.Top,
+            Minimum = 0,
+            Maximum = 100,
+            Title = options?.DistributionPlotTitle,
+            MajorGridlineStyle = LineStyle.Solid,
+            MajorGridlineColor = OxyColor.FromRgb(240, 240, 240)
+        };
+
+        model.Axes.Add(categoryAxis);
+        model.Axes.Add(valueAxis);
+
+        var series = new BarSeries
+        {
+            FillColor = OxyColor.FromRgb(34, 151, 244)
+            // Optionally make this explicit:
+            // YAxisKey = categoryAxis.Key,
+            // XAxisKey = valueAxis.Key
+        };
+
+        series.Items.Add(new BarItem(0));
+        series.Items.Add(new BarItem(0));
+        series.Items.Add(new BarItem(0));
+
+        model.Series.Add(series);
+
+        return (model, categoryAxis);
     }
 
     public void ResetModelZoom()
@@ -156,18 +235,47 @@ public partial class PlotViewModel : BaseViewModel
             if (newMin < dataMin)
             {
                 newMin = dataMin;
-                newMax = System.Math.Min(dataMin + visibleRange, dataMax);
+                newMax = Math.Min(dataMin + visibleRange, dataMax);
             }
 
             if (newMax > dataMax)
             {
                 newMax = dataMax;
-                newMin = System.Math.Max(dataMax - visibleRange, dataMin);
+                newMin = Math.Max(dataMax - visibleRange, dataMin);
             }
 
             axis.Zoom(newMin, newMax);
         }
 
         model.InvalidatePlot(true);
+    }
+
+    public void UpdateOption(PlotOptions plotOptions)
+    {
+        SeriesPlotModel.Title = plotOptions.SeriesPlotTitle;
+        LineSeriesData.Title = plotOptions.LineSeriesTitle;
+
+        foreach (var axis in SeriesPlotModel.Axes)
+        {
+            axis.Title = axis.Position switch
+            {
+                AxisPosition.Bottom => plotOptions.XAxisTitle,
+                AxisPosition.Left => plotOptions.YAxisTitle,
+                _ => axis.Title
+            };
+        }
+
+        SeriesPlotModel.InvalidatePlot(true);
+
+        PiePlotModel.Title = plotOptions.PiePlotTitle;
+        PiePlotModel.InvalidatePlot(true);
+
+        //HitTypeBarPlotModel.Title = plotOptions.DistributionPlotTitle;
+        _hitTypeBarCategoryAxis.ItemsSource = new List<string>
+        {
+            plotOptions.HitTypeNormal ?? "Normal", plotOptions.HitTypeCritical ?? "Critical",
+            plotOptions.HitTypeLucky ?? "Lucky"
+        };
+        HitTypeBarPlotModel.InvalidatePlot(true);
     }
 }

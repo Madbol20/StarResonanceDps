@@ -37,6 +37,7 @@ public sealed class LocalizationManager
     // private readonly string _defaultAssemblyName;
     private readonly CultureInfo _systemDefaultCultureInfo;
     private AggregatedLocalizationProvider _aggregatedProvider;
+    private readonly LocalizeDictionary _localizedDictionary;
     private bool _initialized;
 
     /// <summary>
@@ -54,11 +55,12 @@ public sealed class LocalizationManager
         //     ? Assembly.GetExecutingAssembly().GetName().Name ?? string.Empty
         //     : assemblyName;
 
+        _localizedDictionary = LocalizeDictionary.Instance;
         _aggregatedProvider = null!; // Will be initialized in ConfigureProviders
         ConfigureProviders();
-        LocalizeDictionary.Instance.SetCurrentThreadCulture = true;
-        LocalizeDictionary.Instance.IncludeInvariantCulture = true;
-        LocalizeDictionary.Instance.MissingKeyEvent += InstanceOnMissingKeyEvent;
+        _localizedDictionary.SetCurrentThreadCulture = true;
+        _localizedDictionary.IncludeInvariantCulture = true;
+        _localizedDictionary.MissingKeyEvent += InstanceOnMissingKeyEvent;
         Instance = this;
     }
 
@@ -93,13 +95,17 @@ public sealed class LocalizationManager
     }
 
     /// <summary>
+    /// Gets the culture currently applied to the UI.
+    /// </summary>
+    public CultureInfo CurrentCulture => LocalizeDictionary.Instance.Culture ?? CultureInfo.CurrentUICulture;
+
+    /// <summary>
     /// Gets the current language based on the active culture.
     /// </summary>
     /// <returns>The current <see cref="Language"/>.</returns>
     public Language GetCurrentLanguage()
     {
-        return CultureAttributeExtensions.FromCultureInfo(LocalizeDictionary.Instance.Culture ??
-                                                          CultureInfo.CurrentUICulture);
+        return CultureAttributeExtensions.FromCultureInfo(CurrentCulture);
     }
 
     /// <summary>
@@ -116,6 +122,14 @@ public sealed class LocalizationManager
         return !string.IsNullOrEmpty(localized)
             ? localized
             : key;
+    }
+
+    /// <summary>
+    /// Provides a diagnostic probe for a localization key, returning all provider attempts.
+    /// </summary>
+    public LocalizationLookupResult ProbeKey(string key, CultureInfo? culture = null, bool includeInvariantFallback = true)
+    {
+        return _aggregatedProvider.ProbeKey(key, null, culture, includeInvariantFallback);
     }
 
     /// <summary>

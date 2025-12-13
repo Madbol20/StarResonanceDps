@@ -15,11 +15,28 @@ public partial class Footer : UserControl
     public static readonly DependencyProperty CancelCommandProperty = DependencyProperty.Register(
         nameof(CancelCommand), typeof(ICommand), typeof(Footer), new PropertyMetadata(default(ICommand)));
 
+    public static readonly DependencyProperty ConfirmTooltipProperty = DependencyProperty.Register(
+        nameof(ConfirmTooltip), typeof(string), typeof(Footer), new PropertyMetadata(default(string)));
+
+    public static readonly DependencyProperty CancelTooltipProperty = DependencyProperty.Register(
+        nameof(CancelTooltip), typeof(string), typeof(Footer), new PropertyMetadata(default(string?)));
+
 
     public Footer()
     {
         InitializeComponent();
+    }
 
+    public string CancelTooltip
+    {
+        get => (string)GetValue(CancelTooltipProperty);
+        set => SetValue(CancelTooltipProperty, value);
+    }
+
+    public string ConfirmTooltip
+    {
+        get => (string)GetValue(ConfirmTooltipProperty);
+        set => SetValue(ConfirmTooltipProperty, value);
     }
 
     public ICommand ConfirmCommand

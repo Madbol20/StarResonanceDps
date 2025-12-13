@@ -313,6 +313,20 @@ public partial class DebugFunctions : BaseViewModel, IDisposable
         _logger.LogInformation("Test log entry {Id}", Guid.NewGuid().ToString("N")[..8]);
     }
 
+    #region Localization
+
+    [ObservableProperty] private string _testLocalizationKey = string.Empty;
+    [ObservableProperty] private string _localizedTestValue = string.Empty;
+
+    [RelayCommand]
+    private void TestLocalization()
+    {
+        var ret = _localizationManager.GetString(TestLocalizationKey);
+        LocalizedTestValue = ret;
+    }
+
+    #endregion
+
     #region AddData
 
     [RelayCommand]

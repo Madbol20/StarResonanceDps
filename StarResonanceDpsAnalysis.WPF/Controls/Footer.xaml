@@ -45,6 +45,9 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
         </Style>
+
+        <Image Source="{StaticResource ImageOkNormal}" x:Key="Confirm"/>
+        <Image Source="{StaticResource ImageCancelNormal}" x:Key="Cancel"/>
     </UserControl.Resources>
 
     <Border Style="{StaticResource FooterBorder}">
@@ -59,11 +62,13 @@
                 Grid.Column="0"
                 Click="Confirm_Click"
                 Command="{Binding ConfirmCommand, ElementName=Root}"
-                Style="{StaticResource ControlButton}">
+                Style="{StaticResource ControlButton}"
+                Content="{StaticResource Confirm}"
+                ToolTip="{Binding ConfirmTooltip, ElementName=Root}">
 
-                <Button.Content>
+                <!--<Button.Content>
                     <Image Source="{StaticResource ImageOkNormal}" />
-                </Button.Content>
+                </Button.Content>-->
             </Button>
 
             <Button
@@ -71,11 +76,9 @@
                 Grid.Column="1"
                 Click="Cancel_Click"
                 Command="{Binding CancelCommand, ElementName=Root}"
-                Style="{StaticResource ControlButton}">
-
-                <Button.Content>
-                    <Image Source="{StaticResource ImageCancelNormal}" />
-                </Button.Content>
+                Style="{StaticResource ControlButton}"
+                Content="{StaticResource Cancel}"
+                ToolTip="{Binding CancelTooltip, ElementName=Root}">
             </Button>
         </Grid>
     </Border>

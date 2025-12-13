@@ -205,7 +205,10 @@
     <value>Foque nesta caixa e pressione um atalho (ex: F9). Pressione Delete para limpar.</value>
   </data>
   <data name="Settings_Section_Display_Title" xml:space="preserve">
-    <value>Exibição</value>
+    <value>Configurações de exibição</value>
+  </data>
+  <data name="Settings_Language_Title" xml:space="preserve">
+    <value>Idioma</value>
   </data>
   <data name="Settings_Section_Combat_Title" xml:space="preserve">
     <value>Configurações de Combate</value>
@@ -248,12 +251,6 @@
   </data>
   <data name="Menu_TemporaryMaskPlayerName" xml:space="preserve">
     <value>Mascaramento temporário</value>
-  </data>
-  <data name="Settings_Section_Display_Title" xml:space="preserve">
-    <value>Configurações de exibição</value>
-  </data>
-  <data name="Settings_Language_Title" xml:space="preserve">
-    <value>Idioma</value>
   </data>
   <data name="Settings_Section_Language_Description" xml:space="preserve">
     <value>Preferências de exibição da interface</value>
@@ -643,28 +640,31 @@
     <value>Taxa de sorte</value>
   </data>
   <data name="SkillBreakdown_Label_CritDamage" xml:space="preserve">
-    <value />
+    <value>Dano Crítico</value>
   </data>
   <data name="SkillBreakdown_Info_Name" xml:space="preserve">
-    <value />
+    <value>--Nome de Exemplo--</value>
+  </data>
+  <data name="SkillBreakdown_Info_Uid" xml:space="preserve">
+    <value>UID: 123456</value>
   </data>
   <data name="SkillBreakdown_Info_Power" xml:space="preserve">
-    <value />
+    <value>Poder: 25000</value>
   </data>
   <data name="SkillBreakdown_Info_Level" xml:space="preserve">
-    <value />
+    <value>Nível: 60</value>
   </data>
   <data name="SkillBreakdown_Info_Badge" xml:space="preserve">
-    <value />
+    <value>Emblema: 190</value>
   </data>
   <data name="SkillBreakdown_Placeholder_Graph" xml:space="preserve">
-    <value />
+    <value>Espaço reservado para gráfico</value>
   </data>
   <data name="DpsStatistics_TestButton_Content" xml:space="preserve">
     <value>T</value>
   </data>
   <data name="DpsStatistics_TestButton_Tooltip" xml:space="preserve">
-    <value />
+    <value>Adicionar Item de Teste</value>
   </data>
   <data name="Common_Dash" xml:space="preserve">
     <value>-</value>
@@ -757,7 +757,7 @@
     <value>Automático</value>
   </data>
   <data name="Debug_Localization_Language" xml:space="preserve">
-    <value />
+    <value>Idioma:</value>
   </data>
   <data name="MainView_Plugin_Search_PlaceHolder" xml:space="preserve">
     <value>Pesquisar...</value>
@@ -772,22 +772,22 @@
     <value>Configurações</value>
   </data>
   <data name="Settings_Section_Theme_Title" xml:space="preserve">
-    <value />
+    <value>Configurações de Tema</value>
   </data>
   <data name="Settings_Section_Theme_Description" xml:space="preserve">
-    <value />
+    <value>Personalize sua caixa de ferramentas</value>
   </data>
   <data name="Settings_Theme_WindowColor" xml:space="preserve">
-    <value />
+    <value>Cor da Janela</value>
   </data>
   <data name="Settings_Theme_BackgroundImage" xml:space="preserve">
-    <value />
+    <value>Imagem de Fundo</value>
   </data>
   <data name="Settings_Theme_SelectImage" xml:space="preserve">
-    <value />
+    <value>Selecionar Imagem...</value>
   </data>
   <data name="Settings_CancelConfirm_Title" xml:space="preserve">
-    <value />
+    <value>Descartar Alterações</value>
   </data>
   <data name="Settings_CancelConfirm_Message" xml:space="preserve">
     <value>Descartar todas as alterações? As mudanças não salvas serão perdidas.</value>
@@ -833,7 +833,7 @@ Recomendado: 500-2000 milissegundos</value>
     <value>ms</value>
   </data>
   <data name="Window_Training_Title" xml:space="preserve">
-    <value />
+    <value>Treino</value>
   </data>
   <data name="MainView_Plugin_Training_Title" xml:space="preserve">
     <value />
@@ -869,6 +869,85 @@ Como obter: Após uma luta, seu personagem aparecerá automaticamente na janela 
   <data name="Settings_Common_Records" xml:space="preserve">
     <value>registros</value>
   </data>
+  <data name="Debug_Localization_Apply" xml:space="preserve">
+    <value>Aplicar</value>
+  </data>
+  <data name="Menu_SkillDiary" xml:space="preserve">
+    <value>Diário de Habilidades</value>
+  </data>
+  <data name="Settings_Language_Korean" xml:space="preserve">
+    <value>한국어</value>
+  </data>
+  <data name="SkillBreakdown_Label_Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="SkillBreakdown_Unit_Hits" xml:space="preserve">
+    <value>acertos</value>
+  </data>
+  <data name="SkillBreakdown_Label_AverageDps" xml:space="preserve">
+    <value>DPS médio</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHits" xml:space="preserve">
+    <value>Total de acertos</value>
+  </data>
+  <data name="SkillBreakdown_Section_DamageSkillsAnalysis" xml:space="preserve">
+    <value>Análise de habilidades de dano</value>
+  </data>
+  <data name="SkillBreakdown_Chart_RealTimeDps" xml:space="preserve">
+    <value>DPS em tempo real</value>
+  </data>
+  <data name="SkillBreakdown_Tooltip_ResetZoom" xml:space="preserve">
+    <value>Redefinir zoom</value>
+  </data>
+  <data name="SkillBreakdown_Chart_SkillDamageDistribution" xml:space="preserve">
+    <value>Distribuição de dano por habilidade</value>
+  </data>
+  <data name="SkillBreakdown_Chart_HitTypeDistribution" xml:space="preserve">
+    <value>Distribuição por tipo de acerto</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHealing" xml:space="preserve">
+    <value>Cura total</value>
+  </data>
+  <data name="SkillBreakdown_Label_AverageHps" xml:space="preserve">
+    <value>HPS médio</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHeals" xml:space="preserve">
+    <value>Total de curas</value>
+  </data>
+  <data name="SkillBreakdown_Section_HealingSkillsAnalysis" xml:space="preserve">
+    <value>Análise de habilidades de cura</value>
+  </data>
+  <data name="SkillBreakdown_Chart_RealTimeHps" xml:space="preserve">
+    <value>HPS em tempo real</value>
+  </data>
+  <data name="SkillBreakdown_Chart_HealingDistribution" xml:space="preserve">
+    <value>Distribuição de cura</value>
+  </data>
+  <data name="SkillBreakdown_Chart_HealTypeDistribution" xml:space="preserve">
+    <value>Distribuição por tipo de cura</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalDamageTaken" xml:space="preserve">
+    <value>Dano total recebido</value>
+  </data>
+  <data name="SkillBreakdown_Label_AverageDtps" xml:space="preserve">
+    <value>DTPS médio</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHitsTaken" xml:space="preserve">
+    <value>Total de golpes recebidos</value>
+  </data>
+  <data name="SkillBreakdown_Section_DamageTakenAnalysis" xml:space="preserve">
+    <value>Análise de dano recebido</value>
+  </data>
+  <data name="SkillBreakdown_Chart_RealTimeDtps" xml:space="preserve">
+    <value>DTPS em tempo real</value>
+  </data>
+  <data name="SkillBreakdown_Chart_DamageSourcesDistribution" xml:space="preserve">
+    <value>Distribuição de fontes de dano</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="SkillBreakdown_Chart_DpsSeriesXAxis" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
   <data name="Menu_Training_Personal" xml:space="preserve">
     <value>Treino Solo</value>
   </data>
@@ -877,14 +956,5 @@ Como obter: Após uma luta, seu personagem aparecerá automaticamente na janela 
   </data>
   <data name="Menu_Training_Extreme" xml:space="preserve">
     <value>Treino Extremo</value>
-  </data>
-  <data name="Menu_SkillDiary" xml:space="preserve">
-    <value>Diário de Habilidades</value>
-  </data>
-  <data name="Debug_Localization_Apply" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Settings_Language_Korean" xml:space="preserve">
-    <value>한국어</value>
   </data>
 </root>

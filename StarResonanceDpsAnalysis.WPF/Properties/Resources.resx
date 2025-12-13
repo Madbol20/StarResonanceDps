@@ -984,4 +984,88 @@ How to get: After a fight, your character will automatically appear in the stats
   <data name="Debug_Localization_Apply" xml:space="preserve">
     <value>Apply</value>
   </data>
+  <data name="Menu_SkillDiary" xml:space="preserve">
+    <value>Skill Diary</value>
+  </data>
+  <data name="Settings_Language_Korean" xml:space="preserve">
+    <value>Korean</value>
+  </data>
+  <data name="SkillBreakdown_Label_Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="SkillBreakdown_Unit_Hits" xml:space="preserve">
+    <value>hits</value>
+  </data>
+  <data name="SkillBreakdown_Label_AverageDps" xml:space="preserve">
+    <value>Average DPS</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHits" xml:space="preserve">
+    <value>Total Hits</value>
+  </data>
+  <data name="SkillBreakdown_Section_DamageSkillsAnalysis" xml:space="preserve">
+    <value>Damage Skills Analysis</value>
+  </data>
+  <data name="SkillBreakdown_Chart_RealTimeDps" xml:space="preserve">
+    <value>Real-time DPS</value>
+  </data>
+  <data name="SkillBreakdown_Tooltip_ResetZoom" xml:space="preserve">
+    <value>Reset Zoom</value>
+  </data>
+  <data name="SkillBreakdown_Chart_SkillDamageDistribution" xml:space="preserve">
+    <value>Skill Damage Distribution</value>
+  </data>
+  <data name="SkillBreakdown_Chart_HitTypeDistribution" xml:space="preserve">
+    <value>Hit Type Distribution</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHealing" xml:space="preserve">
+    <value>Total Healing</value>
+  </data>
+  <data name="SkillBreakdown_Label_AverageHps" xml:space="preserve">
+    <value>Average HPS</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHeals" xml:space="preserve">
+    <value>Total Heals</value>
+  </data>
+  <data name="SkillBreakdown_Section_HealingSkillsAnalysis" xml:space="preserve">
+    <value>Healing Skills Analysis</value>
+  </data>
+  <data name="SkillBreakdown_Chart_RealTimeHps" xml:space="preserve">
+    <value>Real-time HPS</value>
+  </data>
+  <data name="SkillBreakdown_Chart_HealingDistribution" xml:space="preserve">
+    <value>Healing Distribution</value>
+  </data>
+  <data name="SkillBreakdown_Chart_HealTypeDistribution" xml:space="preserve">
+    <value>Heal Type Distribution</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalDamageTaken" xml:space="preserve">
+    <value>Total Damage Taken</value>
+  </data>
+  <data name="SkillBreakdown_Label_AverageDtps" xml:space="preserve">
+    <value>Average DTPS</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHitsTaken" xml:space="preserve">
+    <value>Total Hits Taken</value>
+  </data>
+  <data name="SkillBreakdown_Section_DamageTakenAnalysis" xml:space="preserve">
+    <value>Damage Taken Analysis</value>
+  </data>
+  <data name="SkillBreakdown_Chart_RealTimeDtps" xml:space="preserve">
+    <value>Real-time DTPS</value>
+  </data>
+  <data name="SkillBreakdown_Chart_DamageSourcesDistribution" xml:space="preserve">
+    <value>Damage Sources Distribution</value>
+  </data>
+  <data name="SkillBreakdown_Chart_DpsSeriesXAxis" xml:space="preserve">
+    <value>Time (s)</value>
+  </data>
+  <data name="Common_HitType_Lucky" xml:space="preserve">
+    <value>Lucky</value>
+  </data>
+  <data name="Common_HitType_Critical" xml:space="preserve">
+    <value>Crit</value>
+  </data>
+  <data name="Common_HitType_Normal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
 </root>

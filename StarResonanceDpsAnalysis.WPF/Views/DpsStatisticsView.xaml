@@ -200,9 +200,8 @@
                         </TextBlock>
                     <!--  Localized NPC label from Monster dictionary using UID (visible when NPC)  -->
                     <TextBlock
-                        lex:ResxLocalizationProvider.DefaultDictionary="Monster"
                         Style="{StaticResource PlayerInfoTextStyle}"
-                        Text="{lex:Loc {Binding Player.Uid}}"
+                        Text="{lex:Loc {Binding Player.Uid, StringFormat=Monster:{0}}}"
                         Visibility="{Binding Player.IsNpc, Converter={StaticResource BoolToVisibilityConverter}}" />
                     <TextBlock Style="{StaticResource PlayerInfoTextStyle}" Visibility="{Binding Player.IsNpc, Converter={StaticResource BoolToInvertedVisibilityConverter}}">
                         <!--  Player name (visible when not NPC)  -->
@@ -319,7 +318,10 @@
                             OverlayTemplate="{StaticResource StatisticDetailDataTemplate}"
                             Percentage="{Binding PercentOfMax}"
                             PopupContent="{Binding}"
-                            PopupTemplate="{StaticResource PopupTemplate}">
+                            PopupTemplate="{StaticResource PopupTemplate}"
+                            SkillDisplayLimit="{Binding DataContext.CurrentStatisticData.SkillDisplayLimit, RelativeSource={RelativeSource AncestorType=Window}}"
+                            MouseEnterCommand="{Binding MouseEnterCommand}"
+                            MouseLeaveCommand="{Binding MouseLeaveCommand}">
                             <ctrl:DpsIndicatorControl.TrackOpacity>
                                 <MultiBinding Converter="{StaticResource ConditionalPercentToOpacityConverter}">
                                     <Binding Path="DataContext.AppConfig.Opacity" RelativeSource="{RelativeSource AncestorType=Window}" />

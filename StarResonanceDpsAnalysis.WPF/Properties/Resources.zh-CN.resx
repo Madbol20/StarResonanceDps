@@ -953,14 +953,91 @@
   <data name="Settings_Common_Records" xml:space="preserve">
     <value>条</value>
   </data>
+  <data name="Debug_Localization_Apply" xml:space="preserve">
+    <value>应用</value>
+  </data>
   <data name="Menu_SkillDiary" xml:space="preserve">
     <value>技能日志</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Debug_Localization_Apply" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
   <data name="Settings_Language_Korean" xml:space="preserve">
     <value>한국어</value>
+  </data>
+  <data name="SkillBreakdown_Label_Total" xml:space="preserve">
+    <value>总计</value>
+  </data>
+  <data name="SkillBreakdown_Unit_Hits" xml:space="preserve">
+    <value>次</value>
+  </data>
+  <data name="SkillBreakdown_Label_AverageDps" xml:space="preserve">
+    <value>平均 DPS</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHits" xml:space="preserve">
+    <value>总命中次数</value>
+  </data>
+  <data name="SkillBreakdown_Section_DamageSkillsAnalysis" xml:space="preserve">
+    <value>伤害技能分析</value>
+  </data>
+  <data name="SkillBreakdown_Chart_RealTimeDps" xml:space="preserve">
+    <value>实时 DPS</value>
+  </data>
+  <data name="SkillBreakdown_Tooltip_ResetZoom" xml:space="preserve">
+    <value>重置缩放</value>
+  </data>
+  <data name="SkillBreakdown_Chart_SkillDamageDistribution" xml:space="preserve">
+    <value>技能伤害分布</value>
+  </data>
+  <data name="SkillBreakdown_Chart_HitTypeDistribution" xml:space="preserve">
+    <value>命中类型分布</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHealing" xml:space="preserve">
+    <value>总治疗量</value>
+  </data>
+  <data name="SkillBreakdown_Label_AverageHps" xml:space="preserve">
+    <value>平均 HPS</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHeals" xml:space="preserve">
+    <value>总治疗次数</value>
+  </data>
+  <data name="SkillBreakdown_Section_HealingSkillsAnalysis" xml:space="preserve">
+    <value>治疗技能分析</value>
+  </data>
+  <data name="SkillBreakdown_Chart_RealTimeHps" xml:space="preserve">
+    <value>实时 HPS</value>
+  </data>
+  <data name="SkillBreakdown_Chart_HealingDistribution" xml:space="preserve">
+    <value>治疗分布</value>
+  </data>
+  <data name="SkillBreakdown_Chart_HealTypeDistribution" xml:space="preserve">
+    <value>治疗类型分布</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalDamageTaken" xml:space="preserve">
+    <value>总承受伤害</value>
+  </data>
+  <data name="SkillBreakdown_Label_AverageDtps" xml:space="preserve">
+    <value>平均 DTPS</value>
+  </data>
+  <data name="SkillBreakdown_Label_TotalHitsTaken" xml:space="preserve">
+    <value>总受击次数</value>
+  </data>
+  <data name="SkillBreakdown_Section_DamageTakenAnalysis" xml:space="preserve">
+    <value>承伤分析</value>
+  </data>
+  <data name="SkillBreakdown_Chart_RealTimeDtps" xml:space="preserve">
+    <value>实时 DTPS</value>
+  </data>
+  <data name="SkillBreakdown_Chart_DamageSourcesDistribution" xml:space="preserve">
+    <value>伤害来源分布</value>
+  </data>
+  <data name="SkillBreakdown_Chart_DpsSeriesXAxis" xml:space="preserve">
+    <value>时间（秒）</value>
+  </data>
+  <data name="Common_HitType_Lucky" xml:space="preserve">
+    <value>幸运</value>
+  </data>
+  <data name="Common_HitType_Critical" xml:space="preserve">
+    <value>暴击</value>
+  </data>
+  <data name="Common_HitType_Normal" xml:space="preserve">
+    <value>普通</value>
   </data>
 </root>

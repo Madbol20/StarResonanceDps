@@ -1,24 +1,60 @@
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using OxyPlot;
 using StarResonanceDpsAnalysis.WPF.Extensions;
+using StarResonanceDpsAnalysis.WPF.Localization;
+using StarResonanceDpsAnalysis.WPF.Properties;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 
 /// <summary>
 /// ViewModel for the skill breakdown view, showing detailed statistics for a player.
 /// </summary>
-public partial class SkillBreakdownViewModel(ILogger<SkillBreakdownViewModel> logger) : BaseViewModel
+public partial class SkillBreakdownViewModel : BaseViewModel
 {
+    private readonly ILogger<SkillBreakdownViewModel> _logger;
+    private readonly LocalizationManager _localizationManager;
+
+    /// <summary>
+    /// ViewModel for the skill breakdown view, showing detailed statistics for a player.
+    /// </summary>
+    public SkillBreakdownViewModel(ILogger<SkillBreakdownViewModel> logger, LocalizationManager localizationManager)
+    {
+        _logger = logger;
+        _localizationManager = localizationManager;
+        var xAxis = GetXAxisName();
+        _dpsPlot = new PlotViewModel(new PlotOptions
+        {
+            XAxisTitle = xAxis,
+            HitTypeCritical = _localizationManager.GetString(ResourcesKeys.Common_HitType_Critical),
+            HitTypeNormal = _localizationManager.GetString(ResourcesKeys.Common_HitType_Normal),
+            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky)
+        });
+        _hpsPlot = new PlotViewModel(new PlotOptions
+        {
+            XAxisTitle = xAxis,
+            HitTypeCritical = _localizationManager.GetString(ResourcesKeys.Common_HitType_Critical),
+            HitTypeNormal = _localizationManager.GetString(ResourcesKeys.Common_HitType_Normal),
+            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky)
+        });
+        _dtpsPlot = new PlotViewModel(new PlotOptions
+        {
+            XAxisTitle = xAxis,
+            HitTypeCritical = _localizationManager.GetString(ResourcesKeys.Common_HitType_Critical),
+            HitTypeNormal = _localizationManager.GetString(ResourcesKeys.Common_HitType_Normal),
+            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky)
+        });
+    }
+
     /// <summary>
     /// Initializes the ViewModel from a <see cref="StatisticDataViewModel"/>.
     /// </summary>
     public void InitializeFrom(StatisticDataViewModel slot)
     {
-        logger.LogDebug("Initializing SkillBreakdownViewModel from StatisticDataViewModel for player {PlayerName}",
+        _logger.LogDebug("Initializing SkillBreakdownViewModel from StatisticDataViewModel for player {PlayerName}",
             slot.Player.Name);
 
         ObservedSlot = slot;
@@ -35,16 +71,60 @@ public partial class SkillBreakdownViewModel(ILogger<SkillBreakdownViewModel> lo
         HealingStats = slot.Heal.TotalSkillList.FromSkillsToHealing(duration);
         TakenDamageStats = slot.TakenDamage.TotalSkillList.FromSkillsToDamageTaken(duration);
 
+        //UpdatePlotOption();
+
         // Initialize Chart Data
         InitializeTimeSeries(slot.Damage.Dps, DpsPlot);
         InitializeTimeSeries(slot.Heal.Dps, HpsPlot);
         InitializeTimeSeries(slot.TakenDamage.Dps, DtpsPlot);
 
-        UpdatePieChart(slot.Damage.TotalSkillList, DpsPlot);
-        UpdatePieChart(slot.Heal.TotalSkillList, HpsPlot);
-        UpdatePieChart(slot.TakenDamage.TotalSkillList, DtpsPlot);
+        InitializePie(slot.Damage, DpsPlot);
+        InitializePie(slot.Heal, HpsPlot);
+        InitializePie(slot.TakenDamage, DtpsPlot);
 
-        logger.LogDebug("SkillBreakdownViewModel initialized for player: {PlayerName}", PlayerName);
+        UpdateHitTypeDistribution(DamageStats, DpsPlot);
+        UpdateHitTypeDistribution(HealingStats, HpsPlot);
+        UpdateHitTypeDistribution(TakenDamageStats, DtpsPlot);
+
+        _logger.LogDebug("SkillBreakdownViewModel initialized for player: {PlayerName}", PlayerName);
+    }
+
+    private void UpdatePlotOption()
+    {
+        var xAxis = GetXAxisName();
+        DpsPlot.UpdateOption(new PlotOptions
+        {
+            SeriesPlotTitle = _localizationManager.GetString(ResourcesKeys.SkillBreakdown_Chart_RealTimeDps),
+            XAxisTitle = xAxis,
+            DistributionPlotTitle = _localizationManager.GetString(ResourcesKeys.SkillBreakdown_Chart_HitTypeDistribution),
+            HitTypeCritical = _localizationManager.GetString(ResourcesKeys.Common_HitType_Critical),
+            HitTypeNormal = _localizationManager.GetString(ResourcesKeys.Common_HitType_Normal),
+            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky)
+        });
+        HpsPlot.UpdateOption(new PlotOptions
+        {
+            SeriesPlotTitle = _localizationManager.GetString(ResourcesKeys.SkillBreakdown_Chart_RealTimeHps),
+            XAxisTitle = xAxis,
+            DistributionPlotTitle = _localizationManager.GetString(ResourcesKeys.SkillBreakdown_Chart_HealTypeDistribution),
+            HitTypeCritical = _localizationManager.GetString(ResourcesKeys.Common_HitType_Critical),
+            HitTypeNormal = _localizationManager.GetString(ResourcesKeys.Common_HitType_Normal),
+            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky)
+        });
+        DtpsPlot.UpdateOption(new PlotOptions
+        {
+            SeriesPlotTitle = _localizationManager.GetString(ResourcesKeys.SkillBreakdown_Chart_RealTimeDtps),
+            XAxisTitle = xAxis,
+            DistributionPlotTitle = _localizationManager.GetString(ResourcesKeys.SkillBreakdown_Chart_HitTypeDistribution),
+            HitTypeCritical = _localizationManager.GetString(ResourcesKeys.Common_HitType_Critical),
+            HitTypeNormal = _localizationManager.GetString(ResourcesKeys.Common_HitType_Normal),
+            HitTypeLucky = _localizationManager.GetString(ResourcesKeys.Common_HitType_Lucky)
+        });
+    }
+
+    private string GetXAxisName()
+    {
+        var xAxis = _localizationManager.GetString(ResourcesKeys.SkillBreakdown_Chart_DpsSeriesXAxis);
+        return xAxis;
     }
 
     #region Observed Slot (Data Source)
@@ -74,6 +154,7 @@ public partial class SkillBreakdownViewModel(ILogger<SkillBreakdownViewModel> lo
         if (skills is null) return;
         var duration = ObservedSlot.Duration > 0 ? ObservedSlot.Duration : 1;
         skills.UpdateDamage(duration, DamageStats);
+        UpdateHitTypeDistribution(DamageStats, DpsPlot);
     }
 
     private void HealSkillChanged(IReadOnlyList<SkillItemViewModel>? skills)
@@ -82,6 +163,7 @@ public partial class SkillBreakdownViewModel(ILogger<SkillBreakdownViewModel> lo
         if (skills is null) return;
         var duration = ObservedSlot.Duration > 0 ? ObservedSlot.Duration : 1;
         skills.UpdateHealing(duration, HealingStats);
+        UpdateHitTypeDistribution(HealingStats, HpsPlot);
     }
 
     private void TakenDamageSkillChanged(IReadOnlyList<SkillItemViewModel>? skills)
@@ -90,6 +172,7 @@ public partial class SkillBreakdownViewModel(ILogger<SkillBreakdownViewModel> lo
         if (skills is null) return;
         var duration = ObservedSlot.Duration > 0 ? ObservedSlot.Duration : 1;
         skills.UpdateDamageTaken(duration, TakenDamageStats);
+        UpdateHitTypeDistribution(TakenDamageStats, DtpsPlot);
     }
 
     #endregion
@@ -112,11 +195,11 @@ public partial class SkillBreakdownViewModel(ILogger<SkillBreakdownViewModel> lo
 
     #region Chart Models - OxyPlot
 
-    [ObservableProperty] private PlotViewModel _dpsPlot = new(new PlotOptions { YAxisTitle = "Time (s)" });
+    [ObservableProperty] private PlotViewModel _dpsPlot;
 
-    [ObservableProperty] private PlotViewModel _hpsPlot = new(new PlotOptions { YAxisTitle = "Time (s)" });
+    [ObservableProperty] private PlotViewModel _hpsPlot;
 
-    [ObservableProperty] private PlotViewModel _dtpsPlot = new(new PlotOptions { YAxisTitle = "Time (s)" });
+    [ObservableProperty] private PlotViewModel _dtpsPlot;
 
     #endregion
 
@@ -131,7 +214,7 @@ public partial class SkillBreakdownViewModel(ILogger<SkillBreakdownViewModel> lo
 
     #region Chart Initialization
 
-    private void InitializeTimeSeries(ObservableCollection<(TimeSpan duration, double section, double total)> data,
+    private static void InitializeTimeSeries(ObservableCollection<(TimeSpan duration, double section, double total)> data,
         PlotViewModel target)
     {
         void HandleCollectionChanged(object? sender, NotifyCollectionChangedEventArgs args)
@@ -163,9 +246,29 @@ public partial class SkillBreakdownViewModel(ILogger<SkillBreakdownViewModel> lo
         target.RefreshSeries();
     }
 
+    private static void InitializePie(StatisticDataViewModel.SkillDataCollection data,
+        PlotViewModel target)
+    {
+        data.SkillChanged += list =>
+        {
+            if (list == null) return;
+            UpdatePieChart(list, target);
+        };
+        UpdatePieChart(data.TotalSkillList, target);
+    }
+
     private static void UpdatePieChart(IReadOnlyList<SkillItemViewModel> skills, PlotViewModel target)
     {
         target.SetPieSeriesData(skills);
+    }
+
+    private void UpdateHitTypeDistribution(DataStatistics stat, PlotViewModel target)
+    {
+        if (stat.Hits <= 0) return;
+        var crit = (double)stat.CritCount / stat.Hits * 100;
+        var lucky = (double)stat.LuckyCount / stat.Hits * 100;
+        var normal = 100 - crit - lucky;
+        target.SetHitTypeDistribution(normal, crit, lucky);
     }
 
     #endregion
@@ -178,7 +281,7 @@ public partial class SkillBreakdownViewModel(ILogger<SkillBreakdownViewModel> lo
         if (ZoomLevel >= MaxZoom) return;
         ZoomLevel += ZoomStep;
         UpdateAllChartZooms();
-        logger.LogDebug("Zoomed in to {ZoomLevel}", ZoomLevel);
+        _logger.LogDebug("Zoomed in to {ZoomLevel}", ZoomLevel);
     }
 
     [RelayCommand]
@@ -187,7 +290,7 @@ public partial class SkillBreakdownViewModel(ILogger<SkillBreakdownViewModel> lo
         if (ZoomLevel <= MinZoom) return;
         ZoomLevel -= ZoomStep;
         UpdateAllChartZooms();
-        logger.LogDebug("Zoomed out to {ZoomLevel}", ZoomLevel);
+        _logger.LogDebug("Zoomed out to {ZoomLevel}", ZoomLevel);
     }
 
     [RelayCommand]
@@ -195,7 +298,7 @@ public partial class SkillBreakdownViewModel(ILogger<SkillBreakdownViewModel> lo
     {
         ZoomLevel = 1.0;
         ResetAllChartZooms();
-        logger.LogDebug("Zoom reset to default");
+        _logger.LogDebug("Zoom reset to default");
     }
 
     private void UpdateAllChartZooms()
@@ -219,13 +322,19 @@ public partial class SkillBreakdownViewModel(ILogger<SkillBreakdownViewModel> lo
     [RelayCommand]
     private void Confirm()
     {
-        logger.LogDebug("Confirm SkillBreakDown");
+        _logger.LogDebug("Confirm SkillBreakDown");
     }
 
     [RelayCommand]
     private void Cancel()
     {
-        logger.LogDebug("Cancel SkillBreakDown");
+        _logger.LogDebug("Cancel SkillBreakDown");
+    }
+
+    [RelayCommand]
+    private void Refresh()
+    {
+        _logger.LogDebug("Manual refresh");
     }
 
     #endregion
