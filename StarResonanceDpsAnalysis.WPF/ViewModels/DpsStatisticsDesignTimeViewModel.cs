@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Serilog.Events;
 using StarResonanceDpsAnalysis.Core.Analyze.Models;
-using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Data.Models;
 using StarResonanceDpsAnalysis.WPF.Config;
 using StarResonanceDpsAnalysis.WPF.Data;
@@ -32,7 +31,7 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
             new DesignOptionsMonitor(),
             null!,
             LocalizationManager.Instance),
-        new DesignBattleSnapshotService()) // ? 添加设计时快照服务
+        new DesignBattleSnapshotService(), LocalizationManager.Instance) // ? 添加设计时快照服务
     {
         // Initialize AppConfig
         AppConfig = new AppConfig { DebugEnabled = true };

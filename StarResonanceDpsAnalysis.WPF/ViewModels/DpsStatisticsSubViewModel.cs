@@ -10,6 +10,7 @@ using StarResonanceDpsAnalysis.Core.Data.Models;
 using StarResonanceDpsAnalysis.Core.Models;
 using StarResonanceDpsAnalysis.WPF.Data;
 using StarResonanceDpsAnalysis.WPF.Extensions;
+using StarResonanceDpsAnalysis.WPF.Localization;
 using StarResonanceDpsAnalysis.WPF.Models;
 
 namespace StarResonanceDpsAnalysis.WPF.ViewModels;
@@ -34,6 +35,7 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
 {
     private readonly DebugFunctions _debugFunctions;
     private readonly DpsStatisticsViewModel _parent;
+    private readonly LocalizationManager _localizationManager;
     private readonly Dispatcher _dispatcher;
     private readonly ILogger<DpsStatisticsViewModel> _logger;
     private readonly IDataStorage _storage;
@@ -49,7 +51,7 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
 
     public DpsStatisticsSubViewModel(ILogger<DpsStatisticsViewModel> logger, Dispatcher dispatcher, StatisticType type,
         IDataStorage storage,
-        DebugFunctions debugFunctions, DpsStatisticsViewModel parent)
+        DebugFunctions debugFunctions, DpsStatisticsViewModel parent, LocalizationManager localizationManager)
     {
         _logger = logger;
         _dispatcher = dispatcher;
@@ -57,6 +59,7 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
         _storage = storage;
         _debugFunctions = debugFunctions;
         _parent = parent;
+        _localizationManager = localizationManager;
         _data.CollectionChanged += DataChanged;
         return;
 
@@ -170,12 +173,12 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
                 @class = playerInfo.Class;
             }
 
-            slot = new StatisticDataViewModel(_debugFunctions)
+            slot = new StatisticDataViewModel(_debugFunctions, _localizationManager)
             {
                 Index = 999,
                 Value = 0,
                 Duration = (dpsData.LastLoggedTick - (dpsData.StartLoggedTick ?? 0)).ConvertToUnsigned(),
-                Player = new PlayerInfoViewModel
+                Player = new PlayerInfoViewModel(_localizationManager)
                 {
                     Uid = dpsData.UID,
                     Class = @class,
@@ -285,18 +288,18 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
     public void AddTestItem()
     {
         var slots = Data;
-        var newItem = new StatisticDataViewModel(_debugFunctions)
+        var newItem = new StatisticDataViewModel(_debugFunctions, _localizationManager)
         {
             Index = slots.Count + 1,
             Value = (ulong)Random.Shared.Next(100, 2000),
             Duration = 60000,
-            Player = new PlayerInfoViewModel
+            Player = new PlayerInfoViewModel(LocalizationManager.Instance)
             {
                 Uid = Random.Shared.Next(100, 999),
                 Class = RandomClass(),
                 Guild = "Test Guild",
                 Name = $"Test Player {slots.Count + 1}",
-                Spec = ClassSpec.Unknown,
+                Spec = ClassSpecHelper.Random(),
                 PowerLevel = Random.Shared.Next(5000, 39000)
             },
         };
@@ -304,7 +307,7 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
         [
             new SkillItemViewModel
             {
-                SkillName = "Test Skill A", TotalDamage = 15000, HitCount = 25, CritCount = 8, AvgDamage = 600
+                SkillName = "Test Skill A", TotalDamage = 15000, HitCount = 25, CritCount = 8, AvgDamage = 600,
             },
             new SkillItemViewModel
             {

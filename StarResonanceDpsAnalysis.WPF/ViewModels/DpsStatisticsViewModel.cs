@@ -14,6 +14,7 @@ using StarResonanceDpsAnalysis.Core.Models;
 using StarResonanceDpsAnalysis.WPF.Config;
 using StarResonanceDpsAnalysis.WPF.Data;
 using StarResonanceDpsAnalysis.WPF.Extensions;
+using StarResonanceDpsAnalysis.WPF.Localization;
 using StarResonanceDpsAnalysis.WPF.Logging;
 using StarResonanceDpsAnalysis.WPF.Models;
 using StarResonanceDpsAnalysis.WPF.Services;
@@ -110,7 +111,7 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
         IApplicationControlService appControlService,
         Dispatcher dispatcher,
         DebugFunctions debugFunctions,
-        BattleSnapshotService snapshotService)
+        BattleSnapshotService snapshotService, LocalizationManager localizationManager)
     {
         _logger = logger;
         _storage = storage;
@@ -125,11 +126,11 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
         // 初始化StatisticData字典，为每种统计类型创建对应的SubViewModel
         StatisticData = new Dictionary<StatisticType, DpsStatisticsSubViewModel>
         {
-            [StatisticType.Damage] = new(logger, dispatcher, StatisticType.Damage, storage, debugFunctions, this),
-            [StatisticType.Healing] = new(logger, dispatcher, StatisticType.Healing, storage, debugFunctions, this),
-            [StatisticType.TakenDamage] = new(logger, dispatcher, StatisticType.TakenDamage, storage, debugFunctions, this),
+            [StatisticType.Damage] = new(logger, dispatcher, StatisticType.Damage, storage, debugFunctions, this, localizationManager),
+            [StatisticType.Healing] = new(logger, dispatcher, StatisticType.Healing, storage, debugFunctions, this, localizationManager),
+            [StatisticType.TakenDamage] = new(logger, dispatcher, StatisticType.TakenDamage, storage, debugFunctions, this, localizationManager),
             [StatisticType.NpcTakenDamage] =
-                new(logger, dispatcher, StatisticType.NpcTakenDamage, storage, debugFunctions, this)
+                new(logger, dispatcher, StatisticType.NpcTakenDamage, storage, debugFunctions, this, localizationManager)
         };
         // ⭐ 订阅分段清空前事件
         if (_storage is DataStorageV2 storageV2)

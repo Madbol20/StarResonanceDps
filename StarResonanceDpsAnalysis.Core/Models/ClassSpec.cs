@@ -81,5 +81,20 @@ public enum ClassSpec
     /// 灵魂乐手_协奏
     /// </summary>
     SoulMusicianConcerto,
+}
 
+public static class ClassSpecHelper
+{
+    private static readonly ClassSpec[] CachedSpecs = Enum.GetValues<ClassSpec>();
+
+    public static ClassSpec Random()
+    {
+        if (CachedSpecs.Length == 0)
+        {
+            return ClassSpec.Unknown;
+        }
+
+        int index = System.Random.Shared.Next(CachedSpecs.Length);
+        return CachedSpecs[index];
+    }
 }

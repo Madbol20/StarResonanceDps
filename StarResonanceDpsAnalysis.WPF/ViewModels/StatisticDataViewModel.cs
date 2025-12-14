@@ -2,17 +2,18 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using StarResonanceDpsAnalysis.WPF.Localization;
 
 namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 
 [DebuggerDisplay("Name:{Player?.Name};Value:{Value}")]
-public partial class StatisticDataViewModel(DebugFunctions debug) : BaseViewModel, IComparable<StatisticDataViewModel>
+public partial class StatisticDataViewModel(DebugFunctions debug, LocalizationManager localizationManager) : BaseViewModel, IComparable<StatisticDataViewModel>
 {
     [ObservableProperty] private ulong _duration;
     [ObservableProperty] private long _index;
     [ObservableProperty] private double _percent;
     [ObservableProperty] private double _percentOfMax;
-    [ObservableProperty] private PlayerInfoViewModel _player = new();
+    [ObservableProperty] private PlayerInfoViewModel _player = new(localizationManager);
     [ObservableProperty] private ulong _value;
 
     // ? 新增: 技能列表刷新触发器
@@ -48,7 +49,7 @@ public partial class StatisticDataViewModel(DebugFunctions debug) : BaseViewMode
         TakenDamage.Reset();
 
         // Reset player info
-        Player = new PlayerInfoViewModel();
+        Player = new PlayerInfoViewModel(localizationManager);
     }
 
     /// <summary>

@@ -153,7 +153,7 @@
                         <Setter Property="SnapsToDevicePixels" Value="True" />
                     </Style>
                 </Grid.Resources>
-                
+
                 <!--  名次  -->
                 <TextBlock
                     Grid.Column="0"
@@ -185,30 +185,34 @@
                             <Setter Property="Foreground" Value="White" />
                         </Style>
                     </StackPanel.Resources>
-                        <TextBlock
-                            x:Name="PlayerName"
-                            Style="{StaticResource PlayerInfoTextStyle}"
-                            Visibility="{Binding Player.IsNpc, Converter={StaticResource BoolToInvertedVisibilityConverter}}">
-                            <TextBlock.Text>
-                                <MultiBinding Converter="{StaticResource PlayerNameMaskConverter}">
-                                    <Binding Path="Player.Name" />
-                                    <Binding Path="Player.Uid" />
-                                    <Binding Path="DataContext.AppConfig.MaskPlayerName" RelativeSource="{RelativeSource AncestorType=Window}" />
-                                    <Binding Path="DataContext.TemporaryMaskPlayerName" RelativeSource="{RelativeSource AncestorType=Window}" />
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
-                    <!--  Localized NPC label from Monster dictionary using UID (visible when NPC)  -->
+                    <TextBlock Style="{StaticResource PlayerInfoTextStyle}" Text="{Binding Player.PlayerInfo}" />
+                    <!--
                     <TextBlock
-                        Style="{StaticResource PlayerInfoTextStyle}"
-                        Text="{lex:Loc {Binding Player.Uid, StringFormat=Monster:{0}}}"
-                        Visibility="{Binding Player.IsNpc, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <TextBlock Style="{StaticResource PlayerInfoTextStyle}" Visibility="{Binding Player.IsNpc, Converter={StaticResource BoolToInvertedVisibilityConverter}}">
-                        <!--  Player name (visible when not NPC)  -->
-                        <!--<Run Text=" -" />
-                        <Run Text="{lex:Loc {Binding Player.Spec, StringFormat=ClassSpec_{0}}}" />-->
-                        <Run Text="{Binding Player.PowerLevel, StringFormat={} ({0})}" />
+                            x:Name="PlayerName" >
+                        <TextBlock.Style>
+                            <Style BasedOn="{StaticResource PlayerInfoTextStyle}" TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Player.IsNpc}" Value="False">
+                                        <Setter Property="Text">
+                                            <Setter.Value>
+                                                <MultiBinding Converter="{StaticResource PlayerNameMaskConverter}">
+                                                    <Binding Path="Player.Name" />
+                                                    <Binding Path="Player.Uid" />
+                                                    <Binding Path="DataContext.AppConfig.MaskPlayerName" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                                    <Binding Path="DataContext.TemporaryMaskPlayerName" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                                </MultiBinding>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Player.IsNpc}" Value="True">
+                                        <Setter Property="Text" Value="{lex:Loc {Binding Player.Uid, StringFormat=Monster:{0}}}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
                     </TextBlock>
+                    -->
+                    <!--Visibility="{Binding Player.IsNpc, Converter={StaticResource BoolToInvertedVisibilityConverter}}"-->
                 </StackPanel>
 
                 <!--  数值  -->
@@ -397,7 +401,7 @@
                         <Run Text="(" />
                         <Run Text="{lex:Loc {Binding ScopeTime, StringFormat=ScopeTime_{0}}}" />
                         <Run Text=")" />
-                        
+
                     </TextBlock>
                     <!--  右侧按钮  -->
                     <Button
