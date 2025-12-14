@@ -20,11 +20,13 @@
     MinWidth="300"
     MinHeight="35"
     d:DesignHeight="650"
+    d:DesignWidth="650"
     behaviors:WindowSnapBehavior.PreventSnapMaximize="True"
     d:DataContext="{d:DesignInstance Type=viewModels:DpsStatisticsDesignTimeViewModel,
                                      IsDesignTimeCreatable=True}"
     lex:ResxLocalizationProvider.DefaultAssembly="StarResonanceDpsAnalysis.WPF"
     lex:ResxLocalizationProvider.DefaultDictionary="Resources"
+    lex:LocalizeDictionary.DesignCulture="zh-CN"
     ResizeMode="CanResize"
     Style="{StaticResource TransparentWindow}"
     Topmost="{Binding AppConfig.TopmostEnabled, Mode=OneWay}"
@@ -185,8 +187,8 @@
                             <Setter Property="Foreground" Value="White" />
                         </Style>
                     </StackPanel.Resources>
-                    <TextBlock Style="{StaticResource PlayerInfoTextStyle}" Text="{Binding Player.PlayerInfo}" />
-                    <!--
+                    <!--<TextBlock Style="{StaticResource PlayerInfoTextStyle}" Text="{Binding Player.PlayerInfo}" />-->
+
                     <TextBlock
                             x:Name="PlayerName" >
                         <TextBlock.Style>
@@ -211,7 +213,29 @@
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>
-                    -->
+                    <TextBlock Visibility="{Binding Player.IsNpc, Converter={StaticResource BoolToInvertedVisibilityConverter }}"
+                               Style="{StaticResource PlayerInfoTextStyle}">
+                        <Run Text=" -" />
+                        <Run Text="{lex:Loc {Binding Player.Spec, StringFormat=ClassSpec_{0}}}" />
+                        <Run Text="(" />
+                        <Run Text="{Binding Player.PowerLevel}" />
+                        <Run Text="-" />
+                        <Run Text="{Binding Player.DreamStrength}" />
+                        <Run Text=")" />
+                        <!--<TextBlock.Text>
+                            <MultiBinding StringFormat="-{0}({1}-{2})">
+                                <lex:BLoc>
+                                    <lex:BLoc.Value>
+                                        <lex:Loc Key="{Binding Player.Spec, StringFormat=ClassSpec_{0}}"/>
+                                    </lex:BLoc.Value>
+                                </lex:BLoc>
+                                <Binding Path="Player.PowerLevel"/>
+                                <Binding Path="Player.DreamStrength"/>
+                            </MultiBinding>
+                        </TextBlock.Text>-->
+
+                    </TextBlock>
+
                     <!--Visibility="{Binding Player.IsNpc, Converter={StaticResource BoolToInvertedVisibilityConverter}}"-->
                 </StackPanel>
 
