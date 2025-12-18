@@ -1,8 +1,8 @@
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using SharpPcap;
+using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Logging;
-using StarResonanceDpsAnalysis.WPF.Data;
 
 namespace StarResonanceDpsAnalysis.Core.Analyze;
 

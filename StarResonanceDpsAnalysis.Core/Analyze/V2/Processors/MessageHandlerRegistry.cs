@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
-using StarResonanceDpsAnalysis.WPF.Data;
+using StarResonanceDpsAnalysis.Core.Data;
 
 namespace StarResonanceDpsAnalysis.Core.Analyze.V2.Processors;
 

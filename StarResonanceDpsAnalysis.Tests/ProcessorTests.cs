@@ -3,8 +3,8 @@ using Google.Protobuf;
 using Moq;
 using StarResonanceDpsAnalysis.Core.Analyze.Models;
 using StarResonanceDpsAnalysis.Core.Analyze.V2.Processors;
+using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Data.Models;
-using StarResonanceDpsAnalysis.WPF.Data;
 
 namespace StarResonanceDpsAnalysis.Tests;
 

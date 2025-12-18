@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging;
 using PacketDotNet;
 using SharpPcap;
 using StarResonanceDpsAnalysis.Core.Collections;
-using StarResonanceDpsAnalysis.WPF.Data;
 using System.IO.Pipelines;
+using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Logging;
 
 namespace StarResonanceDpsAnalysis.Core.Analyze;

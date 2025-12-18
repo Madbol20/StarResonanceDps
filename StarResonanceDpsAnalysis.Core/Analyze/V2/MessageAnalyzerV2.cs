@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using StarResonanceDpsAnalysis.Core.Analyze.V2.Processors;
+using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Tools;
-using StarResonanceDpsAnalysis.WPF.Data;
 using ZstdNet;
 
 #pragma warning disable 0472

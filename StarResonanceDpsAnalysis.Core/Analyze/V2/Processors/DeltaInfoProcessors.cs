@@ -6,8 +6,8 @@ using StarResonanceDpsAnalysis.Core.Extends.BlueProto;
 using StarResonanceDpsAnalysis.Core.Extends.System;
 using StarResonanceDpsAnalysis.Core.Logging;
 using StarResonanceDpsAnalysis.Core.Tools;
-using StarResonanceDpsAnalysis.WPF.Data;
 using Google.Protobuf;
+using StarResonanceDpsAnalysis.Core.Data;
 
 namespace StarResonanceDpsAnalysis.Core.Analyze.V2.Processors;
 
@@ -73,12 +73,20 @@ public abstract class BaseDeltaInfoProcessor(IDataStorage storage, ILogger? logg
                         _logger?.LogWarning("[BaseDeltaInfoProcessor] Test for get AttrDreamIntensity: targetUuid[{targetUuid}], intensity[{value}]", targetUuid, reader.ReadInt32());
                         break;
 
-                    case AttrType.AttrMaxHp:
-                    case AttrType.AttrId:
                     case AttrType.AttrElementFlag:
+                        _storage.SetPlayerElementFlag(targetUuid, reader.ReadInt32());
+                        break;
                     case AttrType.AttrReductionLevel:
-                    case AttrType.AttrReduntionId:
+                        _storage.SetPlayerReductionLevel(targetUuid, reader.ReadInt32());
+                        break;
                     case AttrType.AttrEnergyFlag:
+                        _storage.SetPlayerEnergyFlag(targetUuid, reader.ReadInt32());
+                        break;
+                    case AttrType.AttrMaxHp:
+                        _storage.SetPlayerMaxHP(targetUuid, reader.ReadInt32());
+                        break;
+                    case AttrType.AttrId:
+                    case AttrType.AttrReduntionId:
                         _ = reader.ReadInt32();
                         break;
                     default:
@@ -105,7 +113,7 @@ public abstract class BaseDeltaInfoProcessor(IDataStorage storage, ILogger? logg
             var isAttackerPlayer = attackerRaw.IsUuidPlayerRaw();
             var attackerUuid = attackerRaw.ShiftRight16();
 
-            var damageSigned = d.HasValue ? d.Value : d.HasLuckyValue ? d.LuckyValue : 0L;
+            var damageSigned = d.HasValue ? d.Value : (d.HasLuckyValue ? d.LuckyValue : 0L);
             if (damageSigned == 0) continue;
 
             var (id, ticks) = IDGenerator.Next();

@@ -192,7 +192,7 @@ public sealed class LocalizationManager
         var path = Path.IsPathRooted(locDir) ? locDir : Path.Combine(baseDir, locDir);
 
         var jsonProvider = new JsonLocalizationProvider(path);
-        _aggregatedProvider = new AggregatedLocalizationProvider(ResxLocalizationProvider.Instance, jsonProvider);
+        _aggregatedProvider = new AggregatedLocalizationProvider(ResxLocalizationProvider.Instance, jsonProvider, _logger);
         LocalizeDictionary.Instance.DefaultProvider = _aggregatedProvider;
     }
 

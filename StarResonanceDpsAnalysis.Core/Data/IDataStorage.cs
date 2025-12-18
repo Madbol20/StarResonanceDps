@@ -1,9 +1,8 @@
 using System.Collections.ObjectModel;
 using StarResonanceDpsAnalysis.Core.Analyze.Models;
-using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Data.Models;
 
-namespace StarResonanceDpsAnalysis.WPF.Data;
+namespace StarResonanceDpsAnalysis.Core.Data;
 
 public interface IDataStorage : IDisposable
 {
@@ -59,6 +58,10 @@ public interface IDataStorage : IDisposable
     void SetPlayerRankLevel(long playerUid, int readInt32);
     void SetPlayerCritical(long playerUid, int readInt32);
     void SetPlayerLucky(long playerUid, int readInt32);
+    void SetPlayerElementFlag(long playerUid, int readInt32);
+    void SetPlayerReductionLevel(long playerUid, int readInt32);
+    void SetPlayerEnergyFlag(long playerUid, int readInt32);
+    void SetNpcTemplateId(long playerUid, int templateId);
 }
 
 public delegate void ServerConnectionStateChangedEventHandler(bool serverConnectionState);

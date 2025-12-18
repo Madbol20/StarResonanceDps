@@ -5,7 +5,6 @@ using StarResonanceDpsAnalysis.Core.Analyze.Models;
 using StarResonanceDpsAnalysis.Core.Data.Models;
 using StarResonanceDpsAnalysis.Core.Extends.Data;
 using StarResonanceDpsAnalysis.Core.Tools;
-using StarResonanceDpsAnalysis.WPF.Data;
 
 namespace StarResonanceDpsAnalysis.Core.Data;
 
@@ -745,9 +744,11 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
                 sectionedData.AddTotalAttackDamage(log.Value);
                 break;
             case DpsType.TakenDamage:
-                fullData.AddTotalTakenDamage(log.Value);
-                sectionedData.AddTotalTakenDamage(log.Value);
-                break;
+                {
+                    fullData.AddTotalTakenDamage(log.Value);
+                    sectionedData.AddTotalTakenDamage(log.Value);
+                    break;
+                }
             case DpsType.Heal:
                 fullData.AddTotalHeal(log.Value);
                 sectionedData.AddTotalHeal(log.Value);
@@ -939,6 +940,30 @@ public sealed partial class DataStorageV2(ILogger<DataStorageV2> logger) : IData
         PlayerInfoData[uid].Lucky = lucky;
 
         TriggerPlayerInfoUpdatedImmediate(uid);
+    }
+
+    public void SetPlayerElementFlag(long playerUid, int readInt32)
+    {
+        PlayerInfoData[playerUid].ElementFlag = readInt32;
+        TriggerPlayerInfoUpdatedImmediate(playerUid);
+    }
+
+    public void SetPlayerReductionLevel(long playerUid, int readInt32)
+    {
+        PlayerInfoData[playerUid].ReductionLevel = readInt32;
+        TriggerPlayerInfoUpdatedImmediate(playerUid);
+    }
+
+    public void SetPlayerEnergyFlag(long playerUid, int readInt32)
+    {
+        PlayerInfoData[playerUid].EnergyFlag = readInt32;
+        TriggerPlayerInfoUpdatedImmediate(playerUid);
+    }
+
+    public void SetNpcTemplateId(long playerUid, int templateId)
+    {
+        PlayerInfoData[playerUid].NpcTemplateId = templateId;
+        TriggerPlayerInfoUpdatedImmediate(playerUid);
     }
 
     /// <summary>

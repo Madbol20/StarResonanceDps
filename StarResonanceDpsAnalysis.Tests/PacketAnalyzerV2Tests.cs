@@ -4,7 +4,6 @@ using PacketDotNet;
 using SharpPcap;
 using StarResonanceDpsAnalysis.Core.Analyze;
 using StarResonanceDpsAnalysis.Core.Data;
-using StarResonanceDpsAnalysis.WPF.Data;
 
 namespace StarResonanceDpsAnalysis.Tests;
 

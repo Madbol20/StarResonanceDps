@@ -6,9 +6,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using StarResonanceDpsAnalysis.Core;
+using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Data.Models;
 using StarResonanceDpsAnalysis.Core.Models;
-using StarResonanceDpsAnalysis.WPF.Data;
 using StarResonanceDpsAnalysis.WPF.Extensions;
 using StarResonanceDpsAnalysis.WPF.Localization;
 using StarResonanceDpsAnalysis.WPF.Models;
@@ -169,18 +169,12 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
 
     protected StatisticDataViewModel GetOrAddStatisticDataViewModel(DpsData dpsData)
     {
-        PlayerInfo? playerInfo;
+        var ret = _storage.ReadOnlyPlayerInfoDatas.TryGetValue(dpsData.UID, out var playerInfo);
+
+
         if (!DataDictionary.TryGetValue(dpsData.UID, out var slot))
         {
-            var ret = _storage.ReadOnlyPlayerInfoDatas.TryGetValue(dpsData.UID, out playerInfo);
             // Debug.Assert(playerInfo != null, nameof(playerInfo) + " != null");
-            var @class = Classes.Unknown;
-            if (ret)
-            {
-                Debug.Assert(playerInfo != null, nameof(playerInfo) + " != null");
-                @class = playerInfo.Class;
-            }
-
             slot = new StatisticDataViewModel(_debugFunctions, _localizationManager)
             {
                 Index = 999,
@@ -189,17 +183,35 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
                 Player = new PlayerInfoViewModel(_localizationManager)
                 {
                     Uid = dpsData.UID,
-                    Class = @class,
                     Guild = "Unknown",
                     Name = ret ? playerInfo?.Name ?? $"UID: {dpsData.UID}" : $"UID: {dpsData.UID}",
                     Spec = playerInfo?.Spec ?? ClassSpec.Unknown,
-                    IsNpc = dpsData.IsNpcData
+                    IsNpc = dpsData.IsNpcData,
+                    NpcTemplateId = playerInfo?.NpcTemplateId ?? 0,
                 },
                 // Set the hover action to call parent's SetIndicatorHover
                 SetHoverStateAction = (isHovering) => _parent.SetIndicatorHover(isHovering)
             };
 
             _dispatcher.Invoke(() => { Data.Add(slot); });
+        }
+
+        if (ret)
+        {
+            Debug.Assert(playerInfo != null, nameof(playerInfo) + " != null");
+            slot.Player.Name = playerInfo.Name ?? $"UID: {dpsData.UID}";
+            slot.Player.Class = playerInfo.Class;
+            slot.Player.Spec = playerInfo.Spec;
+            slot.Player.PowerLevel = playerInfo.CombatPower ?? 0;
+            //slot.Player.DreamStrength
+        }
+        else
+        {
+            slot.Player.Name = $"UID: {dpsData.UID}";
+            slot.Player.Class = Classes.Unknown;
+            slot.Player.Spec = ClassSpec.Unknown;
+            slot.Player.PowerLevel = 0;
+            slot.Player.DreamStrength = 0;
         }
 
         return slot;
@@ -240,6 +252,7 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
             slot.Player.Spec = processed.PlayerSpec;
             slot.Player.Uid = uid;
             slot.Player.PowerLevel = processed.PowerLevel;
+            // TODO: implement DreamStrength reading
 
             // Set current player slot if this is the current player
             if (hasCurrentPlayer && uid == currentPlayerUid)

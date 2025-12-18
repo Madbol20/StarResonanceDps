@@ -5,9 +5,9 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Serilog.Events;
 using StarResonanceDpsAnalysis.Core.Analyze.Models;
+using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Data.Models;
 using StarResonanceDpsAnalysis.WPF.Config;
-using StarResonanceDpsAnalysis.WPF.Data;
 using StarResonanceDpsAnalysis.WPF.Localization;
 using StarResonanceDpsAnalysis.WPF.Services;
 using StarResonanceDpsAnalysis.WPF.Views;
@@ -204,6 +204,22 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
         }
 
         public void SetPlayerLucky(long playerUid, int readInt32)
+        {
+        }
+
+        public void SetPlayerElementFlag(long playerUid, int readInt32)
+        {
+        }
+
+        public void SetPlayerReductionLevel(long playerUid, int readInt32)
+        {
+        }
+
+        public void SetPlayerEnergyFlag(long playerUid, int readInt32)
+        {
+        }
+
+        public void SetNpcTemplateId(long playerUid, int templateId)
         {
         }
 

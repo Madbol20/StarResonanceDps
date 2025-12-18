@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using System.Xml;
 using StarResonanceDpsAnalysis.Core.Analyze.Models;
 using StarResonanceDpsAnalysis.Core.Data.Models;
-using StarResonanceDpsAnalysis.WPF.Data;
 
 namespace StarResonanceDpsAnalysis.Core.Data;
 
@@ -449,5 +448,29 @@ public class InstantizedDataStorage : IDataStorage, IDisposable
     {
         EnsurePlayer(playerUid);
         DataStorage.ReadOnlyPlayerInfoDatas[playerUid].Lucky = readInt32;
+    }
+
+    public void SetPlayerElementFlag(long playerUid, int readInt32)
+    {
+        EnsurePlayer(playerUid);
+        DataStorage.ReadOnlyPlayerInfoDatas[playerUid].ElementFlag = readInt32;
+    }
+
+    public void SetPlayerReductionLevel(long playerUid, int readInt32)
+    {
+        EnsurePlayer(playerUid);
+        DataStorage.ReadOnlyPlayerInfoDatas[playerUid].ReductionLevel = readInt32;
+    }
+
+    public void SetPlayerEnergyFlag(long playerUid, int readInt32)
+    {
+        EnsurePlayer(playerUid);
+        DataStorage.ReadOnlyPlayerInfoDatas[playerUid].EnergyFlag = readInt32;
+    }
+
+    public void SetNpcTemplateId(long playerUid,int templateId)
+    {
+        EnsurePlayer(playerUid);
+        DataStorage.ReadOnlyPlayerInfoDatas[playerUid].NpcTemplateId = templateId;
     }
 }

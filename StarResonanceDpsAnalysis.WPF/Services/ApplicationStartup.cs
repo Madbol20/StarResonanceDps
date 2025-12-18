@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StarResonanceDpsAnalysis.Core.Analyze;
+using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.WPF.Config;
-using StarResonanceDpsAnalysis.WPF.Data;
 using StarResonanceDpsAnalysis.WPF.Localization;
 using StarResonanceDpsAnalysis.WPF.Models;
 using StarResonanceDpsAnalysis.WPF.Logging;

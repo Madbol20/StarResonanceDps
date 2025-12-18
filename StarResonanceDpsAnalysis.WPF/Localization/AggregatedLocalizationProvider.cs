@@ -1,6 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Resources;
 using System.Windows;
+using Microsoft.Extensions.Logging;
 using WPFLocalizeExtension.Providers;
 
 namespace StarResonanceDpsAnalysis.WPF.Localization;
@@ -11,6 +13,7 @@ namespace StarResonanceDpsAnalysis.WPF.Localization;
 public class AggregatedLocalizationProvider : ILocalizationProvider
 {
     private readonly JsonLocalizationProvider _jsonProvider;
+    private readonly ILogger _logger;
     private readonly ResxLocalizationProvider _resxProvider;
 
     /// <summary>
@@ -18,8 +21,10 @@ public class AggregatedLocalizationProvider : ILocalizationProvider
     /// </summary>
     /// <param name="resxProvider">The ResX localization provider.</param>
     /// <param name="jsonProvider">The JSON localization provider.</param>
-    public AggregatedLocalizationProvider(ResxLocalizationProvider resxProvider, JsonLocalizationProvider jsonProvider)
+    public AggregatedLocalizationProvider(ResxLocalizationProvider resxProvider, JsonLocalizationProvider jsonProvider, ILogger logger)
     {
+        _logger = logger;
+
         _jsonProvider = jsonProvider ?? throw new ArgumentNullException(nameof(jsonProvider));
         _resxProvider = resxProvider; // ?? ResxLocalizationProvider.Instance;
 
@@ -161,13 +166,22 @@ public class AggregatedLocalizationProvider : ILocalizationProvider
             AvailableCultures.Add(c);
     }
 
-    private static LocalizationLookupStep? CaptureStep(ILocalizationProvider provider, string providerName, string key,
+    private LocalizationLookupStep? CaptureStep(ILocalizationProvider provider, string providerName, string key,
         DependencyObject? target, CultureInfo culture, ICollection<LocalizationLookupStep> steps)
     {
-        var value = provider.GetLocalizedObject(key, target, culture);
-        var step = new LocalizationLookupStep(providerName, culture, value);
-        steps.Add(step);
-        return value != null ? step : null;
+        try
+        {
+            if (key == "Monster:0") return null;
+            var value = provider.GetLocalizedObject(key, target, culture);
+            var step = new LocalizationLookupStep(providerName, culture, value);
+            steps.Add(step);
+            return value != null ? step : null;
+        }
+        catch (MissingManifestResourceException)
+        {
+            _logger.LogDebug("Missing resource key:{0}", key);
+            return null;
+        }
     }
 
     private static LocalizationLookupResult BuildResult(LocalizationLookupStep? successStep,

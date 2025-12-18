@@ -40,4 +40,7 @@
     <!-- <Protobuf Include="..\StarResonanceData\proto\**\*.proto" GrpcServices="Both" ProtoRoot="..\StarResonanceData\proto" /> -->
     <Protobuf Include="Protobuf\BlueProtobuf.proto" GrpcServices="Both" Condition="Exists('Protobuf\BlueProtobuf.proto')" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Analyze\Helpers\" />
+  </ItemGroup>
 </Project>

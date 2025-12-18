@@ -1,9 +1,9 @@
 using System.Text;
 using BlueProto;
 using Microsoft.Extensions.Logging;
+using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Extends.BlueProto;
 using StarResonanceDpsAnalysis.Core.Extends.System;
-using StarResonanceDpsAnalysis.WPF.Data;
 
 namespace StarResonanceDpsAnalysis.Core.Analyze.V2.Processors;
 

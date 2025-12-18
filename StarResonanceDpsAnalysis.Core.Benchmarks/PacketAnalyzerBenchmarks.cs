@@ -3,7 +3,6 @@ using PacketDotNet;
 using SharpPcap;
 using StarResonanceDpsAnalysis.Core.Analyze;
 using StarResonanceDpsAnalysis.Core.Data;
-using StarResonanceDpsAnalysis.WPF.Data;
 using System.Buffers.Binary;
 using System.Net;
 using System.Net.NetworkInformation;

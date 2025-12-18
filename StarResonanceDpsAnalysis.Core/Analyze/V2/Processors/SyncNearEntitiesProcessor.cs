@@ -1,11 +1,10 @@
-using System.Diagnostics;
 using BlueProto;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
 using Microsoft.Extensions.Logging;
 using StarResonanceDpsAnalysis.Core.Analyze.Models;
+using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Extends.System;
-using StarResonanceDpsAnalysis.WPF.Data;
 
 namespace StarResonanceDpsAnalysis.Core.Analyze.V2.Processors;
 
@@ -39,17 +38,18 @@ internal sealed class SyncNearEntitiesProcessor : IMessageProcessor
 
         foreach (var entity in syncNearEntities.Appear)
         {
-            if (entity.EntType != EEntityType.EntChar) continue;
+            if ((int)entity.EntType < 0 || (int)entity.EntType >= _entitySyncHandlers.Count) continue;
 
-            var playerUid = entity.Uuid.ShiftRight16();
-            if (playerUid == 0) continue;
+            var handler = _entitySyncHandlers[(int)entity.EntType];
+            if (handler == null) continue;
 
             var attrCollection = entity.Attrs;
-            if (attrCollection?.Attrs == null) continue;
+            if (attrCollection?.Attrs == null || attrCollection.Attrs.Count == 0) continue;
 
-            if ((int)entity.EntType < 0 || (int)entity.EntType >= _entitySyncHandlers.Count) continue;
-            var handler = _entitySyncHandlers[(int)entity.EntType];
-            handler?.Invoke(playerUid, attrCollection.Attrs);
+            var entityUid = entity.Uuid.ShiftRight16();
+            if (entityUid == 0) continue;
+
+            handler(entityUid, attrCollection.Attrs);
         }
     }
 
@@ -75,7 +75,9 @@ internal sealed class SyncNearEntitiesProcessor : IMessageProcessor
             switch (attrType)
             {
                 case AttrType.AttrName:
-                    _storage.SetPlayerName(playerUid, reader.ReadString());
+                    var playerName = reader.ReadString();
+                    _storage.SetPlayerName(playerUid, playerName);
+                    _logger?.LogWarning("Set PlayerName: {playerUid}@{playerName}", playerUid, playerName);
                     break;
                 case AttrType.AttrProfessionId:
                     _storage.SetPlayerProfessionID(playerUid, reader.ReadInt32());
@@ -102,26 +104,76 @@ internal sealed class SyncNearEntitiesProcessor : IMessageProcessor
                     _storage.SetPlayerMaxHP(playerUid, reader.ReadInt32());
                     break;
 
-                case (AttrType)0x2CB0: // AttrDreamIntensity
+                case (AttrType)0x2CB0: // AttrDreamStrength
                     _logger?.LogWarning("[SyncNearEntitiesProcessor] Test for get AttrDreamIntensity: targetUuid[{playerUid}], intensity[{value}]", playerUid, reader.ReadInt32());
                     break;
 
-                case AttrType.AttrId:
                 case AttrType.AttrElementFlag:
-                case AttrType.AttrReductionLevel:
-                case AttrType.AttrReduntionId:
-                case AttrType.AttrEnergyFlag:
+                    _storage.SetPlayerElementFlag(playerUid, reader.ReadInt32());
                     break;
-                // default:
-                //     throw new ArgumentOutOfRangeException();
+                case AttrType.AttrReductionLevel:
+                    _storage.SetPlayerReductionLevel(playerUid, reader.ReadInt32());
+                    break;
+                case AttrType.AttrEnergyFlag:
+                    _storage.SetPlayerEnergyFlag(playerUid, reader.ReadInt32());
+                    break;
+                case AttrType.AttrId:
+                case AttrType.AttrReduntionId:
+                    break;
+                    // default:
+                    //     throw new ArgumentOutOfRangeException();
             }
         }
     }
 
     private void ProcessEnemyAttrs(long enemyUid, RepeatedField<Attr> attrs)
     {
-        // Placeholder for enemy attribute processing logic
-        // In a more advanced implementation, this would update an enemy data store.
-        _logger?.LogTrace("Processing attributes for enemy {EnemyUid}", enemyUid);
+        if (attrs.Count == 0) return;
+
+        _storage.EnsurePlayer(enemyUid);
+
+        foreach (var attr in attrs)
+        {
+            if (attr.Id == 0 || attr.RawData == null || attr.RawData.Length == 0) continue;
+
+            var rawBytes = attr.RawData.ToByteArray();
+            if (_logger?.IsEnabled(LogLevel.Debug) == true)
+            {
+                var rawBase64 = Convert.ToBase64String(rawBytes);
+                _logger.LogDebug("Found attrId {AttrId} for enemy {EnemyUid} {AttrRaw}", attr.Id, enemyUid, rawBase64);
+            }
+
+            var reader = new CodedInputStream(rawBytes);
+            try
+            {
+                switch ((AttrType)attr.Id)
+                {
+                    case AttrType.AttrName:
+                        var enemyName = reader.ReadString();
+                        _storage.SetPlayerName(enemyUid, enemyName);
+                        _logger?.LogInformation("Found monster name {EnemyName} for uuid {EnemyUid}", enemyName, enemyUid);
+                        break;
+                    case AttrType.AttrId:
+                        var templateId = reader.ReadInt32();
+                        _storage.SetNpcTemplateId(enemyUid, templateId);
+                        _logger?.LogInformation("Set enemy {Uid} template id{templateId}", enemyUid, templateId);
+                        break;
+                    case AttrType.AttrHp:
+                        var enemyHp = reader.ReadInt32();
+                        _storage.SetPlayerHP(enemyUid, enemyHp);
+                        break;
+                    case AttrType.AttrMaxHp:
+                        var enemyMaxHp = reader.ReadInt32();
+                        _storage.SetPlayerMaxHP(enemyUid, enemyMaxHp);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (InvalidProtocolBufferException ex)
+            {
+                _logger?.LogWarning(ex, "Failed to decode attr {AttrId} for enemy {EnemyUid}", attr.Id, enemyUid);
+            }
+        }
     }
 }

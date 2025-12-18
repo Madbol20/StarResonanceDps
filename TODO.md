@@ -19,6 +19,7 @@
  - [ ] DPS Statistics View -> Binding error
  - [ ] Export DPS statistics image
  - [ ] Not to update port filter if the ports are same
+ - [ ] Process DreamStrength info
 
 ### Issues
 

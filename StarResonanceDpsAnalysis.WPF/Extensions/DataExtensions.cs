@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using StarResonanceDpsAnalysis.Core.Analyze;
 using StarResonanceDpsAnalysis.Core.Data;
-using StarResonanceDpsAnalysis.WPF.Data;
 
 namespace StarResonanceDpsAnalysis.WPF.Extensions;
 

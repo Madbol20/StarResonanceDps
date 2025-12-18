@@ -27,6 +27,7 @@ public partial class PlayerInfoViewModel : BaseViewModel
     [ObservableProperty] private ClassSpec _spec = ClassSpec.Unknown;
     [ObservableProperty] private long _uid;
     [ObservableProperty] private bool _mask;
+    [ObservableProperty] private int _npcTemplateId;
 
     public PlayerInfoViewModel(LocalizationManager localizationManager)
     {
@@ -50,9 +51,8 @@ public partial class PlayerInfoViewModel : BaseViewModel
 
     private void UpdatePlayerInfo()
     {
-        // if player info 
         PlayerInfo = IsNpc
-            ? _localizationManager.GetString($"Monster:{Uid}")
+            ? _localizationManager.GetString($"Monster:{NpcTemplateId}")
             : $"{GetName()} - {GetSpec()} ({PowerLevel}-{DreamStrength})";// Name - Class Spec (PowerLevel-DreamStrength)
 
         return;
