@@ -113,15 +113,16 @@ public sealed class LocalizationManager
     /// </summary>
     /// <param name="key">The localization key.</param>
     /// <param name="cultureInfo">Force culture info</param>
+    /// <param name="defaultValue"></param>
     /// <returns>The localized string, or the key if not found.</returns>
-    public string GetString(string key, CultureInfo? cultureInfo = null)
+    public string GetString(string key, CultureInfo? cultureInfo = null, string? defaultValue = null)
     {
         var culture = cultureInfo ?? LocalizeDictionary.Instance.Culture ?? CultureInfo.CurrentUICulture;
         var localized = _aggregatedProvider.GetLocalizedObject(key, null, culture) as string;
 
         return !string.IsNullOrEmpty(localized)
             ? localized
-            : key;
+            : (defaultValue ?? key);
     }
 
     /// <summary>

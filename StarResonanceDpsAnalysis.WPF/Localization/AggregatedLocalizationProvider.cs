@@ -21,7 +21,9 @@ public class AggregatedLocalizationProvider : ILocalizationProvider
     /// </summary>
     /// <param name="resxProvider">The ResX localization provider.</param>
     /// <param name="jsonProvider">The JSON localization provider.</param>
-    public AggregatedLocalizationProvider(ResxLocalizationProvider resxProvider, JsonLocalizationProvider jsonProvider, ILogger logger)
+    /// <param name="logger"></param>
+    public AggregatedLocalizationProvider(ResxLocalizationProvider resxProvider, JsonLocalizationProvider jsonProvider,
+        ILogger logger)
     {
         _logger = logger;
 
@@ -101,7 +103,7 @@ public class AggregatedLocalizationProvider : ILocalizationProvider
         while (!Equals(current, CultureInfo.InvariantCulture))
         {
             var jsonHit = CaptureStep(_jsonProvider, "JSON", key, target, current, steps);
-            if (jsonHit != null)
+            if (jsonHit != null || key.StartsWith("JsonDictionary"))
             {
                 return BuildResult(jsonHit, steps);
             }
@@ -171,7 +173,6 @@ public class AggregatedLocalizationProvider : ILocalizationProvider
     {
         try
         {
-            if (key == "Monster:0") return null;
             var value = provider.GetLocalizedObject(key, target, culture);
             var step = new LocalizationLookupStep(providerName, culture, value);
             steps.Add(step);

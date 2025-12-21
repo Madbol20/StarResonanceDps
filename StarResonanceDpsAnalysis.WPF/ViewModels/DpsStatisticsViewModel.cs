@@ -125,11 +125,15 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
         // 初始化StatisticData字典，为每种统计类型创建对应的SubViewModel
         StatisticData = new Dictionary<StatisticType, DpsStatisticsSubViewModel>
         {
-            [StatisticType.Damage] = new(logger, dispatcher, StatisticType.Damage, storage, debugFunctions, this, localizationManager),
-            [StatisticType.Healing] = new(logger, dispatcher, StatisticType.Healing, storage, debugFunctions, this, localizationManager),
-            [StatisticType.TakenDamage] = new(logger, dispatcher, StatisticType.TakenDamage, storage, debugFunctions, this, localizationManager),
+            [StatisticType.Damage] = new(logger, dispatcher, StatisticType.Damage, storage, debugFunctions, this,
+                localizationManager),
+            [StatisticType.Healing] = new(logger, dispatcher, StatisticType.Healing, storage, debugFunctions, this,
+                localizationManager),
+            [StatisticType.TakenDamage] = new(logger, dispatcher, StatisticType.TakenDamage, storage, debugFunctions,
+                this, localizationManager),
             [StatisticType.NpcTakenDamage] =
-                new(logger, dispatcher, StatisticType.NpcTakenDamage, storage, debugFunctions, this, localizationManager)
+                new(logger, dispatcher, StatisticType.NpcTakenDamage, storage, debugFunctions, this,
+                    localizationManager)
         };
         // ⭐ 订阅分段清空前事件
         if (_storage is DataStorageV2 storageV2)
@@ -1100,11 +1104,6 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
             // Get player info for this UID
             _storage.ReadOnlyPlayerInfoDatas.TryGetValue(dpsData.UID, out var playerInfo);
 
-            var playerName = playerInfo?.Name ?? string.Empty; //$"UID: {dpsData.UID}";
-            var playerClass = playerInfo?.Class ?? Classes.Unknown;
-            var playerSpec = playerInfo?.Spec ?? ClassSpec.Unknown;
-            var powerLevel = playerInfo?.CombatPower ?? 0;
-
             var duration = (dpsData.LastLoggedTick - (dpsData.StartLoggedTick ?? 0)).ConvertToUnsigned();
 
             // Build skill lists once for reuse
@@ -1123,8 +1122,7 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
                 if (shouldShowInDamageList)
                 {
                     result[StatisticType.Damage][dpsData.UID] = new DpsDataProcessed(
-                        dpsData, damageValue, duration, totalDmg, totalHeal, totalTaken,
-                        playerName, playerClass, playerSpec, powerLevel);
+                        dpsData, damageValue, duration, totalDmg, totalHeal, totalTaken, dpsData.UID);
                 }
             }
 
@@ -1133,8 +1131,7 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
             if (healingValue > 0 && !dpsData.IsNpcData)
             {
                 result[StatisticType.Healing][dpsData.UID] = new DpsDataProcessed(
-                    dpsData, healingValue, duration, totalDmg, totalHeal, totalTaken,
-                    playerName, playerClass, playerSpec, powerLevel);
+                    dpsData, healingValue, duration, totalDmg, totalHeal, totalTaken, dpsData.UID);
             }
 
             // Process TakenDamage
@@ -1147,14 +1144,12 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
                     _logger.LogDebug(
                         $"NPC TakenDamage: UID={dpsData.UID}, Value={takenDamageValue}, IsNpcData={dpsData.IsNpcData}");
                     result[StatisticType.NpcTakenDamage][dpsData.UID] = new DpsDataProcessed(
-                        dpsData, takenDamageValue, duration, totalDmg, totalHeal, totalTaken,
-                        playerName, playerClass, playerSpec, powerLevel);
+                        dpsData, takenDamageValue, duration, totalDmg, totalHeal, totalTaken, dpsData.UID);
                 }
                 else // 玩家 TakenDamage - 只显示玩家
                 {
                     result[StatisticType.TakenDamage][dpsData.UID] = new DpsDataProcessed(
-                        dpsData, takenDamageValue, duration, totalDmg, totalHeal, totalTaken,
-                        playerName, playerClass, playerSpec, powerLevel);
+                        dpsData, takenDamageValue, duration, totalDmg, totalHeal, totalTaken, dpsData.UID);
                 }
             }
         }
@@ -1167,7 +1162,8 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
     /// <summary>
     /// Builds skill list snapshot
     /// </summary>
-    private (List<SkillItemViewModel> totalDamage, List<SkillItemViewModel> totalHeal, List<SkillItemViewModel> totalTakenDamage)
+    private (List<SkillItemViewModel> totalDamage, List<SkillItemViewModel> totalHeal, List<SkillItemViewModel>
+        totalTakenDamage)
         BuildSkillListSnapshot(DpsData dpsData)
     {
         var battleLogs = dpsData.ReadOnlyBattleLogs;
@@ -1289,7 +1285,7 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
                     CritCount = critTimes,
                     AvgDamage = avgHeal,
                     CritRate = critRate,
-                    LuckyCount = luckyTimes,
+                    LuckyCount = luckyTimes
                 };
             }).ToList();
 
@@ -1315,7 +1311,7 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
                     CritCount = critTimes,
                     AvgDamage = avgDamage,
                     CritRate = critRate,
-                    LuckyCount = luckyTimes,
+                    LuckyCount = luckyTimes
                 };
             }).ToList();
 
@@ -1885,14 +1881,8 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
             var healingSkills = ConvertSnapshotSkillsToViewModel(playerData.HealingSkills);
             var takenSkills = ConvertSnapshotSkillsToViewModel(playerData.TakenSkills);
 
-            var skillDisplayLimit = CurrentStatisticData?.SkillDisplayLimit ?? 8;
-            var filteredDamage = skillDisplayLimit > 0 ? damageSkills.Take(skillDisplayLimit).ToList() : damageSkills;
-            var filteredHealing =
-                skillDisplayLimit > 0 ? healingSkills.Take(skillDisplayLimit).ToList() : healingSkills;
-            var filteredTaken = skillDisplayLimit > 0 ? takenSkills.Take(skillDisplayLimit).ToList() : takenSkills;
-
             // 解析职业
-            Enum.TryParse<Classes>(playerData.Profession, out var playerClass);
+            //Enum.TryParse<Classes>(playerData.Profession, out var playerClass);
 
             // 伤害统计
             if (playerData.TotalDamage > 0)
@@ -1907,10 +1897,7 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
                         dummyDpsData,
                         playerData.TotalDamage,
                         0, damageSkills, healingSkills, takenSkills,
-                        playerData.Nickname,
-                        playerClass,
-                        ClassSpec.Unknown,
-                        playerData.CombatPower
+                        playerData.Uid
                     );
                 }
             }
@@ -1923,10 +1910,7 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
                     dummyDpsData,
                     playerData.TotalHealing,
                     0, damageSkills, healingSkills, takenSkills,
-                    playerData.Nickname,
-                    playerClass,
-                    ClassSpec.Unknown,
-                    playerData.CombatPower
+                    playerData.Uid
                 );
             }
 
@@ -1941,10 +1925,7 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
                         dummyDpsData,
                         playerData.TakenDamage,
                         0, damageSkills, healingSkills, takenSkills,
-                        playerData.Nickname,
-                        playerClass,
-                        ClassSpec.Unknown,
-                        playerData.CombatPower
+                        playerData.Uid
                     );
                 }
                 else // 玩家承伤
@@ -1954,10 +1935,7 @@ public partial class DpsStatisticsViewModel : BaseViewModel, IDisposable
                         dummyDpsData,
                         playerData.TakenDamage,
                         0, damageSkills, healingSkills, takenSkills,
-                        playerData.Nickname,
-                        playerClass,
-                        ClassSpec.Unknown,
-                        playerData.CombatPower
+                        playerData.Uid
                     );
                 }
             }

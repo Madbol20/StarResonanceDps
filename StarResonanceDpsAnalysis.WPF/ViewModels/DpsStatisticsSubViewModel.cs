@@ -5,7 +5,6 @@ using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using StarResonanceDpsAnalysis.Core;
 using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Data.Models;
 using StarResonanceDpsAnalysis.Core.Models;
@@ -26,18 +25,15 @@ public readonly record struct DpsDataProcessed(
     List<SkillItemViewModel> DamageSkillList,
     List<SkillItemViewModel> HealSkillList,
     List<SkillItemViewModel> TakenDamageSkillList,
-    string PlayerName,
-    Classes PlayerClass,
-    ClassSpec PlayerSpec,
-    int PowerLevel);
+    long Uid);
 
 public partial class DpsStatisticsSubViewModel : BaseViewModel
 {
     private readonly DebugFunctions _debugFunctions;
-    private readonly DpsStatisticsViewModel _parent;
-    private readonly LocalizationManager _localizationManager;
     private readonly Dispatcher _dispatcher;
+    private readonly LocalizationManager _localizationManager;
     private readonly ILogger<DpsStatisticsViewModel> _logger;
+    private readonly DpsStatisticsViewModel _parent;
     private readonly IDataStorage _storage;
     private readonly StatisticType _type;
     [ObservableProperty] private StatisticDataViewModel? _currentPlayerSlot;
@@ -169,52 +165,54 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
 
     protected StatisticDataViewModel GetOrAddStatisticDataViewModel(DpsData dpsData)
     {
+        if (DataDictionary.TryGetValue(dpsData.UID, out var slot)) return slot;
+
+        // Debug.Assert(playerInfo != null, nameof(playerInfo) + " != null");
         var ret = _storage.ReadOnlyPlayerInfoDatas.TryGetValue(dpsData.UID, out var playerInfo);
-
-
-        if (!DataDictionary.TryGetValue(dpsData.UID, out var slot))
+        slot = new StatisticDataViewModel(_debugFunctions, _localizationManager)
         {
-            // Debug.Assert(playerInfo != null, nameof(playerInfo) + " != null");
-            slot = new StatisticDataViewModel(_debugFunctions, _localizationManager)
+            Index = 999,
+            Value = 0,
+            Duration = (dpsData.LastLoggedTick - (dpsData.StartLoggedTick ?? 0)).ConvertToUnsigned(),
+            Player = new PlayerInfoViewModel(_localizationManager)
             {
-                Index = 999,
-                Value = 0,
-                Duration = (dpsData.LastLoggedTick - (dpsData.StartLoggedTick ?? 0)).ConvertToUnsigned(),
-                Player = new PlayerInfoViewModel(_localizationManager)
-                {
-                    Uid = dpsData.UID,
-                    Guild = "Unknown",
-                    Name = ret ? playerInfo?.Name ?? $"UID: {dpsData.UID}" : $"UID: {dpsData.UID}",
-                    Spec = playerInfo?.Spec ?? ClassSpec.Unknown,
-                    IsNpc = dpsData.IsNpcData,
-                    NpcTemplateId = playerInfo?.NpcTemplateId ?? 0,
-                },
-                // Set the hover action to call parent's SetIndicatorHover
-                SetHoverStateAction = (isHovering) => _parent.SetIndicatorHover(isHovering)
-            };
+                Uid = dpsData.UID,
+                Guild = "Unknown",
+                Name = ret ? playerInfo?.Name ?? $"UID: {dpsData.UID}" : $"UID: {dpsData.UID}",
+                Spec = playerInfo?.Spec ?? ClassSpec.Unknown,
+                IsNpc = dpsData.IsNpcData,
+                NpcTemplateId = playerInfo?.NpcTemplateId ?? 0
+            },
+            // Set the hover action to call parent's SetIndicatorHover
+            SetHoverStateAction = isHovering => _parent.SetIndicatorHover(isHovering)
+        };
 
-            _dispatcher.Invoke(() => { Data.Add(slot); });
-        }
+        _dispatcher.Invoke(() => { Data.Add(slot); });
 
-        if (ret)
+        return slot;
+    }
+
+    private void UpdatePlayerInfo(StatisticDataViewModel slot, PlayerInfo? playerInfo)
+    {
+        if (playerInfo != null)
         {
             Debug.Assert(playerInfo != null, nameof(playerInfo) + " != null");
-            slot.Player.Name = playerInfo.Name ?? $"UID: {dpsData.UID}";
+            slot.Player.Name = playerInfo.Name ?? $"UID: {slot.Player.Uid}";
             slot.Player.Class = playerInfo.Class;
             slot.Player.Spec = playerInfo.Spec;
             slot.Player.PowerLevel = playerInfo.CombatPower ?? 0;
-            //slot.Player.DreamStrength
+            slot.Player.SeasonLevel = playerInfo.SeasonLevel;
+            slot.Player.SeasonStrength = playerInfo.SeasonStrength;
         }
         else
         {
-            slot.Player.Name = $"UID: {dpsData.UID}";
+            slot.Player.Name = $"UID: {slot.Player.Uid}";
             slot.Player.Class = Classes.Unknown;
             slot.Player.Spec = ClassSpec.Unknown;
             slot.Player.PowerLevel = 0;
-            slot.Player.DreamStrength = 0;
+            slot.Player.SeasonLevel = 0;
+            slot.Player.SeasonStrength = 0;
         }
-
-        return slot;
     }
 
     /// <summary>
@@ -233,6 +231,10 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
 
             var slot = GetOrAddStatisticDataViewModel(processed.OriginalData);
 
+            // Update player info
+            _storage.ReadOnlyPlayerInfoDatas.TryGetValue(processed.Uid, out var playerInfo);
+            UpdatePlayerInfo(slot, playerInfo);
+
             // Update slot values with pre-computed data
             slot.Value = processed.Value;
             slot.Duration = processed.Duration;
@@ -245,14 +247,6 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
 
             slot.TakenDamage.TotalSkillList = processed.TakenDamageSkillList;
             slot.TakenDamage.RefreshFilteredList(SkillDisplayLimit);
-
-            // Update player info
-            slot.Player.Name = processed.PlayerName;
-            slot.Player.Class = processed.PlayerClass;
-            slot.Player.Spec = processed.PlayerSpec;
-            slot.Player.Uid = uid;
-            slot.Player.PowerLevel = processed.PowerLevel;
-            // TODO: implement DreamStrength reading
 
             // Set current player slot if this is the current player
             if (hasCurrentPlayer && uid == currentPlayerUid)
@@ -322,13 +316,13 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
                 Name = $"Test Player {slots.Count + 1}",
                 Spec = ClassSpecHelper.Random(),
                 PowerLevel = Random.Shared.Next(5000, 39000)
-            },
+            }
         };
         newItem.Damage.FilteredSkillList =
         [
             new SkillItemViewModel
             {
-                SkillName = "Test Skill A", TotalDamage = 15000, HitCount = 25, CritCount = 8, AvgDamage = 600,
+                SkillName = "Test Skill A", TotalDamage = 15000, HitCount = 25, CritCount = 8, AvgDamage = 600
             },
             new SkillItemViewModel
             {
@@ -403,71 +397,6 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
         return (Classes)values.GetValue(Random.Shared.Next(values.Length))!;
     }
 
-    #region Sort
-
-    /// <summary>
-    /// Changes the sort member path and re-sorts the data
-    /// </summary>
-    [RelayCommand]
-    private void SetSortMemberPath(string memberPath)
-    {
-        if (SortMemberPath == memberPath)
-        {
-            // Toggle sort direction if the same property is clicked
-            SortDirection = SortDirection == SortDirectionEnum.Ascending
-                ? SortDirectionEnum.Descending
-                : SortDirectionEnum.Ascending;
-        }
-        else
-        {
-            SortMemberPath = memberPath;
-            SortDirection = SortDirectionEnum.Descending; // Default to descending for new properties
-        }
-
-        // Trigger immediate re-sort
-        SortSlotsInPlace(force: true);
-    }
-
-    /// <summary>
-    /// Manually triggers a sort operation
-    /// </summary>
-    [RelayCommand]
-    private void ManualSort()
-    {
-        SortSlotsInPlace(force: true);
-    }
-
-    /// <summary>
-    /// Sorts by Value in descending order (highest DPS first)
-    /// </summary>
-    [RelayCommand]
-    private void SortByValue()
-    {
-        SetSortMemberPath("Value");
-    }
-
-    /// <summary>
-    /// Sorts by Name in ascending order
-    /// </summary>
-    [RelayCommand]
-    private void SortByName()
-    {
-        SortMemberPath = "Name";
-        SortDirection = SortDirectionEnum.Ascending;
-        SortSlotsInPlace(force: true);
-    }
-
-    /// <summary>
-    /// Sorts by Classes
-    /// </summary>
-    [RelayCommand]
-    private void SortByClass()
-    {
-        SetSortMemberPath("Classes");
-    }
-
-    #endregion
-
     public void Reset()
     {
         // Ensure collection modifications happen on the UI thread
@@ -495,4 +424,69 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
     {
         RefreshSkillDisplayLimit();
     }
+
+    #region Sort
+
+    /// <summary>
+    /// Changes the sort member path and re-sorts the data
+    /// </summary>
+    [RelayCommand]
+    private void SetSortMemberPath(string memberPath)
+    {
+        if (SortMemberPath == memberPath)
+        {
+            // Toggle sort direction if the same property is clicked
+            SortDirection = SortDirection == SortDirectionEnum.Ascending
+                ? SortDirectionEnum.Descending
+                : SortDirectionEnum.Ascending;
+        }
+        else
+        {
+            SortMemberPath = memberPath;
+            SortDirection = SortDirectionEnum.Descending; // Default to descending for new properties
+        }
+
+        // Trigger immediate re-sort
+        SortSlotsInPlace(true);
+    }
+
+    /// <summary>
+    /// Manually triggers a sort operation
+    /// </summary>
+    [RelayCommand]
+    private void ManualSort()
+    {
+        SortSlotsInPlace(true);
+    }
+
+    /// <summary>
+    /// Sorts by Value in descending order (highest DPS first)
+    /// </summary>
+    [RelayCommand]
+    private void SortByValue()
+    {
+        SetSortMemberPath("Value");
+    }
+
+    /// <summary>
+    /// Sorts by Name in ascending order
+    /// </summary>
+    [RelayCommand]
+    private void SortByName()
+    {
+        SortMemberPath = "Name";
+        SortDirection = SortDirectionEnum.Ascending;
+        SortSlotsInPlace(true);
+    }
+
+    /// <summary>
+    /// Sorts by Classes
+    /// </summary>
+    [RelayCommand]
+    private void SortByClass()
+    {
+        SetSortMemberPath("Classes");
+    }
+
+    #endregion
 }
