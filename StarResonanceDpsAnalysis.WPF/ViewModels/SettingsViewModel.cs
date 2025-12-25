@@ -195,18 +195,6 @@ public partial class SettingsViewModel(
         }
     }
 
-    /// <summary>
-    /// ⭐ 新增: 处理开关伤害统计快捷键输入
-    /// </summary>
-    [RelayCommand]
-    private void HandleToggleDpsShortcut(object parameter)
-    {
-        if (parameter is KeyEventArgs e)
-        {
-            HandleShortcutInput(e, ShortcutType.ToggleDps);
-        }
-    }
-
     private void OnAppConfigPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (sender is not AppConfig config)
@@ -306,9 +294,6 @@ public partial class SettingsViewModel(
             case ShortcutType.TopMost:
                 AppConfig.TopmostShortcut = shortcutData;
                 break;
-            case ShortcutType.ToggleDps:
-                AppConfig.ToggleDpsShortcut = shortcutData;
-                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(shortcutType), shortcutType, null);
         }
@@ -330,9 +315,6 @@ public partial class SettingsViewModel(
                 break;
             case ShortcutType.TopMost:
                 AppConfig.TopmostShortcut = shortCut;
-                break;
-            case ShortcutType.ToggleDps:
-                AppConfig.ToggleDpsShortcut = shortCut;
                 break;
         }
     }
@@ -481,8 +463,7 @@ public enum ShortcutType
 {
     MouseThrough,
     ClearData,
-    TopMost,
-    ToggleDps  // ⭐ 新增: 开关伤害统计
+    TopMost
 }
 
 public sealed class SettingsDesignTimeViewModel : SettingsViewModel

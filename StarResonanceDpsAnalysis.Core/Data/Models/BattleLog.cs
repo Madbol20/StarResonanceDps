@@ -10,10 +10,10 @@ namespace StarResonanceDpsAnalysis.Core.Data.Models
     /// 战斗日志
     /// </summary>
     /// <remarks>
-    /// 现阶段的字段顺序是经过设计的, 请勿随意更改
-    /// 本段中, 后续的多个 bool 类型, 可以考虑合并为一个 Flag 以节省空间并提高效率, 但会降低可读性
+    /// Changed from struct to class for better performance with collections.
+    /// Large structs (>16 bytes) cause excessive copying when used in List/Dictionary.
     /// </remarks>
-    public struct BattleLog
+    public sealed class BattleLog
     {
         /// <summary>
         /// 包ID

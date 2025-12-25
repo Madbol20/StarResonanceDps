@@ -136,12 +136,6 @@ public partial class AppConfig : ObservableObject
     private KeyBinding _clearDataShortcut = new(Key.F9, ModifierKeys.None);
 
     /// <summary>
-    /// ⭐ 新增: 开关伤害统计快捷键
-    /// </summary>
-    [ObservableProperty]
-    private KeyBinding _toggleDpsShortcut = new(Key.F10, ModifierKeys.None);
-
-    /// <summary>
     /// 当前窗口是否置顶
     /// </summary>
     [ObservableProperty]
@@ -171,6 +165,49 @@ public partial class AppConfig : ObservableObject
     /// </summary>
     [ObservableProperty]
     private int _maxHistoryCount = 15;
+
+    /// <summary>
+    /// ⭐ 新增: 打桩模式默认木桩类型
+    /// 默认值：Center (中间木桩)
+    /// </summary>
+    [ObservableProperty]
+    private int _defaultDummyTarget = 0; // 0=Center, 1=TDummy
+
+    /// <summary>
+    /// ⭐ 新增: DPS统计页面 - 技能显示数量
+    /// 默认值：8条
+    /// </summary>
+    [ObservableProperty]
+    private int _skillDisplayLimit = 8;
+
+    /// <summary>
+    /// ⭐ 新增: DPS统计页面 - 是否统计NPC数据
+    /// 默认值：false (不统计NPC)
+    /// </summary>
+    [ObservableProperty]
+    private bool _isIncludeNpcData = false;
+
+    /// <summary>
+    /// ⭐ 新增: DPS统计页面 - 是否显示团队总伤
+    /// 默认值：true (显示)
+    /// </summary>
+    [ObservableProperty]
+    private bool _showTeamTotalDamage = true;
+
+    /// <summary>
+    /// ⭐ 新增: DPS统计页面 - 快照最小记录时长(秒)
+    /// 默认值：5秒
+    /// 范围：0 - 300秒
+    /// </summary>
+    [ObservableProperty]
+    private int _minimalDurationInSeconds = 5;
+
+    /// <summary>
+    /// new PlayerStatistics path instead of legacy DpsData
+    /// Default: true (use new architecture)
+    /// </summary>
+    [ObservableProperty]
+    private bool _usePlayerStatisticsPath = true;
 
     public AppConfig Clone()
     {

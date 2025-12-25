@@ -578,33 +578,6 @@
                                         </Grid>
                                     </Border>
 
-                                    <!--  ⭐ 新增: 开关伤害统计快捷键  -->
-                                    <Border Style="{StaticResource SectionFieldBorderBase}">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="39*" />
-                                                <ColumnDefinition Width="*" MinWidth="10" />
-                                                <ColumnDefinition Width="60*" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <TextBlock
-                                                Grid.Column="0"
-                                                Style="{StaticResource FieldName}"
-                                                Text="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Shortcut_ToggleDps}}" />
-                                            <TextBox
-                                                x:Name="ToggleDpsTextBox"
-                                                Grid.Column="2"
-                                                IsReadOnly="True"
-                                                Style="{StaticResource AntTextBoxStyle}"
-                                                Text="{Binding AppConfig.ToggleDpsShortcut, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource KeyToStringConverter}}"
-                                                ToolTip="{lex:Loc Key={x:Static loc:ResourcesKeys.Settings_Shortcut_ToggleDps_Tooltip}}">
-                                                <b:Interaction.Behaviors>
-                                                    <behaviors:KeyDownCommandBehavior Command="{Binding HandleToggleDpsShortcutCommand}" />
-                                                </b:Interaction.Behaviors>
-                                            </TextBox>
-                                        </Grid>
-                                    </Border>
-
                                 </StackPanel>
                             </Border>
 

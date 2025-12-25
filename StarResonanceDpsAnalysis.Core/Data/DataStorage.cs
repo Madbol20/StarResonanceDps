@@ -141,6 +141,8 @@ public static class DataStorage
     /// </summary>
     public static event ServerChangedEventHandler? ServerChanged;
 
+    public static event SectionEndedEventHandler? SectionEnded;
+
     /// <summary>
     /// 从文件加载缓存玩家信息
     /// </summary>
@@ -295,7 +297,7 @@ public static class DataStorage
         if (LastBattleLog != null)
         {
             // 如果 战斗超时 或 强制创建新战斗分段 时, 创建新分段
-            var prevTt = new TimeSpan(LastBattleLog.Value.TimeTicks);
+            var prevTt = new TimeSpan(LastBattleLog.TimeTicks);
             if (tt - prevTt > SectionTimeout || ForceNewBattleSection)
             {
                 PrivateClearDpsData();
@@ -736,5 +738,9 @@ public static class DataStorage
         TriggerPlayerInfoUpdated(uid);
     }
 
+    private static void OnSectionEnded()
+    {
+        SectionEnded?.Invoke();
+    }
     #endregion
 }

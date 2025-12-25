@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Data.Models;
 using StarResonanceDpsAnalysis.Core.Models;
+using StarResonanceDpsAnalysis.Core.Statistics;
 using StarResonanceDpsAnalysis.WPF.Extensions;
 using StarResonanceDpsAnalysis.WPF.Localization;
 using StarResonanceDpsAnalysis.WPF.Models;
@@ -19,9 +20,9 @@ namespace StarResonanceDpsAnalysis.WPF.ViewModels;
 /// Immutable by design for thread-safety and performance
 /// </summary>
 public readonly record struct DpsDataProcessed(
-    DpsData OriginalData,
+    PlayerStatistics OriginalData,
     ulong Value,
-    ulong Duration,
+    long DurationTicks,
     List<SkillItemViewModel> DamageSkillList,
     List<SkillItemViewModel> HealSkillList,
     List<SkillItemViewModel> TakenDamageSkillList,
@@ -44,6 +45,7 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
     [ObservableProperty] private SortDirectionEnum _sortDirection = SortDirectionEnum.Descending;
     [ObservableProperty] private string _sortMemberPath = "Value";
     [ObservableProperty] private bool _suppressSorting;
+    [ObservableProperty] private int? _currentPlayerRank = null;
 
     public DpsStatisticsSubViewModel(ILogger<DpsStatisticsViewModel> logger, Dispatcher dispatcher, StatisticType type,
         IDataStorage storage,
@@ -141,7 +143,7 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
                         Data.SortBy(x => x.Value, SortDirection == SortDirectionEnum.Descending);
                         break;
                     case "Name":
-                        Data.SortBy(x => x.Player.Name, SortDirection == SortDirectionEnum.Descending);
+                        Data.SortBy(x => x.Player.PlayerInfo, SortDirection == SortDirectionEnum.Descending);
                         break;
                     case "Classes":
                         Data.SortBy(x => (int)x.Player.Class, SortDirection == SortDirectionEnum.Descending);
@@ -173,17 +175,50 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
         {
             Index = 999,
             Value = 0,
-            Duration = (dpsData.LastLoggedTick - (dpsData.StartLoggedTick ?? 0)).ConvertToUnsigned(),
+            DurationTicks = dpsData.LastLoggedTick - (dpsData.StartLoggedTick ?? 0),
             Player = new PlayerInfoViewModel(_localizationManager)
             {
                 Uid = dpsData.UID,
                 Guild = "Unknown",
-                Name = ret ? playerInfo?.Name ?? $"UID: {dpsData.UID}" : $"UID: {dpsData.UID}",
+                Name = playerInfo?.Name,
                 Spec = playerInfo?.Spec ?? ClassSpec.Unknown,
                 IsNpc = dpsData.IsNpcData,
-                NpcTemplateId = playerInfo?.NpcTemplateId ?? 0
+                NpcTemplateId = playerInfo?.NpcTemplateId ?? 0,
+                Mask = _parent.AppConfig.MaskPlayerName
             },
             // Set the hover action to call parent's SetIndicatorHover
+            SetHoverStateAction = isHovering => _parent.SetIndicatorHover(isHovering)
+        };
+
+        _dispatcher.Invoke(() => { Data.Add(slot); });
+
+        return slot;
+    }
+
+    /// <summary>
+    /// ? NEW: Get or add StatisticDataViewModel from PlayerStatistics (new architecture)
+    /// </summary>
+    protected StatisticDataViewModel GetOrAddStatisticDataViewModel(PlayerStatistics playerStats)
+    {
+        if (DataDictionary.TryGetValue(playerStats.Uid, out var slot))
+            return slot;
+
+        var ret = _storage.ReadOnlyPlayerInfoDatas.TryGetValue(playerStats.Uid, out var playerInfo);
+        slot = new StatisticDataViewModel(_debugFunctions, _localizationManager)
+        {
+            Index = 999,
+            Value = 0,
+            DurationTicks = playerStats.LastTick - (playerStats.StartTick ?? 0),
+            Player = new PlayerInfoViewModel(_localizationManager)
+            {
+                Uid = playerStats.Uid,
+                Guild = "Unknown",
+                Name = playerInfo?.Name,
+                Spec = playerInfo?.Spec ?? ClassSpec.Unknown,
+                IsNpc = playerStats.IsNpc,
+                NpcTemplateId = playerInfo?.NpcTemplateId ?? 0,
+                Mask = _parent.AppConfig.MaskPlayerName
+            },
             SetHoverStateAction = isHovering => _parent.SetIndicatorHover(isHovering)
         };
 
@@ -197,7 +232,7 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
         if (playerInfo != null)
         {
             Debug.Assert(playerInfo != null, nameof(playerInfo) + " != null");
-            slot.Player.Name = playerInfo.Name ?? $"UID: {slot.Player.Uid}";
+            slot.Player.Name = playerInfo.Name;
             slot.Player.Class = playerInfo.Class;
             slot.Player.Spec = playerInfo.Spec;
             slot.Player.PowerLevel = playerInfo.CombatPower ?? 0;
@@ -206,7 +241,7 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
         }
         else
         {
-            slot.Player.Name = $"UID: {slot.Player.Uid}";
+            slot.Player.Name = null;
             slot.Player.Class = Classes.Unknown;
             slot.Player.Spec = ClassSpec.Unknown;
             slot.Player.PowerLevel = 0;
@@ -215,6 +250,34 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
         }
     }
 
+    /// <summary>
+    /// ⭐ 更新当前玩家排名(使用用户在设置中配置的UID)
+    /// </summary>
+    /// <param name="currentPlayerUid"></param>
+    private void UpdateCurrentPlayerRank(long currentPlayerUid)
+    {
+        var found = false;
+        int i;
+        for (i = 0; i < Data.Count; i++)
+        {
+            if (Data[i].Player.Uid != currentPlayerUid) continue;
+            found = true;
+            break;
+        }
+
+        if (found)
+            CurrentPlayerRank = i + 1;
+        else
+            CurrentPlayerRank = null;
+
+        // ⭐ 调试日志
+        _logger.LogDebug(
+            "排名更新: UserUID={UserUid}, Rank={Rank}, Total={Total}, Type={Type}",
+            currentPlayerUid,
+            CurrentPlayerRank ?? -1,
+            Data.Count,
+            _type);
+    }
     /// <summary>
     /// Updates data with pre-computed values for efficient batch processing
     /// </summary>
@@ -232,12 +295,13 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
             var slot = GetOrAddStatisticDataViewModel(processed.OriginalData);
 
             // Update player info
-            _storage.ReadOnlyPlayerInfoDatas.TryGetValue(processed.Uid, out var playerInfo);
+            var ret = _storage.ReadOnlyPlayerInfoDatas.TryGetValue(processed.Uid, out var playerInfo);
+            if (!ret) continue;
             UpdatePlayerInfo(slot, playerInfo);
 
             // Update slot values with pre-computed data
             slot.Value = processed.Value;
-            slot.Duration = processed.Duration;
+            slot.DurationTicks = processed.DurationTicks;
 
             slot.Damage.TotalSkillList = processed.DamageSkillList;
             slot.Damage.RefreshFilteredList(SkillDisplayLimit);
@@ -274,6 +338,7 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
 
         // Sort data in place 
         SortSlotsInPlace();
+        UpdateCurrentPlayerRank(currentPlayerUid);
     }
 
     private ulong GetValueForType(DpsData dpsData)
@@ -307,7 +372,7 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
         {
             Index = slots.Count + 1,
             Value = (ulong)Random.Shared.Next(100, 2000),
-            Duration = 60000,
+            DurationTicks = 60000,
             Player = new PlayerInfoViewModel(LocalizationManager.Instance)
             {
                 Uid = Random.Shared.Next(100, 999),
@@ -322,45 +387,47 @@ public partial class DpsStatisticsSubViewModel : BaseViewModel
         [
             new SkillItemViewModel
             {
-                SkillName = "Test Skill A", TotalDamage = 15000, HitCount = 25, CritCount = 8, AvgDamage = 600
+                SkillName = "Test Skill A",
+                Damage = new SkillItemViewModel.SkillValue { TotalValue = 15000, HitCount = 25, CritCount = 8, Average = 600 } },
+            new SkillItemViewModel
+            {
+                SkillName = "Test Skill B",
+                Damage = new SkillItemViewModel.SkillValue { TotalValue = 8500, HitCount = 15, CritCount = 4, Average = 567 }
             },
             new SkillItemViewModel
             {
-                SkillName = "Test Skill B", TotalDamage = 8500, HitCount = 15, CritCount = 4, AvgDamage = 567
-            },
-            new SkillItemViewModel
-            {
-                SkillName = "Test Skill C", TotalDamage = 12300, HitCount = 30, CritCount = 12, AvgDamage = 410
+                SkillName = "Test Skill C",
+                Damage = new SkillItemViewModel.SkillValue { TotalValue = 12300, HitCount = 30, CritCount = 12, Average = 410 }
             }
         ];
         newItem.Heal.FilteredSkillList =
         [
             new SkillItemViewModel
             {
-                SkillName = "Test Heal Skill A", TotalDamage = 15000, HitCount = 25, CritCount = 8, AvgDamage = 600
+                SkillName = "Test Heal Skill A", Heal = new() { TotalValue = 15000, HitCount = 25, CritCount = 8, Average = 600 }
             },
             new SkillItemViewModel
             {
-                SkillName = "Test Heal Skill B", TotalDamage = 8500, HitCount = 15, CritCount = 4, AvgDamage = 567
+                SkillName = "Test Heal Skill B", Heal = new() { TotalValue = 8500, HitCount = 15, CritCount = 4, Average = 567 }
             },
             new SkillItemViewModel
             {
-                SkillName = "Test Heal Skill C", TotalDamage = 12300, HitCount = 30, CritCount = 12, AvgDamage = 410
+                SkillName = "Test Heal Skill C",Heal = new() { TotalValue = 12300, HitCount = 30, CritCount = 12, Average = 410 }
             }
         ];
         newItem.TakenDamage.FilteredSkillList =
         [
             new SkillItemViewModel
             {
-                SkillName = "Test Taken Skill A", TotalDamage = 15000, HitCount = 25, CritCount = 8, AvgDamage = 600
+                SkillName = "Test Taken Skill A", TakenDamage = new() { TotalValue = 15000, HitCount = 25, CritCount = 8, Average = 600 }
             },
             new SkillItemViewModel
             {
-                SkillName = "Test Taken Skill B", TotalDamage = 8500, HitCount = 15, CritCount = 4, AvgDamage = 567
+                SkillName = "Test Taken Skill B", TakenDamage =new() { TotalValue = 8500, HitCount = 15, CritCount = 4, Average = 567 }
             },
             new SkillItemViewModel
             {
-                SkillName = "Test Taken Skill C", TotalDamage = 12300, HitCount = 30, CritCount = 12, AvgDamage = 410
+                SkillName = "Test Taken Skill C", TakenDamage = new() { TotalValue = 12300, HitCount = 30, CritCount = 12, Average = 410 }
             }
         ];
 

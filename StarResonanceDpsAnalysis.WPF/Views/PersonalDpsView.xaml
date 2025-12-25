@@ -277,9 +277,21 @@
                                     Header="打桩模式"
                                     IsCheckable="True"
                                     IsChecked="{Binding EnableTrainingMode}" />
-                                <MenuItem
-                                    Command="{Binding ExportSrlogsCommand}"
-                                    Header="导出为srlogs" />
+                                
+                                <!-- ⭐ 新增: 木桩选择菜单 -->
+                                <MenuItem Header="木桩选择">
+                                    <MenuItem
+                                        Header="中间木桩"
+                                        IsCheckable="True"
+                                        IsChecked="{Binding SelectedDummyTarget, Mode=TwoWay, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Center}"
+                                        StaysOpenOnClick="True" />
+                                    <MenuItem
+                                        Header="T木桩"
+                                        IsCheckable="True"
+                                        IsChecked="{Binding SelectedDummyTarget, Mode=TwoWay, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=TDummy}"
+                                        StaysOpenOnClick="True" />
+                                </MenuItem>
+                                
                                 <MenuItem
                                     Command="{Binding ClearCommand}"
                                     Header="清空" />

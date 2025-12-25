@@ -7,6 +7,7 @@ using Serilog.Events;
 using StarResonanceDpsAnalysis.Core.Analyze.Models;
 using StarResonanceDpsAnalysis.Core.Data;
 using StarResonanceDpsAnalysis.Core.Data.Models;
+using StarResonanceDpsAnalysis.Core.Statistics;
 using StarResonanceDpsAnalysis.WPF.Config;
 using StarResonanceDpsAnalysis.WPF.Localization;
 using StarResonanceDpsAnalysis.WPF.Services;
@@ -31,7 +32,7 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
             new DesignOptionsMonitor(),
             null!,
             LocalizationManager.Instance),
-        new DesignBattleSnapshotService(), LocalizationManager.Instance) // ? 添加设计时快照服务
+        new DesignBattleSnapshotService(), LocalizationManager.Instance, new MessageDialogService(null!)) 
     {
         // Initialize AppConfig
         AppConfig = new AppConfig { DebugEnabled = true };
@@ -123,6 +124,7 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
         public event DpsDataUpdatedEventHandler? DpsDataUpdated;
         public event DataUpdatedEventHandler? DataUpdated;
         public event ServerChangedEventHandler? ServerChanged;
+        public event SectionEndedEventHandler? SectionEnded;
 #pragma warning restore
 
         public void LoadPlayerInfoFromFile()
@@ -229,6 +231,16 @@ public sealed class DpsStatisticsDesignTimeViewModel : DpsStatisticsViewModel
 
         public void SetPlayerSeasonStrength(long playerUid, int seasonStrength)
         {
+        }
+
+        public IReadOnlyDictionary<long, PlayerStatistics> GetStatistics(bool fullSession)
+        {
+            return null!;
+        }
+
+        public int GetStatisticsCount(bool fullSession)
+        {
+            return -1;
         }
 
         public void Dispose()
