@@ -7,19 +7,18 @@ public class PercentToWidthConverter : IMultiValueConverter
 {
     public object Convert(object[]? values, Type targetType, object parameter, CultureInfo culture)
     {
-        if (values == null || values.Length < 3)
+        if (values == null || values.Length < 2)
             return 0d;
 
-        if (!TryToDouble(values[0], out var value))
+        if (!TryToDouble(values[0], out var percentage))
             return 0d;
 
-        if (!TryToDouble(values[1], out var maximum) || maximum <= 0)
+        if (!TryToDouble(values[1], out var totalWidth))
             return 0d;
 
-        if (!TryToDouble(values[2], out var totalWidth))
-            return 0d;
-
-        var ratio = Math.Max(0d, Math.Min(1d, value / maximum));
+        // If percentage is already 0-100, divide by 100. If 0-1, use as is.
+        // Assuming percentage is 0-100 based on ViewModel logic.
+        var ratio = Math.Max(0d, Math.Min(1d, percentage / 100d));
         return ratio * totalWidth;
     }
 

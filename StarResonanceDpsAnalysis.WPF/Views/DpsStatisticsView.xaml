@@ -1,4 +1,4 @@
-﻿<Window
+<Window
     x:Class="StarResonanceDpsAnalysis.WPF.Views.DpsStatisticsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -276,7 +276,7 @@
                     <MultiBinding Converter="{StaticResource StatisticTypeToSkillListConverter}">
                         <Binding Path="." />
                         <Binding Path="DataContext.StatisticIndex" RelativeSource="{RelativeSource AncestorType=Window}" />
-                        <!--  ⭐ 新增: 添加SkillListRefreshTrigger作为第三个绑定源,每次触发器改变时重新执行转换器  -->
+                        <!--  添加SkillListRefreshTrigger作为第三个绑定源,每次触发器改变时重新执行转换器  -->
                         <Binding Path="SkillListRefreshTrigger" />
                     </MultiBinding>
                 </ctrl:DpsDetailPopup.SkillList>
@@ -355,6 +355,13 @@
     <!--  半透明/圆角交给内部 Border  -->
     <Border Style="{StaticResource ShadowWindowBorder}">
         <Grid CacheMode="BitmapCache">
+            <!-- ⭐ 新增：背景图片 -->
+            <Grid.Background>
+                <ImageBrush 
+              ImageSource="{Binding BackgroundImagePath}"
+              Stretch="Uniform"
+              Opacity="{Binding AppConfig.Opacity, Converter={StaticResource PercentToOpacityConverter}}" />
+            </Grid.Background>
             <Grid.RowDefinitions>
                 <RowDefinition Height="25" />
                 <RowDefinition Height="*" />
@@ -374,9 +381,11 @@
                         TopRight="{StaticResource MainCornerRadiusDouble}" />
                 </Border.CornerRadius>
                 <Border.Background>
+                    <!-- ⭐ 修改：使用主题颜色 + 透明度 -->
                     <SolidColorBrush>
                         <SolidColorBrush.Color>
-                            <MultiBinding Converter="{StaticResource ConditionalPercentToColorConverter}" ConverterParameter="#BABABA">
+                            <MultiBinding Converter="{StaticResource ThemeColorWithOpacityConverter}">
+                                <Binding Path="ThemeColor" />
                                 <Binding Path="AppConfig.Opacity" />
                                 <Binding Path="AppConfig.MouseThroughEnabled" />
                             </MultiBinding>
@@ -704,15 +713,10 @@
             </Border>
 
             <Border Grid.Row="1">
+                <!-- ⭐ 修复1: 移除背景色，让壁纸可以透过来 -->
+                <!-- 如果需要半透明背景，可以使用较低的透明度 -->
                 <Border.Background>
-                    <SolidColorBrush>
-                        <SolidColorBrush.Color>
-                            <MultiBinding Converter="{StaticResource ConditionalPercentToColorConverter}" ConverterParameter="#191919">
-                                <Binding Path="AppConfig.Opacity" />
-                                <Binding Path="AppConfig.MouseThroughEnabled" />
-                            </MultiBinding>
-                        </SolidColorBrush.Color>
-                    </SolidColorBrush>
+                    <SolidColorBrush Color="#191919" Opacity="0.3" />
                 </Border.Background>
                 <ctrl:SortedDpsControl
                     Padding="0,5,0,5"
@@ -818,15 +822,18 @@
                 Grid.Row="3"
                 Style="{StaticResource FooterContentBorder}">
                 <Border.Background>
+                    <!-- ⭐ 修改：使用主题颜色 + 透明度 -->
                     <SolidColorBrush>
                         <SolidColorBrush.Color>
-                            <MultiBinding Converter="{StaticResource ConditionalPercentToColorConverter}" ConverterParameter="#BABABA">
-                                <Binding Path="DataContext.AppConfig.Opacity" RelativeSource="{RelativeSource AncestorType=Window}" />
-                                <Binding Path="DataContext.AppConfig.MouseThroughEnabled" RelativeSource="{RelativeSource AncestorType=Window}" />
+                            <MultiBinding Converter="{StaticResource ThemeColorWithOpacityConverter}">
+                                <Binding Path="ThemeColor" />
+                                <Binding Path="AppConfig.Opacity" />
+                                <Binding Path="AppConfig.MouseThroughEnabled" />
                             </MultiBinding>
                         </SolidColorBrush.Color>
                     </SolidColorBrush>
                 </Border.Background>
+                <!-- ⭐ 修复2: 恢复底部栏内容 -->
                 <Grid Margin="6">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -882,9 +889,7 @@
                             Visibility="{Binding ShowTeamTotalDamage, Converter={StaticResource BoolToInvertedVisibilityConverter}}">
                             <TextBlock.Text>
                                 <MultiBinding Converter="{StaticResource HumanReadableNumberConverter}">
-                                    <Binding
-                                        Path="CurrentStatisticData.CurrentPlayerSlot.Value"
-                                        />
+                                    <Binding Path="CurrentStatisticData.CurrentPlayerSlot.Value" />
                                     <Binding Path="DataContext.AppConfig.DamageDisplayType" RelativeSource="{RelativeSource AncestorType=Window, Mode=FindAncestor}" />
                                 </MultiBinding>
                             </TextBlock.Text>
@@ -909,8 +914,6 @@
                     </StackPanel>
                 </Grid>
             </Border>
-
         </Grid>
     </Border>
-
 </Window>

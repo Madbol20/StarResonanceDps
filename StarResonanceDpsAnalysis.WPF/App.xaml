@@ -28,6 +28,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Styles/DpsIndicatorControlStyle.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/ImageResourceDictionary.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/CardHeaderStyle.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Styles/SimpleColorPickerStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -1,40 +1,29 @@
 using System.Globalization;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 
 namespace StarResonanceDpsAnalysis.WPF.Converters;
 
 /// <summary>
-/// MultiValueConverter that prefers the alternation index (first binding) and falls back to the item's Id (second binding).
-/// It returns a string representation (1-based index when alternation index is available).
+/// Converter that checks if an item's index in an ItemsControl is less than a parameter.
 /// </summary>
-public class ItemIndexMultiConverter : IMultiValueConverter
+public class ItemIndexMultiConverter : IValueConverter
 {
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        // values[0] => alternation index (int)
-        // values[1] => Id (object)
-        if (values == null || values.Length < 2)
-            return "";
-
-        try
+        if (value is DependencyObject item && ItemsControl.ItemsControlFromItemContainer(item) is ItemsControl itemsControl)
         {
-            if (values[0] is int alt && alt >= 0)
+            int index = itemsControl.ItemContainerGenerator.IndexFromContainer(item);
+            if (int.TryParse(parameter?.ToString(), out int limit))
             {
-                // display as 1-based
-                return (alt + 1).ToString(culture);
+                return index < limit;
             }
-
-            // fallback to Id
-            var id = values[1];
-            return id?.ToString() ?? string.Empty;
         }
-        catch
-        {
-            return string.Empty;
-        }
+        return false;
     }
 
-    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         throw new NotSupportedException();
     }

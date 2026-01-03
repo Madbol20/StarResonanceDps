@@ -24,4 +24,6 @@ public partial class SkillItemViewModel : BaseViewModel
         [ObservableProperty] private long _luckyValue;
         [ObservableProperty] private int _luckyCount;
     }
+
+    [ObservableProperty] private double _percentage;
 }

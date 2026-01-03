@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using OxyPlot;
 using OxyPlot.Axes;
+using OxyPlot.Legends;
 using OxyPlot.Series;
 using StarResonanceDpsAnalysis.WPF.Models;
 
@@ -65,13 +66,15 @@ public partial class PlotViewModel : BaseViewModel
 
         PieSeriesData = new PieSeries
         {
-            StrokeThickness = 2,
-            InsideLabelPosition = 0.5,
+            StrokeThickness = 3,
+            InsideLabelPosition = 0.6,
             AngleSpan = 360,
-            StartAngle = 0,
+            StartAngle = -90,
             InsideLabelColor = OxyColors.White,
-            InsideLabelFormat = "{1}: {2:0}",
-            Stroke = OxyColors.White
+            InsideLabelFormat = "{1}\n{2:0}%",
+            Stroke = OxyColors.White,
+            FontSize = 12,
+            FontWeight = 700 // Bold
         };
         _piePlotModel = new PlotModel
         {
@@ -79,6 +82,18 @@ public partial class PlotViewModel : BaseViewModel
             Background = OxyColors.Transparent,
             Series = { PieSeriesData }
         };
+        
+        // Add Legend
+        _piePlotModel.Legends.Add(new Legend
+        {
+            LegendPosition = LegendPosition.BottomCenter,
+            LegendOrientation = LegendOrientation.Horizontal,
+            LegendPlacement = LegendPlacement.Outside,
+            LegendBorderThickness = 0,
+            LegendFontSize = 12,
+            LegendTextColor = OxyColor.Parse("#666666"),
+            LegendSymbolPlacement = LegendSymbolPlacement.Left
+        });
 
         // Bar chart model for hit type percentages (Normal, Critical, Lucky)
         (_hitTypeBarPlotModel, _hitTypeBarCategoryAxis) = CreateHitTypeBarPlotModel(options);

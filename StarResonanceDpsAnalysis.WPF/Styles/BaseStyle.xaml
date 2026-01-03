@@ -120,7 +120,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ScrollBar">
-                    <Grid Width="8" Background="Transparent">
+                    <Grid Width="6" Background="Transparent">
                         <!--  轨道  -->
                         <Track Name="PART_Track" IsDirectionReversed="true">
                             <Track.Resources>
@@ -141,7 +141,7 @@
                                 <Thumb Background="#888">
                                     <Thumb.Template>
                                         <ControlTemplate TargetType="Thumb">
-                                            <Border Background="{TemplateBinding Background}" CornerRadius="4" />
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="3" />
                                         </ControlTemplate>
                                     </Thumb.Template>
                                 </Thumb>

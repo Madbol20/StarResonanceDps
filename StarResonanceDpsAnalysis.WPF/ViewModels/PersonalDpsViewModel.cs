@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -41,12 +41,12 @@ public partial class PersonalDpsViewModel : BaseViewModel
     private readonly object _timerLock = new();
     private Timer? _remainingTimer;
 
-    // ⭐ 新增: 缓存上一次的显示数据（脱战后保持显示）
+    // 缓存上一次的显示数据（脱战后保持显示）
     private string _cachedDpsDisplay = "0 (0)";
     private double _cachedTeamPercent = 0;
     private string _cachedPercentDisplay = "0%";
 
-    // ⭐ 新增: 标记是否正在等待新战斗开始
+    // 标记是否正在等待新战斗开始
     private bool _awaitingNewBattle = false;
 
     public PersonalDpsViewModel(
@@ -61,6 +61,9 @@ public partial class PersonalDpsViewModel : BaseViewModel
         _dispatcher = dispatcher;
         _configManager = configManager;
         _logger = logger;
+
+        // ⭐ 订阅配置更新事件以响应主题颜色变化
+        _configManager.ConfigurationUpdated += OnConfigurationUpdated;
 
         //throw new NotImplementedException();
 
@@ -89,6 +92,11 @@ public partial class PersonalDpsViewModel : BaseViewModel
 
     public TimeSpan TimeLimit { get; } = TimeSpan.FromMinutes(3);
 
+    /// <summary>
+    /// ⭐ 主题颜色（用于渐变和文字）
+    /// </summary>
+    public string ThemeColor => _configManager.CurrentConfig.ThemeColor;
+
     [ObservableProperty] private bool _startTraining;
     [ObservableProperty] private bool _enableTrainingMode;
     [ObservableProperty] private DateTime? _startTime;
@@ -97,7 +105,7 @@ public partial class PersonalDpsViewModel : BaseViewModel
     [ObservableProperty] private double _teamDamagePercent = 0;
     [ObservableProperty] private string _teamPercentDisplay = "0%";
 
-    // ⭐ 新增: 木桩类型选择（默认为中间木桩）
+    // 木桩类型选择（默认为中间木桩）
     [ObservableProperty] private DummyTargetType _selectedDummyTarget = DummyTargetType.Center;
 
     public double RemainingPercent
@@ -492,6 +500,17 @@ public partial class PersonalDpsViewModel : BaseViewModel
         {
             _remainingTimer?.Change(Timeout.Infinite, Timeout.Infinite);
         }
+    }
+
+    /// <summary>
+    /// ⭐ 配置更新事件处理（支持主题颜色实时更新）
+    /// </summary>
+    private void OnConfigurationUpdated(object? sender, AppConfig newConfig)
+    {
+        _dispatcher.BeginInvoke(() =>
+        {
+            OnPropertyChanged(nameof(ThemeColor));
+        });
     }
 
     [RelayCommand]

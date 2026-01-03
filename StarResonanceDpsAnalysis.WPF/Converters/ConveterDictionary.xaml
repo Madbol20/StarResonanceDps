@@ -35,4 +35,12 @@
     <converters:MultiBoolToVisibilityConverter x:Key="MultiBoolToVisibilityConverter" />
     <converters:PlayerNameMaskConverter x:Key="PlayerNameMaskConverter" />
     <converters:SkillValueByStatisticConverter x:Key="SkillValueByStatisticConverter" />
+    <converters:EqualityToVisibilityConverter x:Key="EqualityToVisibilityConverter" />
+    <converters:ColorStringToBrushConverter x:Key="ColorStringToBrushConverter" />
+    <converters:ThemeColorWithOpacityConverter x:Key="ThemeColorWithOpacityConverter" />
+    <converters:RgbToColorConverter x:Key="RgbToColorConverter" />
+    <converters:ThemeColorToGradientConverter x:Key="ThemeColorToGradientConverter" />
+    <converters:SkillNameToGradientConverter x:Key="SkillNameToGradientConverter" />
+    <converters:SkillNameToRandomGradientConverter x:Key="SkillNameToRandomGradientConverter" />
+    <converters:ColorToBrushConverter x:Key="ColorToBrushConverter" />
 </ResourceDictionary>
